@@ -13,6 +13,7 @@
     int outOfStockCount = ViewBag.OutOfStockCount ?? 0;
     decimal totalStockValue = ViewBag.TotalStockValue ?? 0m;
 
+    var latestAuditLogs = ViewBag.LatestAuditLogs as List<AuditLog> ?? new List<AuditLog>();
     var latestProducts = ViewBag.LatestProducts as List<Product> ?? new List<Product>();
     var latestMovements = ViewBag.LatestMovements as List<StockMovement> ?? new List<StockMovement>();
     var lowStockProducts = ViewBag.LowStockProducts as List<Product> ?? new List<Product>();
@@ -588,6 +589,46 @@
     </div>
 
     <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">Son İşlemler</div>
+                    <p class="panel-subtitle">Sistemde yapılan son kayıtlı işlemler</p>
+                </div>
+
+                <div class="panel-body">
+                    @if (latestAuditLogs.Any())
+                    {
+                        <div class="mini-list">
+                            @foreach (var item in latestAuditLogs)
+                            {
+                                <div class="mini-item">
+                                    <div class="mini-thumb-placeholder">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+
+                                    <div>
+                                        <div class="mini-title">@item.ActionType • @item.EntityName</div>
+                                        <p class="mini-subtitle">@item.Description</p>
+                                    </div>
+
+                                    <span class="mini-badge badge-ok">
+                                        @item.CreatedDate.ToString("dd.MM HH:mm")
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-box">Henüz log kaydı bulunmuyor.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
         <div class="col-xl-6">
             <div class="panel-card">
                 <div class="panel-header">
@@ -822,13 +863,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    animation: false,
-                    cutout: "68%",
-                    plugins: {
-                        legend: {
-                            position: "bottom"
-                        }
-                    }
+                    animation: false
                 }
             });
         }
@@ -842,10 +877,11 @@
                 data: {
                     labels: dailyMovementLabels,
                     datasets: [{
-                        label: "Hareket Sayısı",
+                        label: "Günlük Hareket",
                         data: dailyMovementCounts,
+                        fill: false,
                         tension: 0.35,
-                        fill: false
+                        borderWidth: 3
                     }]
                 },
                 options: {
@@ -902,14 +938,14 @@
             if (!el) return;
 
             new Chart(el, {
-                type: "line",
+                type: "bar",
                 data: {
                     labels: yearlyMovementLabels,
                     datasets: [{
                         label: "Yıllık Hareket",
                         data: yearlyMovementCounts,
-                        tension: 0.35,
-                        fill: false
+                        borderRadius: 8,
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -929,12 +965,10 @@
             });
         }
 
-        window.addEventListener("load", function () {
-            createCategoryChart();
-            createMovementChart();
-            createDailyMovementChart();
-            createMonthlyMovementChart();
-            createYearlyMovementChart();
-        });
+        createCategoryChart();
+        createMovementChart();
+        createDailyMovementChart();
+        createMonthlyMovementChart();
+        createYearlyMovementChart();
     </script>
 }

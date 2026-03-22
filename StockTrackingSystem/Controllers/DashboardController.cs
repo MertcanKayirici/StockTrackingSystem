@@ -157,6 +157,13 @@ namespace StockTrackingSystem.Controllers
                 yearlyMovementData.Select(x => x.Count)
             );
 
+            var latestAuditLogs = await _context.AuditLogs
+                .OrderByDescending(x => x.CreatedDate)
+                .Take(8)
+                .ToListAsync();
+
+            ViewBag.LatestAuditLogs = latestAuditLogs;
+
             return View();
         }
     }
