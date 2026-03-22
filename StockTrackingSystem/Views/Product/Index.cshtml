@@ -431,6 +431,29 @@
     }
 
     /* =========================
+           EXPORT DROPDOWN
+       ========================= */
+    .dropdown-menu .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        font-weight: 600;
+        border-radius: 12px;
+        margin: 4px 8px;
+        transition: all 0.2s ease;
+    }
+
+        .dropdown-menu .dropdown-item:hover {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+    .dropdown-menu {
+        min-width: 220px;
+        padding: 10px;
+    }
+
+    /* =========================
            ACTION BUTTONS
         ========================= */
     .action-btn {
@@ -859,12 +882,50 @@
          PRODUCT TABLE
     ========================= -->
     <div class="table-card">
-        <div class="table-header d-flex justify-content-between align-items-center">
+        <div class="table-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
                 <div class="table-title">Ürün Listesi</div>
                 <p class="table-subtitle mb-0">
                     <span id="filteredText">@filteredCount</span> kayıt listeleniyor
                 </p>
+            </div>
+
+            <!-- Export dropdown for downloading filtered product data as Excel or PDF -->
+            <div class="dropdown">
+                <button class="btn btn-dark rounded-pill px-4 py-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-2"></i>Export
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4">
+                    <li>
+                        <a class="dropdown-item"
+                           asp-action="Export"
+                           asp-route-format="excel"
+                           asp-route-search="@currentSearch"
+                           asp-route-categoryId="@currentCategoryId"
+                           asp-route-statusFilter="@currentStatus"
+                           asp-route-stockFilter="@currentStockFilter"
+                           asp-route-startDate="@currentStartDate"
+                           asp-route-endDate="@currentEndDate"
+                           asp-route-sortOrder="@currentSort">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Excel (.xlsx)
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item"
+                           asp-action="Export"
+                           asp-route-format="pdf"
+                           asp-route-search="@currentSearch"
+                           asp-route-categoryId="@currentCategoryId"
+                           asp-route-statusFilter="@currentStatus"
+                           asp-route-stockFilter="@currentStockFilter"
+                           asp-route-startDate="@currentStartDate"
+                           asp-route-endDate="@currentEndDate"
+                           asp-route-sortOrder="@currentSort">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>PDF (.pdf)
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
 

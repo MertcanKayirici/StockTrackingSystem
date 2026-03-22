@@ -1,7 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
+using StockTrackingSystem.Services.Export;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IExcelExportService, ExcelExportService>();
+builder.Services.AddScoped<IPdfExportService, PdfExportService>();
 
 builder.Services.AddControllersWithViews();
 

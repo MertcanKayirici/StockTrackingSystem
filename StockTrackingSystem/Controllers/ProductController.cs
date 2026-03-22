@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
 using StockTrackingSystem.Models;
 using StockTrackingSystem.Helpers;
+using StockTrackingSystem.Services.Export;
 
 namespace StockTrackingSystem.Controllers
 {
@@ -11,12 +12,20 @@ namespace StockTrackingSystem.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly IExcelExportService _excelExportService;
+        private readonly IPdfExportService _pdfExportService;
 
         // Constructor
-        public ProductController(AppDbContext context, IWebHostEnvironment environment)
+        public ProductController(
+            AppDbContext context,
+            IWebHostEnvironment environment,
+            IExcelExportService excelExportService,
+            IPdfExportService pdfExportService)
         {
             _context = context;
             _environment = environment;
+            _excelExportService = excelExportService;
+            _pdfExportService = pdfExportService;
         }
 
         // =========================
@@ -380,6 +389,129 @@ namespace StockTrackingSystem.Controllers
                 criticalCount
             });
 
+        }
+
+        // =========================
+        // EXPORT
+        // =========================
+
+        [HttpGet]
+        public async Task<IActionResult> Export(
+            string format,
+            string? search,
+            int? categoryId,
+            string? statusFilter,
+            string? stockFilter,
+            DateTime? startDate,
+            DateTime? endDate,
+            string? sortOrder)
+        {
+            var query = _context.Products
+                .Include(x => x.Category)
+                .Include(x => x.Supplier)
+                .AsQueryable();
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchText = search.Trim();
+                query = query.Where(x =>
+                    x.Name.Contains(searchText) ||
+                    x.ProductCode.Contains(searchText) ||
+                    (x.Description != null && x.Description.Contains(searchText)));
+            }
+
+            // Apply category filter
+            if (categoryId.HasValue && categoryId.Value > 0)
+                query = query.Where(x => x.CategoryId == categoryId.Value);
+
+            // Apply status filter
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                if (statusFilter == "active")
+                    query = query.Where(x => x.IsActive);
+                else if (statusFilter == "passive")
+                    query = query.Where(x => !x.IsActive);
+            }
+
+            // Apply stock filter
+            if (!string.IsNullOrWhiteSpace(stockFilter))
+            {
+                if (stockFilter == "critical")
+                    query = query.Where(x => x.StockQuantity <= x.CriticalStockLevel && x.StockQuantity > 0);
+                else if (stockFilter == "normal")
+                    query = query.Where(x => x.StockQuantity > x.CriticalStockLevel);
+                else if (stockFilter == "out")
+                    query = query.Where(x => x.StockQuantity == 0);
+            }
+
+            // Apply start date filter
+            if (startDate.HasValue)
+                query = query.Where(x => x.CreatedDate >= startDate.Value.Date);
+
+            // Apply end date filter
+            if (endDate.HasValue)
+            {
+                var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(x => x.CreatedDate <= end);
+            }
+
+            // Apply sorting
+            query = sortOrder switch
+            {
+                "name_asc" => query.OrderBy(x => x.Name),
+                "name_desc" => query.OrderByDescending(x => x.Name),
+                "price_asc" => query.OrderBy(x => x.UnitPrice),
+                "price_desc" => query.OrderByDescending(x => x.UnitPrice),
+                "stock_asc" => query.OrderBy(x => x.StockQuantity),
+                "stock_desc" => query.OrderByDescending(x => x.StockQuantity),
+                "date_asc" => query.OrderBy(x => x.CreatedDate),
+                _ => query.OrderByDescending(x => x.CreatedDate)
+            };
+
+            var products = await query.AsNoTracking().ToListAsync();
+
+            if (string.Equals(format, "excel", StringComparison.OrdinalIgnoreCase))
+            {
+                var content = _excelExportService.ExportProductsToExcel(products);
+
+                AuditLogHelper.AddLog(
+                    _context,
+                    "Export",
+                    "Product",
+                    0,
+                    $"Ürün listesi Excel olarak dışa aktarıldı. Kayıt sayısı: {products.Count}"
+                );
+
+                await _context.SaveChangesAsync();
+
+                return File(
+                    content,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"products-report-{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            }
+
+            if (string.Equals(format, "pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                var content = _pdfExportService.ExportProductsToPdf(products);
+
+                AuditLogHelper.AddLog(
+                    _context,
+                    "Export",
+                    "Product",
+                    0,
+                    $"Ürün listesi PDF olarak dışa aktarıldı. Kayıt sayısı: {products.Count}"
+                );
+
+                await _context.SaveChangesAsync();
+
+                return File(
+                    content,
+                    "application/pdf",
+                    $"products-report-{DateTime.Now:yyyyMMddHHmmss}.pdf");
+            }
+
+            return BadRequest("Geçersiz export formatı.");
         }
 
         // =========================
