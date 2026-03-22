@@ -1,14 +1,21 @@
 ﻿@model StockTrackingSystem.Models.Category
 
 @{
+    // Page title
     ViewData["Title"] = "Kategori Düzenle";
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           CARD STYLES
+        ========================= */
     .edit-page-card,
     .edit-form-card {
         border: 0;
@@ -22,6 +29,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .edit-page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -35,6 +45,9 @@
         margin-bottom: 0;
     }
 
+    /* =========================
+           FORM CARD
+        ========================= */
     .edit-form-card {
         overflow: hidden;
     }
@@ -61,6 +74,9 @@
         padding: 28px;
     }
 
+    /* =========================
+           FORM INPUTS
+        ========================= */
     .form-label {
         font-size: 0.96rem;
         font-weight: 700;
@@ -88,6 +104,7 @@
         resize: vertical;
     }
 
+        /* Focus state */
         .form-control:focus,
         .form-select:focus,
         textarea.form-control:focus {
@@ -101,6 +118,9 @@
         margin-top: 8px;
     }
 
+    /* =========================
+           VALIDATION
+        ========================= */
     .validation-summary-errors,
     .alert-danger {
         border-radius: 16px;
@@ -111,6 +131,9 @@
         margin-bottom: 20px;
     }
 
+    /* =========================
+           STATUS SWITCH
+        ========================= */
     .status-box {
         border: 1px solid #e2e8f0;
         border-radius: 18px;
@@ -196,6 +219,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           META INFO
+        ========================= */
     .meta-card {
         border: 1px solid #eef2f7;
         background: #f8fafc;
@@ -219,6 +245,9 @@
         color: #0f172a;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .form-actions {
         display: flex;
         flex-wrap: wrap;
@@ -226,7 +255,8 @@
         margin-top: 28px;
     }
 
-    .save-btn {
+    .save-btn,
+    .cancel-btn {
         min-height: 52px;
         border-radius: 16px;
         padding: 0 24px;
@@ -235,11 +265,6 @@
     }
 
     .cancel-btn {
-        min-height: 52px;
-        border-radius: 16px;
-        padding: 0 24px;
-        font-weight: 700;
-        font-size: 0.98rem;
         display: inline-flex;
         align-items: center;
         text-decoration: none;
@@ -247,6 +272,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="edit-page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -260,6 +288,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         FORM CARD
+    ========================= -->
     <div class="edit-form-card">
         <div class="edit-form-header">
             <div class="edit-form-title">Kategori Düzenleme Formu</div>
@@ -267,12 +298,16 @@
         </div>
 
         <div class="edit-form-body">
+            <!-- =========================
+                 FORM
+            ========================= -->
             <form asp-action="Edit" method="post">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="CreatedDate" />
 
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
+                <!-- Meta info -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <div class="meta-card">
@@ -289,7 +324,9 @@
                     </div>
                 </div>
 
+                <!-- Form inputs -->
                 <div class="row g-4">
+                    <!-- Name -->
                     <div class="col-12">
                         <label asp-for="Name" class="form-label">Kategori Adı</label>
                         <input asp-for="Name" class="form-control" placeholder="Kategori adını giriniz" />
@@ -297,6 +334,7 @@
                         <div class="form-hint">Liste ekranında görünecek ana kategori ismi.</div>
                     </div>
 
+                    <!-- Description -->
                     <div class="col-12">
                         <label asp-for="Description" class="form-label">Açıklama</label>
                         <textarea asp-for="Description" class="form-control" rows="5" placeholder="Kategori açıklamasını giriniz..."></textarea>
@@ -304,6 +342,7 @@
                         <div class="form-hint">Kısa ve açıklayıcı bir özet yazman yeterli.</div>
                     </div>
 
+                    <!-- Status -->
                     <div class="col-12">
                         <label class="form-label">Durum</label>
 
@@ -327,6 +366,7 @@
                     </div>
                 </div>
 
+                <!-- Buttons -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-warning save-btn">
                         <i class="bi bi-check2-circle me-2"></i>Güncelle
@@ -349,6 +389,7 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // Handle active/passive switch UI
         const isActiveSwitch = document.getElementById("isActiveSwitch");
         const statusLabel = document.getElementById("statusLabel");
 

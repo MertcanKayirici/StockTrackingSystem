@@ -10,11 +10,17 @@ namespace StockTrackingSystem.Controllers
     {
         private readonly AppDbContext _context;
 
+        // Constructor
         public SupplierController(AppDbContext context)
         {
             _context = context;
         }
 
+        // =========================
+        // INDEX
+        // =========================
+
+        // Display supplier list with filters and sorting
         [HttpGet]
         public async Task<IActionResult> Index(
             string? search,
@@ -25,6 +31,7 @@ namespace StockTrackingSystem.Controllers
         {
             var query = _context.Suppliers.AsQueryable();
 
+            // Search filter
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var searchText = search.Trim();
@@ -36,6 +43,7 @@ namespace StockTrackingSystem.Controllers
                     (x.Phone != null && x.Phone.Contains(searchText)));
             }
 
+            // Status filter
             if (!string.IsNullOrWhiteSpace(statusFilter))
             {
                 if (statusFilter == "active")
@@ -44,17 +52,20 @@ namespace StockTrackingSystem.Controllers
                     query = query.Where(x => !x.IsActive);
             }
 
+            // Start date filter
             if (startDate.HasValue)
             {
                 query = query.Where(x => x.CreatedDate >= startDate.Value.Date);
             }
 
+            // End date filter
             if (endDate.HasValue)
             {
                 var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
                 query = query.Where(x => x.CreatedDate <= end);
             }
 
+            // Sorting
             query = sortOrder switch
             {
                 "name_asc" => query.OrderBy(x => x.CompanyName),
@@ -65,12 +76,14 @@ namespace StockTrackingSystem.Controllers
 
             var suppliers = await query.ToListAsync();
 
+            // UI state
             ViewBag.Search = search;
             ViewBag.StatusFilter = statusFilter;
             ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
             ViewBag.SortOrder = sortOrder;
 
+            // Summary data
             ViewBag.TotalCount = await _context.Suppliers.CountAsync();
             ViewBag.ActiveCount = await _context.Suppliers.CountAsync(x => x.IsActive);
             ViewBag.PassiveCount = await _context.Suppliers.CountAsync(x => !x.IsActive);
@@ -79,6 +92,11 @@ namespace StockTrackingSystem.Controllers
             return View(suppliers);
         }
 
+        // =========================
+        // CREATE
+        // =========================
+
+        // Show create form
         [HttpGet]
         public IActionResult Create()
         {
@@ -88,6 +106,7 @@ namespace StockTrackingSystem.Controllers
             });
         }
 
+        // Handle create post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Supplier supplier)
@@ -102,7 +121,7 @@ namespace StockTrackingSystem.Controllers
 
             _context.Suppliers.Add(supplier);
 
-
+            // Audit log
             AuditLogHelper.AddLog(
                 _context,
                 "Create",
@@ -117,6 +136,11 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DETAILS
+        // =========================
+
+        // Show supplier details
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -130,6 +154,11 @@ namespace StockTrackingSystem.Controllers
             return View(supplier);
         }
 
+        // =========================
+        // EDIT
+        // =========================
+
+        // Show edit form
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -141,6 +170,7 @@ namespace StockTrackingSystem.Controllers
             return View(supplier);
         }
 
+        // Handle edit post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Supplier supplier)
@@ -163,7 +193,7 @@ namespace StockTrackingSystem.Controllers
             existingSupplier.IsActive = supplier.IsActive;
             existingSupplier.UpdatedDate = DateTime.Now;
 
-
+            // Audit log
             AuditLogHelper.AddLog(
                 _context,
                 "Update",
@@ -178,6 +208,57 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DELETE
+        // =========================
+
+        // Delete supplier
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var supplier = await _context.Suppliers
+                .Include(x => x.Products)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (supplier == null)
+            {
+                return Json(new { success = false, message = "Tedarikçi bulunamadı." });
+            }
+
+            // Prevent delete if linked products exist
+            if (supplier.Products != null && supplier.Products.Any())
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Bu tedarikçiye bağlı ürünler olduğu için silinemez."
+                });
+            }
+
+            var supplierName = supplier.CompanyName;
+            var supplierId = supplier.Id;
+
+            _context.Suppliers.Remove(supplier);
+
+            // Audit log
+            AuditLogHelper.AddLog(
+                _context,
+                "Delete",
+                "Supplier",
+                supplierId,
+                $"{supplierName} tedarikçisi silindi."
+            );
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Tedarikçi başarıyla silindi." });
+        }
+
+        // =========================
+        // STATUS TOGGLE
+        // =========================
+
+        // Toggle supplier active/passive status
         [HttpPost]
         public async Task<IActionResult> ToggleStatus(int id)
         {
@@ -191,7 +272,7 @@ namespace StockTrackingSystem.Controllers
             supplier.IsActive = !supplier.IsActive;
             supplier.UpdatedDate = DateTime.Now;
 
-
+            // Audit log
             AuditLogHelper.AddLog(
                 _context,
                 "StatusChange",
@@ -214,46 +295,6 @@ namespace StockTrackingSystem.Controllers
                 activeCount,
                 passiveCount
             });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var supplier = await _context.Suppliers
-                .Include(x => x.Products)
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (supplier == null)
-            {
-                return Json(new { success = false, message = "Tedarikçi bulunamadı." });
-            }
-
-            if (supplier.Products != null && supplier.Products.Any())
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Bu tedarikçiye bağlı ürünler olduğu için silinemez."
-                });
-            }
-
-            var supplierName = supplier.CompanyName;
-            var supplierId = supplier.Id;
-
-            _context.Suppliers.Remove(supplier);
-
-            AuditLogHelper.AddLog(
-                _context,
-                "Delete",
-                "Supplier",
-                supplierId,
-                $"{supplierName} tedarikçisi silindi."
-            );
-
-
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, message = "Tedarikçi başarıyla silindi." });
         }
     }
 }

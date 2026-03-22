@@ -1,14 +1,21 @@
 ﻿@model StockTrackingSystem.Models.Supplier
 
 @{
+    // Page title
     ViewData["Title"] = "Tedarikçi Düzenle";
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           MAIN CARDS
+        ========================= */
     .page-card, .form-card {
         border: 0;
         border-radius: 24px;
@@ -21,6 +28,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -34,6 +44,9 @@
         margin-bottom: 0;
     }
 
+    /* =========================
+           FORM CARD
+        ========================= */
     .form-card {
         overflow: hidden;
     }
@@ -60,6 +73,9 @@
         padding: 28px;
     }
 
+    /* =========================
+           FORM ELEMENTS
+        ========================= */
     .form-label {
         font-size: 0.96rem;
         font-weight: 700;
@@ -90,6 +106,9 @@
             box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
         }
 
+    /* =========================
+           VALIDATION ALERT
+        ========================= */
     .alert-danger {
         border-radius: 16px;
         border: 0;
@@ -99,6 +118,9 @@
         margin-bottom: 20px;
     }
 
+    /* =========================
+           META CARDS
+        ========================= */
     .meta-card {
         border: 1px solid #eef2f7;
         background: #f8fafc;
@@ -122,6 +144,9 @@
         color: #0f172a;
     }
 
+    /* =========================
+           STATUS BOX
+        ========================= */
     .status-box {
         border: 1px solid #e2e8f0;
         border-radius: 18px;
@@ -146,6 +171,9 @@
         font-size: 0.9rem;
     }
 
+    /* =========================
+           MODERN SWITCH
+        ========================= */
     .modern-switch {
         position: relative;
         display: inline-block;
@@ -207,6 +235,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .form-actions {
         display: flex;
         flex-wrap: wrap;
@@ -227,6 +258,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -240,6 +274,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         FORM CARD
+    ========================= -->
     <div class="form-card">
         <div class="form-header">
             <div class="form-title">Tedarikçi Düzenleme Formu</div>
@@ -253,6 +290,7 @@
 
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
+                <!-- Meta information -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <div class="meta-card">
@@ -269,37 +307,44 @@
                     </div>
                 </div>
 
+                <!-- Form fields -->
                 <div class="row g-4">
+                    <!-- Company name -->
                     <div class="col-md-6">
                         <label asp-for="CompanyName" class="form-label">Firma Adı</label>
                         <input asp-for="CompanyName" class="form-control" />
                         <span asp-validation-for="CompanyName" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Contact person -->
                     <div class="col-md-6">
                         <label asp-for="ContactName" class="form-label">Yetkili Kişi</label>
                         <input asp-for="ContactName" class="form-control" />
                         <span asp-validation-for="ContactName" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Phone -->
                     <div class="col-md-6">
                         <label asp-for="Phone" class="form-label">Telefon</label>
                         <input asp-for="Phone" class="form-control" />
                         <span asp-validation-for="Phone" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Email -->
                     <div class="col-md-6">
                         <label asp-for="Email" class="form-label">E-posta</label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Address -->
                     <div class="col-12">
                         <label asp-for="Address" class="form-label">Adres</label>
                         <textarea asp-for="Address" class="form-control" rows="4"></textarea>
                         <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Supplier status -->
                     <div class="col-12">
                         <label class="form-label">Durum</label>
 
@@ -323,6 +368,7 @@
                     </div>
                 </div>
 
+                <!-- Form actions -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-warning save-btn">
                         <i class="bi bi-check2-circle me-2"></i>Güncelle
@@ -344,9 +390,13 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // =========================
+        // STATUS SWITCH ELEMENTS
+        // =========================
         const isActiveSwitch = document.getElementById("isActiveSwitch");
         const statusLabel = document.getElementById("statusLabel");
 
+        // Update active/passive label
         function updateStatusLabel() {
             if (!isActiveSwitch || !statusLabel) return;
 
@@ -361,6 +411,7 @@
             }
         }
 
+        // Initialize and bind switch event
         if (isActiveSwitch) {
             updateStatusLabel();
             isActiveSwitch.addEventListener("change", updateStatusLabel);

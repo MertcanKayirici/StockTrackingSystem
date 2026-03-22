@@ -1,14 +1,17 @@
 ﻿@model List<StockTrackingSystem.Models.Supplier>
 
 @{
+    // Page title
     ViewData["Title"] = "Tedarikçi Yönetimi";
 
+    // Current filter values
     var currentSearch = ViewBag.Search as string;
     var currentStatus = ViewBag.StatusFilter as string;
     var currentSort = ViewBag.SortOrder as string;
     var currentStartDate = ViewBag.StartDate as string;
     var currentEndDate = ViewBag.EndDate as string;
 
+    // Summary statistics
     int totalCount = ViewBag.TotalCount != null ? (int)ViewBag.TotalCount : 0;
     int activeCount = ViewBag.ActiveCount != null ? (int)ViewBag.ActiveCount : 0;
     int passiveCount = ViewBag.PassiveCount != null ? (int)ViewBag.PassiveCount : 0;
@@ -16,10 +19,16 @@
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           MAIN CARDS
+        ========================= */
     .page-card, .stats-card, .filter-card, .table-card {
         border: 0;
         border-radius: 24px;
@@ -32,6 +41,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .page-title {
         font-size: 2.2rem;
         font-weight: 800;
@@ -52,6 +64,9 @@
         font-size: 1rem;
     }
 
+    /* =========================
+           STATISTICS CARDS
+        ========================= */
     .stats-card {
         position: relative;
         display: flex;
@@ -144,6 +159,9 @@
         color: #0f172a;
     }
 
+    /* =========================
+           FILTER CARD
+        ========================= */
     .filter-card {
         padding: 28px;
         margin-bottom: 24px;
@@ -195,6 +213,9 @@
             color: #ffffff;
         }
 
+    /* =========================
+           TABLE CARD
+        ========================= */
     .table-card {
         overflow: hidden;
     }
@@ -253,6 +274,9 @@
         font-size: 0.93rem;
     }
 
+    /* =========================
+           STATUS SWITCH
+        ========================= */
     .status-switch-wrap {
         display: inline-flex;
         align-items: center;
@@ -334,6 +358,9 @@
         font-weight: 700;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .action-btn {
         width: 46px;
         height: 46px;
@@ -381,6 +408,9 @@
             color: white;
         }
 
+    /* =========================
+           DELETE MODAL
+        ========================= */
     .delete-modal-content {
         border: 0;
         border-radius: 24px;
@@ -450,6 +480,9 @@
         font-weight: 700;
     }
 
+    /* =========================
+           EMPTY STATE
+        ========================= */
     .empty-state {
         padding: 70px 20px;
         text-align: center;
@@ -457,6 +490,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -470,6 +506,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         STATISTICS
+    ========================= -->
     <div class="row g-3 mb-4">
         <div class="col-md-6 col-xl-3">
             <div class="stats-card stats-card-total">
@@ -512,14 +551,19 @@
         </div>
     </div>
 
+    <!-- =========================
+         FILTER FORM
+    ========================= -->
     <div class="filter-card">
         <form method="get" asp-action="Index" id="filterForm">
             <div class="row g-3">
+                <!-- Search -->
                 <div class="col-lg-4">
                     <label class="filter-title">Arama</label>
                     <input type="text" name="search" id="searchInput" value="@currentSearch" class="form-control" placeholder="Firma, yetkili, telefon veya e-posta ara..." />
                 </div>
 
+                <!-- Status -->
                 <div class="col-lg-2">
                     <label class="filter-title">Durum</label>
                     <select name="statusFilter" id="statusFilter" class="form-select">
@@ -543,16 +587,19 @@
                     </select>
                 </div>
 
+                <!-- Start date -->
                 <div class="col-lg-2">
                     <label class="filter-title">Başlangıç</label>
                     <input type="date" name="startDate" id="startDate" value="@currentStartDate" class="form-control" />
                 </div>
 
+                <!-- End date -->
                 <div class="col-lg-2">
                     <label class="filter-title">Bitiş</label>
                     <input type="date" name="endDate" id="endDate" value="@currentEndDate" class="form-control" />
                 </div>
 
+                <!-- Sort -->
                 <div class="col-lg-2">
                     <label class="filter-title">Sıralama</label>
                     <select name="sortOrder" id="sortOrder" class="form-select">
@@ -601,11 +648,17 @@
         </form>
     </div>
 
+    <!-- =========================
+         SUCCESS MESSAGE
+    ========================= -->
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success rounded-4 shadow-sm">@TempData["SuccessMessage"]</div>
     }
 
+    <!-- =========================
+         SUPPLIER TABLE
+    ========================= -->
     <div class="table-card">
         <div class="table-header d-flex justify-content-between align-items-center">
             <div>
@@ -631,16 +684,19 @@
                         @foreach (var item in Model)
                         {
                             <tr id="row-@item.Id">
+                                <!-- Supplier identity -->
                                 <td class="ps-4">
                                     <div class="supplier-name">@item.CompanyName</div>
                                     <div class="supplier-sub">@(string.IsNullOrWhiteSpace(item.ContactName) ? "Yetkili kişi yok" : item.ContactName)</div>
                                 </td>
 
+                                <!-- Contact info -->
                                 <td>
                                     <div class="supplier-sub">@(!string.IsNullOrWhiteSpace(item.Phone) ? item.Phone : "Telefon yok")</div>
                                     <div class="supplier-sub">@(!string.IsNullOrWhiteSpace(item.Email) ? item.Email : "E-posta yok")</div>
                                 </td>
 
+                                <!-- Status -->
                                 <td>
                                     <div class="status-switch-wrap">
                                         <label class="modern-switch">
@@ -658,10 +714,12 @@
                                     </div>
                                 </td>
 
+                                <!-- Created date -->
                                 <td>
                                     <span class="date-badge">@item.CreatedDate.ToString("dd.MM.yyyy")</span>
                                 </td>
 
+                                <!-- Actions -->
                                 <td class="text-end pe-4">
                                     <div class="d-inline-flex gap-2">
                                         <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-detail" title="Detay">
@@ -688,6 +746,7 @@
         }
         else
         {
+            <!-- Empty state -->
             <div class="empty-state">
                 <div style="font-size:2.4rem;">🏢</div>
                 <h5 class="fw-bold mt-3">Tedarikçi bulunamadı</h5>
@@ -697,6 +756,9 @@
     </div>
 </div>
 
+<!-- =========================
+     DELETE MODAL
+========================= -->
 <div class="modal fade" id="deleteSupplierModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content delete-modal-content">
@@ -733,6 +795,9 @@
 
 @section Scripts {
     <script>
+        // =========================
+        // FILTER FORM ELEMENTS
+        // =========================
         const filterForm = document.getElementById("filterForm");
         const searchInput = document.getElementById("searchInput");
         const statusFilter = document.getElementById("statusFilter");
@@ -742,10 +807,12 @@
 
         let debounceTimer;
 
+        // Submit filter form
         function submitFilterForm() {
             filterForm.submit();
         }
 
+        // Debounced search submit
         if (searchInput) {
             searchInput.addEventListener("input", function () {
                 clearTimeout(debounceTimer);
@@ -755,11 +822,15 @@
             });
         }
 
+        // Auto submit on filter changes
         if (statusFilter) statusFilter.addEventListener("change", submitFilterForm);
         if (startDate) startDate.addEventListener("change", submitFilterForm);
         if (endDate) endDate.addEventListener("change", submitFilterForm);
         if (sortOrder) sortOrder.addEventListener("change", submitFilterForm);
 
+        // =========================
+        // STATUS TOGGLE
+        // =========================
         document.querySelectorAll(".status-toggle").forEach(toggle => {
             toggle.addEventListener("change", async function () {
                 const checkbox = this;
@@ -797,9 +868,13 @@
             });
         });
 
+        // =========================
+        // DELETE MODAL
+        // =========================
         let selectedSupplierId = null;
         let deleteModalInstance = null;
 
+        // Open delete confirmation modal
         function openDeleteModal(id, name) {
             selectedSupplierId = id;
 
@@ -817,6 +892,7 @@
             deleteModalInstance.show();
         }
 
+        // Delete selected supplier
         async function deleteSelectedSupplier() {
             if (!selectedSupplierId) return;
 

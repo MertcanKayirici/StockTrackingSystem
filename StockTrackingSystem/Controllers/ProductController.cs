@@ -12,12 +12,18 @@ namespace StockTrackingSystem.Controllers
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
+        // Constructor
         public ProductController(AppDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
             _environment = environment;
         }
 
+        // =========================
+        // INDEX
+        // =========================
+
+        // Display product list with filters, search and sorting
         [HttpGet]
         public async Task<IActionResult> Index(
             string? search,
@@ -33,6 +39,7 @@ namespace StockTrackingSystem.Controllers
                 .Include(x => x.Supplier)
                 .AsQueryable();
 
+            // Apply search filter
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var searchText = search.Trim();
@@ -42,9 +49,11 @@ namespace StockTrackingSystem.Controllers
                     (x.Description != null && x.Description.Contains(searchText)));
             }
 
+            // Apply category filter
             if (categoryId.HasValue && categoryId.Value > 0)
                 query = query.Where(x => x.CategoryId == categoryId.Value);
 
+            // Apply status filter
             if (!string.IsNullOrWhiteSpace(statusFilter))
             {
                 if (statusFilter == "active")
@@ -53,6 +62,7 @@ namespace StockTrackingSystem.Controllers
                     query = query.Where(x => !x.IsActive);
             }
 
+            // Apply stock filter
             if (!string.IsNullOrWhiteSpace(stockFilter))
             {
                 if (stockFilter == "critical")
@@ -63,15 +73,18 @@ namespace StockTrackingSystem.Controllers
                     query = query.Where(x => x.StockQuantity == 0);
             }
 
+            // Apply start date filter
             if (startDate.HasValue)
                 query = query.Where(x => x.CreatedDate >= startDate.Value.Date);
 
+            // Apply end date filter
             if (endDate.HasValue)
             {
                 var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
                 query = query.Where(x => x.CreatedDate <= end);
             }
 
+            // Apply sorting
             query = sortOrder switch
             {
                 "name_asc" => query.OrderBy(x => x.Name),
@@ -86,6 +99,7 @@ namespace StockTrackingSystem.Controllers
 
             var products = await query.ToListAsync();
 
+            // Store current filter values for UI
             ViewBag.Search = search;
             ViewBag.CategoryId = categoryId;
             ViewBag.StatusFilter = statusFilter;
@@ -94,12 +108,14 @@ namespace StockTrackingSystem.Controllers
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
             ViewBag.SortOrder = sortOrder;
 
+            // Store summary data
             ViewBag.TotalCount = await _context.Products.CountAsync();
             ViewBag.ActiveCount = await _context.Products.CountAsync(x => x.IsActive);
             ViewBag.PassiveCount = await _context.Products.CountAsync(x => !x.IsActive);
             ViewBag.CriticalCount = await _context.Products.CountAsync(x => x.StockQuantity <= x.CriticalStockLevel && x.StockQuantity > 0);
             ViewBag.FilteredCount = products.Count;
 
+            // Load active categories for filter dropdown
             ViewBag.Categories = await _context.Categories
                 .Where(x => x.IsActive)
                 .OrderBy(x => x.Name)
@@ -113,6 +129,11 @@ namespace StockTrackingSystem.Controllers
             return View(products);
         }
 
+        // =========================
+        // CREATE
+        // =========================
+
+        // Show create form
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -125,10 +146,12 @@ namespace StockTrackingSystem.Controllers
             });
         }
 
+        // Handle create post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product, IFormFile? imageFile)
         {
+            // Check duplicate product code
             if (await _context.Products.AnyAsync(x => x.ProductCode == product.ProductCode))
             {
                 ModelState.AddModelError("ProductCode", "Bu ürün kodu zaten kullanılıyor.");
@@ -140,6 +163,7 @@ namespace StockTrackingSystem.Controllers
                 return View(product);
             }
 
+            // Save uploaded product image
             if (imageFile != null && imageFile.Length > 0)
             {
                 product.ImageUrl = await SaveImageAsync(imageFile);
@@ -151,6 +175,7 @@ namespace StockTrackingSystem.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
+            // Add audit log after creation
             AuditLogHelper.AddLog(
                 _context,
                 "Create",
@@ -165,6 +190,11 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DETAILS
+        // =========================
+
+        // Show product details
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -179,6 +209,11 @@ namespace StockTrackingSystem.Controllers
             return View(product);
         }
 
+        // =========================
+        // EDIT
+        // =========================
+
+        // Show edit form
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -191,6 +226,7 @@ namespace StockTrackingSystem.Controllers
             return View(product);
         }
 
+        // Handle edit post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Product product, IFormFile? imageFile, bool removeImage = false)
@@ -200,6 +236,7 @@ namespace StockTrackingSystem.Controllers
             if (existingProduct == null)
                 return NotFound();
 
+            // Check duplicate product code except current record
             if (await _context.Products.AnyAsync(x => x.ProductCode == product.ProductCode && x.Id != product.Id))
             {
                 ModelState.AddModelError("ProductCode", "Bu ürün kodu zaten kullanılıyor.");
@@ -212,6 +249,7 @@ namespace StockTrackingSystem.Controllers
                 return View(product);
             }
 
+            // Update editable fields
             existingProduct.Name = product.Name;
             existingProduct.ProductCode = product.ProductCode;
             existingProduct.Description = product.Description;
@@ -224,12 +262,14 @@ namespace StockTrackingSystem.Controllers
             existingProduct.IsActive = product.IsActive;
             existingProduct.UpdatedDate = DateTime.Now;
 
+            // Remove existing image if requested
             if (removeImage && !string.IsNullOrWhiteSpace(existingProduct.ImageUrl))
             {
                 DeleteImageFile(existingProduct.ImageUrl);
                 existingProduct.ImageUrl = null;
             }
 
+            // Replace existing image with new uploaded file
             if (imageFile != null && imageFile.Length > 0)
             {
                 if (!string.IsNullOrWhiteSpace(existingProduct.ImageUrl))
@@ -238,6 +278,7 @@ namespace StockTrackingSystem.Controllers
                 existingProduct.ImageUrl = await SaveImageAsync(imageFile);
             }
 
+            // Add audit log after update
             AuditLogHelper.AddLog(
                 _context,
                 "Update",
@@ -253,8 +294,11 @@ namespace StockTrackingSystem.Controllers
 
         }
 
+        // =========================
+        // DELETE
+        // =========================
 
-
+        // Delete product and related stock movements
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -270,11 +314,13 @@ namespace StockTrackingSystem.Controllers
                 return Json(new { success = false, message = "Ürün bulunamadı." });
             }
 
+            // Delete product image file if exists
             if (!string.IsNullOrWhiteSpace(product.ImageUrl))
             {
                 DeleteImageFile(product.ImageUrl);
             }
 
+            // Add audit log before deletion
             AuditLogHelper.AddLog(
                 _context,
                 "Delete",
@@ -290,6 +336,11 @@ namespace StockTrackingSystem.Controllers
             return Json(new { success = true, message = "Ürün başarıyla silindi." });
         }
 
+        // =========================
+        // STATUS TOGGLE
+        // =========================
+
+        // Toggle product active/passive status
         [HttpPost]
         public async Task<IActionResult> ToggleStatus(int id)
         {
@@ -303,6 +354,7 @@ namespace StockTrackingSystem.Controllers
             product.IsActive = !product.IsActive;
             product.UpdatedDate = DateTime.Now;
 
+            // Add audit log for status change
             AuditLogHelper.AddLog(
                 _context,
                 "StatusChange",
@@ -328,9 +380,13 @@ namespace StockTrackingSystem.Controllers
                 criticalCount
             });
 
-
         }
 
+        // =========================
+        // HELPERS
+        // =========================
+
+        // Load category and supplier dropdown data
         private async Task LoadDropdownsAsync()
         {
             ViewBag.Categories = await _context.Categories
@@ -354,6 +410,7 @@ namespace StockTrackingSystem.Controllers
                 .ToListAsync();
         }
 
+        // Save uploaded image file and return relative path
         private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
             var uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "products");
@@ -376,6 +433,7 @@ namespace StockTrackingSystem.Controllers
             return $"/img/products/{fileName}";
         }
 
+        // Delete image file from physical storage
         private void DeleteImageFile(string imageUrl)
         {
             var cleanPath = imageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);

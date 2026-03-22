@@ -1,14 +1,21 @@
 ﻿@model StockTrackingSystem.Models.StockMovement
 
 @{
+    // Page title
     ViewData["Title"] = "Hareket Detayı";
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           MAIN CARDS
+        ========================= */
     .page-card, .details-card, .stat-card {
         border: 0;
         border-radius: 24px;
@@ -21,6 +28,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -34,6 +44,9 @@
         margin-bottom: 0;
     }
 
+    /* =========================
+           STAT CARDS
+        ========================= */
     .stat-card {
         padding: 22px 24px;
         display: flex;
@@ -67,6 +80,9 @@
         color: #0f172a;
     }
 
+    /* =========================
+           DETAILS CARD
+        ========================= */
     .details-card {
         overflow: hidden;
     }
@@ -87,6 +103,9 @@
         padding: 28px;
     }
 
+    /* =========================
+           DETAIL ITEMS
+        ========================= */
     .detail-item {
         padding: 18px 20px;
         border: 1px solid #eef2f7;
@@ -110,6 +129,9 @@
         color: #0f172a;
     }
 
+    /* =========================
+           PRODUCT IMAGE
+        ========================= */
     .product-image {
         width: 220px;
         height: 220px;
@@ -119,6 +141,9 @@
         background: #fff;
     }
 
+    /* =========================
+           MOVEMENT BADGE
+        ========================= */
     .movement-badge {
         display: inline-flex;
         align-items: center;
@@ -138,6 +163,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .action-buttons {
         display: flex;
         flex-wrap: wrap;
@@ -158,6 +186,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -171,6 +202,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         STATISTICS
+    ========================= -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="stat-card">
@@ -203,6 +237,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         MOVEMENT DETAILS
+    ========================= -->
     <div class="details-card">
         <div class="details-header">
             <div class="details-title">Hareket Bilgileri</div>
@@ -210,6 +247,7 @@
 
         <div class="details-body">
             <div class="row g-4">
+                <!-- Product image -->
                 <div class="col-lg-4">
                     <div class="detail-item text-center">
                         @if (!string.IsNullOrWhiteSpace(Model.Product?.ImageUrl))
@@ -225,6 +263,7 @@
                     </div>
                 </div>
 
+                <!-- Main detail fields -->
                 <div class="col-lg-8">
                     <div class="row g-4">
                         <div class="col-md-6">
@@ -285,6 +324,7 @@
                 </div>
             </div>
 
+            <!-- Action buttons -->
             <div class="action-buttons">
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning action-btn-main">
                     <i class="bi bi-pencil-square me-2"></i>Düzenle

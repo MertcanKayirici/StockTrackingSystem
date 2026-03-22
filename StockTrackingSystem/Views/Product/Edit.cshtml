@@ -2,75 +2,111 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
+    // Page title
     ViewData["Title"] = "Ürün Düzenle";
+
+    // Category dropdown data
     var categories = ViewBag.Categories as List<SelectListItem> ?? new List<SelectListItem>();
-    var suppliers = ViewBag.Suppliers as List<SelectListItem> ?? new List<SelectListItem>();
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
-    .edit-page-card, .edit-form-card {
+    /* =========================
+           MAIN CARDS
+        ========================= */
+    .page-card,
+    .form-card,
+    .preview-card {
         border: 0;
         border-radius: 24px;
         background: #ffffff;
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
 
-    .edit-page-card {
+    .page-card {
         padding: 30px 32px;
         margin-bottom: 24px;
     }
 
-    .edit-page-title {
-        font-size: 2rem;
+    /* =========================
+           PAGE HEADER
+        ========================= */
+    .page-title {
+        font-size: 2.1rem;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 6px;
     }
 
-    .edit-page-subtitle {
+    .page-subtitle {
         color: #64748b;
         font-size: 1.02rem;
         margin-bottom: 0;
     }
 
-    .edit-form-card {
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-weight: 700;
+    }
+
+    /* =========================
+           CARD STRUCTURE
+        ========================= */
+    .form-card,
+    .preview-card {
         overflow: hidden;
     }
 
-    .edit-form-header {
-        padding: 24px 28px 12px;
+    @@media (min-width: 1200px) {
+        .form-card {
+            height: 100%;
+        }
+    }
+
+    .card-header-custom {
+        padding: 24px 28px 14px 28px;
         border-bottom: 1px solid #f1f5f9;
     }
 
-    .edit-form-title {
-        font-size: 1.15rem;
+    .card-title-custom {
+        font-size: 1.12rem;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 4px;
     }
 
-    .edit-form-text {
+    .card-subtitle-custom {
         color: #64748b;
+        font-size: 0.93rem;
         margin-bottom: 0;
-        font-size: 0.96rem;
     }
 
-    .edit-form-body {
-        padding: 28px;
+    .card-body-custom {
+        padding: 24px 28px 28px 28px;
     }
 
+    /* =========================
+           FORM ELEMENTS
+        ========================= */
     .form-label {
-        font-size: 0.96rem;
+        font-size: 0.95rem;
         font-weight: 700;
-        color: #1e293b;
+        color: #334155;
         margin-bottom: 10px;
     }
 
-    .form-control, .form-select, textarea.form-control {
+    .form-control,
+    .form-select {
         min-height: 54px;
         border-radius: 16px;
         border: 1px solid #dbe2ea;
@@ -88,58 +124,51 @@
         resize: vertical;
     }
 
-        .form-control:focus, .form-select:focus, textarea.form-control:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
-        }
-
-    .alert-danger {
-        border-radius: 16px;
-        border: 0;
-        background: #fef2f2;
-        color: #b91c1c;
-        padding: 14px 16px;
-        margin-bottom: 20px;
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
     }
 
-    .meta-card, .status-box, .image-box {
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        background: #f8fafc;
-        padding: 18px 20px;
+    input[type="file"].form-control {
+        padding-top: 12px;
+        padding-bottom: 12px;
     }
 
-    .meta-label {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #64748b;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
+    .text-danger {
+        font-size: 0.88rem;
+        font-weight: 600;
+        margin-top: 6px;
+        display: block;
     }
 
-    .meta-value {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #0f172a;
-    }
-
-    .status-box {
+    /* =========================
+           MODERN SWITCH
+        ========================= */
+    .modern-switch-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 14px;
+        gap: 16px;
+        padding: 16px 18px;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        background: #f8fafc;
     }
 
-    .status-box-left h6, .image-box h6 {
-        margin: 0 0 4px 0;
-        font-weight: 700;
+    .modern-switch-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .modern-switch-title {
+        font-weight: 800;
         color: #0f172a;
-        font-size: 1rem;
+        font-size: 0.98rem;
     }
 
-    .status-box-left p, .image-box p {
-        margin: 0;
+    .modern-switch-subtitle {
         color: #64748b;
         font-size: 0.9rem;
     }
@@ -147,7 +176,7 @@
     .modern-switch {
         position: relative;
         display: inline-block;
-        width: 54px;
+        width: 56px;
         height: 30px;
         margin: 0;
         flex-shrink: 0;
@@ -187,309 +216,472 @@
         }
 
             .modern-switch input:checked + .slider:before {
-                transform: translateX(24px);
+                transform: translateX(26px);
             }
 
-    .status-text {
-        min-width: 56px;
-        text-align: right;
-        font-size: 0.92rem;
-        font-weight: 800;
-    }
-
-    .status-active {
-        color: #16a34a;
-    }
-
-    .status-passive {
-        color: #ef4444;
-    }
-
-    .current-image-wrap {
-        margin-top: 16px;
+    /* =========================
+           PREVIEW CARD
+        ========================= */
+    .preview-box {
+        border: 1px dashed #dbe2ea;
+        border-radius: 22px;
+        background: #f8fafc;
+        padding: 28px 24px;
+        text-align: center;
+        min-height: 280px;
         display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        align-items: flex-start;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 
-    .current-image {
-        width: 180px;
-        height: 180px;
+    .preview-image {
+        width: 160px;
+        height: 160px;
         object-fit: cover;
+        border-radius: 24px;
+        border: 3px solid #e2e8f0;
+        background: #ffffff;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        margin-bottom: 16px;
+    }
+
+    .preview-placeholder {
+        width: 160px;
+        height: 160px;
+        margin: 0 auto 16px auto;
+        border-radius: 24px;
+        border: 3px solid #e2e8f0;
+        background: #ffffff;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .preview-title {
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+        word-break: break-word;
+    }
+
+    .preview-text {
+        color: #64748b;
+        font-size: 0.93rem;
+        margin-bottom: 0;
+        line-height: 1.6;
+        max-width: 360px;
+        word-break: break-word;
+    }
+
+    /* =========================
+           INFO LIST
+        ========================= */
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
         border-radius: 18px;
-        border: 1px solid #e2e8f0;
-        background: #fff;
+        border: 1px solid #eef2f7;
+        background: #f8fafc;
     }
 
-    .image-preview-wrap {
-        margin-top: 16px;
-        display: none;
+    .info-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(37, 99, 235, 0.10);
+        color: #2563eb;
+        font-size: 1.05rem;
+        flex-shrink: 0;
     }
 
-    .image-preview {
-        width: 180px;
-        height: 180px;
-        object-fit: cover;
-        border-radius: 18px;
-        border: 1px solid #e2e8f0;
-        background: #fff;
+    .info-label {
+        font-size: 0.86rem;
+        color: #64748b;
+        margin-bottom: 2px;
     }
 
-    .form-actions {
+    .info-value {
+        font-size: 0.96rem;
+        font-weight: 800;
+        color: #0f172a;
+        word-break: break-word;
+    }
+
+    /* =========================
+           ACTION BAR
+        ========================= */
+    .action-bar {
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
-        margin-top: 28px;
+        margin-top: 6px;
     }
 
-    .save-btn, .cancel-btn {
+    .save-btn,
+    .cancel-btn {
         min-height: 52px;
         border-radius: 16px;
         padding: 0 24px;
         font-weight: 700;
-        font-size: 0.98rem;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    .save-btn {
+        min-width: 190px;
+    }
+
+    .cancel-btn {
+        min-width: 140px;
         text-decoration: none;
+    }
+
+    .validation-summary-errors ul {
+        margin: 0 0 16px 0;
+        padding-left: 18px;
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    /* =========================
+           RESPONSIVE
+        ========================= */
+    @@media (max-width: 1199.98px) {
+        .page-card {
+            padding: 24px;
+        }
+
+        .card-header-custom {
+            padding: 20px 22px 12px 22px;
+        }
+
+        .card-body-custom {
+            padding: 20px 22px 24px 22px;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .page-title {
+            font-size: 1.7rem;
+        }
+
+        .page-card {
+            padding: 20px;
+        }
+
+        .card-header-custom {
+            padding: 18px 18px 12px 18px;
+        }
+
+        .card-body-custom {
+            padding: 18px 18px 20px 18px;
+        }
+
+        .modern-switch-row {
+            align-items: flex-start;
+        }
+
+        .action-bar {
+            flex-direction: column;
+        }
+
+        .save-btn,
+        .cancel-btn,
+        .back-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .preview-image,
+        .preview-placeholder {
+            width: 130px;
+            height: 130px;
+        }
+
+        .preview-box {
+            min-height: 240px;
+            padding: 22px 18px;
+        }
     }
 </style>
 
 <div class="container py-4">
-    <div class="edit-page-card">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
+    <div class="page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
-                <h1 class="edit-page-title">Ürün Düzenle</h1>
-                <p class="edit-page-subtitle">Ürün bilgilerini, görselini ve stok ayarlarını güncelleyebilirsin.</p>
+                <h1 class="page-title">Ürün Düzenle</h1>
+                <p class="page-subtitle">Ürün bilgilerini güncelle, stok ve durum alanlarını kolayca yönet.</p>
             </div>
 
-            <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
-                <i class="bi bi-arrow-left me-2"></i>Listeye Dön
+            <a asp-action="Index" class="btn btn-outline-dark back-btn">
+                <i class="bi bi-arrow-left"></i>Listeye Dön
             </a>
         </div>
     </div>
 
-    <div class="edit-form-card">
-        <div class="edit-form-header">
-            <div class="edit-form-title">Ürün Düzenleme Formu</div>
-            <p class="edit-form-text">Aşağıdaki alanları güncelleyerek ürün kaydını düzenleyebilirsin.</p>
-        </div>
+    <!-- =========================
+         EDIT FORM
+    ========================= -->
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input asp-for="Id" type="hidden" />
+        <input asp-for="CreatedDate" type="hidden" />
+        <input asp-for="ImageUrl" type="hidden" />
 
-        <div class="edit-form-body">
-            <form asp-action="Edit" method="post" enctype="multipart/form-data">
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="CreatedDate" />
-                <input type="hidden" asp-for="ImageUrl" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <div class="meta-card">
-                            <div class="meta-label">Ürün ID</div>
-                            <div class="meta-value">#@Model.Id</div>
-                        </div>
+        <div class="row g-4">
+            <!-- Main form column -->
+            <div class="col-xl-8">
+                <div class="form-card">
+                    <div class="card-header-custom">
+                        <div class="card-title-custom">Ürün Bilgileri</div>
+                        <p class="card-subtitle-custom">Temel alanları güncelleyerek ürün kaydını düzenleyebilirsin.</p>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="meta-card">
-                            <div class="meta-label">Oluşturulma Tarihi</div>
-                            <div class="meta-value">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</div>
+                    <div class="card-body-custom">
+                        <div class="row g-4">
+                            <!-- Product name -->
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label">Ürün Adı</label>
+                                <input asp-for="Name" class="form-control" placeholder="Örn: Logitech MX Master 3" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6">
+                                <label asp-for="CategoryId" class="form-label">Kategori</label>
+                                <select asp-for="CategoryId" asp-items="categories" class="form-select">
+                                    <option value="">Kategori Seçin</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Unit price -->
+                            <div class="col-md-6">
+                                <label asp-for="UnitPrice" class="form-label">Birim Fiyat</label>
+                                <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                                <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                            </div>
+
+                            <!-- Stock quantity -->
+                            <div class="col-md-6">
+                                <label asp-for="StockQuantity" class="form-label">Stok Miktarı</label>
+                                <input asp-for="StockQuantity" class="form-control" type="number" placeholder="0" />
+                                <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                            </div>
+
+                            <!-- Critical stock level -->
+                            <div class="col-md-6">
+                                <label asp-for="CriticalStockLevel" class="form-label">Kritik Stok Seviyesi</label>
+                                <input asp-for="CriticalStockLevel" class="form-control" type="number" placeholder="Örn: 5" />
+                                <span asp-validation-for="CriticalStockLevel" class="text-danger"></span>
+                            </div>
+
+                            <!-- Image upload -->
+                            <div class="col-md-6">
+                                <label class="form-label">Ürün Görseli</label>
+                                <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" />
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label asp-for="Description" class="form-label">Açıklama</label>
+                                <textarea asp-for="Description" class="form-control" placeholder="Ürün hakkında kısa açıklama yaz..."></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <!-- Active status -->
+                            <div class="col-12">
+                                <div class="modern-switch-row">
+                                    <div class="modern-switch-info">
+                                        <div class="modern-switch-title">Ürün Durumu</div>
+                                        <div class="modern-switch-subtitle">Aktif ürünler listelerde görünür ve işlem almaya devam eder.</div>
+                                    </div>
+
+                                    <label class="modern-switch">
+                                        <input asp-for="IsActive" />
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form actions -->
+                        <div class="action-bar mt-4">
+                            <button type="submit" class="btn btn-primary save-btn">
+                                <i class="bi bi-check2-circle me-2"></i>Değişiklikleri Kaydet
+                            </button>
+
+                            <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
+                                Vazgeç
+                            </a>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label asp-for="Name" class="form-label">Ürün Adı</label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+            <!-- Preview and summary column -->
+            <div class="col-xl-4">
+                <!-- Preview card -->
+                <div class="preview-card mb-4">
+                    <div class="card-header-custom">
+                        <div class="card-title-custom">Önizleme</div>
+                        <p class="card-subtitle-custom">Görsel ve temel ürün görünümü</p>
                     </div>
 
-                    <div class="col-md-6">
-                        <label asp-for="ProductCode" class="form-label">Ürün Kodu</label>
-                        <input asp-for="ProductCode" class="form-control" />
-                        <span asp-validation-for="ProductCode" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="CategoryId" class="form-label">Kategori</label>
-                        <select asp-for="CategoryId" class="form-select">
-                            <option value="">Kategori Seçiniz</option>
-                            @foreach (var category in categories)
+                    <div class="card-body-custom">
+                        <div class="preview-box">
+                            @if (!string.IsNullOrWhiteSpace(Model?.ImageUrl))
                             {
-                                <option value="@category.Value" selected="@(Model.CategoryId.ToString() == category.Value)">
-                                    @category.Text
-                                </option>
-                            }
-                        </select>
-                        <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="SupplierId" class="form-label">Tedarikçi</label>
-                        <select asp-for="SupplierId" class="form-select">
-                            <option value="">Tedarikçi Seçiniz</option>
-                            @foreach (var supplier in suppliers)
-                            {
-                                <option value="@supplier.Value" selected="@(Model.SupplierId.ToString() == supplier.Value)">
-                                    @supplier.Text
-                                </option>
-                            }
-                        </select>
-                        <span asp-validation-for="SupplierId" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-12">
-                        <label asp-for="Description" class="form-label">Açıklama</label>
-                        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label asp-for="UnitPrice" class="form-label">Birim Fiyat</label>
-                        <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" min="0" />
-                        <span asp-validation-for="UnitPrice" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label asp-for="StockQuantity" class="form-label">Stok Miktarı</label>
-                        <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
-                        <span asp-validation-for="StockQuantity" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label asp-for="CriticalStockLevel" class="form-label">Kritik Stok</label>
-                        <input asp-for="CriticalStockLevel" class="form-control" type="number" min="0" />
-                        <span asp-validation-for="CriticalStockLevel" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label asp-for="UnitType" class="form-label">Birim Türü</label>
-                        <select asp-for="UnitType" class="form-select">
-                            <option value="Adet">Adet</option>
-                            <option value="Kg">Kg</option>
-                            <option value="Litre">Litre</option>
-                            <option value="Paket">Paket</option>
-                            <option value="Kutu">Kutu</option>
-                        </select>
-                        <span asp-validation-for="UnitType" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Ürün Görseli</label>
-                        <div class="image-box">
-                            <h6>Görsel Yönetimi</h6>
-                            <p>Yeni görsel seçersen eski görsel klasörden silinir.</p>
-
-                            <input type="file" name="imageFile" id="imageFile" class="form-control mt-3" accept=".jpg,.jpeg,.png,.webp" />
-
-                            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-                            {
-                                <div class="current-image-wrap">
-                                    <div>
-                                        <img src="@Model.ImageUrl" alt="@Model.Name" class="current-image" />
-                                    </div>
-
-                                    <div class="form-check mt-2">
-                                        <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage" />
-                                        <label class="form-check-label" for="removeImage">
-                                            Mevcut görseli kaldır
-                                        </label>
-                                    </div>
+                                <img src="@Model.ImageUrl" id="imagePreview" alt="Ürün Görseli" class="preview-image" />
+                                <div id="imagePreviewPlaceholder" class="preview-placeholder d-none">
+                                    <i class="bi bi-image"></i>
                                 </div>
                             }
+                            else
+                            {
+                                <div id="imagePreviewPlaceholder" class="preview-placeholder">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                                <img src="" id="imagePreview" alt="Ürün Görseli" class="preview-image d-none" />
+                            }
 
-                            <div class="image-preview-wrap" id="imagePreviewWrap">
-                                <img id="imagePreview" class="image-preview" alt="Yeni önizleme" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Durum</label>
-
-                        <div class="status-box">
-                            <div class="status-box-left">
-                                <h6>Ürün Durumu</h6>
-                                <p>Bu ürünün aktif veya pasif olmasını buradan değiştirebilirsin.</p>
+                            <div class="preview-title" id="previewName">
+                                @(string.IsNullOrWhiteSpace(Model?.Name) ? "Ürün adı burada görünecek" : Model.Name)
                             </div>
 
-                            <div class="d-flex align-items-center gap-3">
-                                <label class="modern-switch">
-                                    <input asp-for="IsActive" id="isActiveSwitch" />
-                                    <span class="slider"></span>
-                                </label>
-
-                                <span id="statusLabel" class="status-text @(Model.IsActive ? "status-active" : "status-passive")">
-                                    @(Model.IsActive ? "Aktif" : "Pasif")
-                                </span>
-                            </div>
+                            <p class="preview-text" id="previewDescription">
+                                @(string.IsNullOrWhiteSpace(Model?.Description) ? "Ürün açıklaması burada görünecek." : Model.Description)
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-warning save-btn">
-                        <i class="bi bi-check2-circle me-2"></i>Güncelle
-                    </button>
+                <!-- Summary card -->
+                <div class="preview-card">
+                    <div class="card-header-custom">
+                        <div class="card-title-custom">Kayıt Özeti</div>
+                        <p class="card-subtitle-custom">Mevcut ürün bilgileri</p>
+                    </div>
 
-                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary cancel-btn">
-                        <i class="bi bi-eye me-2"></i>Detaya Git
-                    </a>
+                    <div class="card-body-custom">
+                        <div class="info-list">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-calendar-check"></i></div>
+                                <div>
+                                    <div class="info-label">Oluşturulma Tarihi</div>
+                                    <div class="info-value">@Model.CreatedDate.ToString("dd.MM.yyyy")</div>
+                                </div>
+                            </div>
 
-                    <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
-                        <i class="bi bi-x-circle me-2"></i>Vazgeç
-                    </a>
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-box-seam"></i></div>
+                                <div>
+                                    <div class="info-label">Mevcut Stok</div>
+                                    <div class="info-value">@Model.StockQuantity adet</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                                <div>
+                                    <div class="info-label">Kritik Seviye</div>
+                                    <div class="info-value">@Model.CriticalStockLevel adet</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-cash-stack"></i></div>
+                                <div>
+                                    <div class="info-label">Birim Fiyat</div>
+                                    <div class="info-value">@Model.UnitPrice.ToString("C")</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon"><i class="bi bi-check2-square"></i></div>
+                                <div>
+                                    <div class="info-label">Durum</div>
+                                    <div class="info-value">@(Model.IsActive ? "Aktif" : "Pasif")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        const isActiveSwitch = document.getElementById("isActiveSwitch");
-        const statusLabel = document.getElementById("statusLabel");
-        const imageFile = document.getElementById("imageFile");
+        // =========================
+        // PREVIEW ELEMENTS
+        // =========================
+        const nameInput = document.getElementById("Name");
+        const descInput = document.getElementById("Description");
+        const imageInput = document.getElementById("imageFile");
+        const previewName = document.getElementById("previewName");
+        const previewDescription = document.getElementById("previewDescription");
         const imagePreview = document.getElementById("imagePreview");
-        const imagePreviewWrap = document.getElementById("imagePreviewWrap");
+        const imagePreviewPlaceholder = document.getElementById("imagePreviewPlaceholder");
 
-        function updateStatusLabel() {
-            if (!isActiveSwitch || !statusLabel) return;
-
-            if (isActiveSwitch.checked) {
-                statusLabel.textContent = "Aktif";
-                statusLabel.classList.remove("status-passive");
-                statusLabel.classList.add("status-active");
-            } else {
-                statusLabel.textContent = "Pasif";
-                statusLabel.classList.remove("status-active");
-                statusLabel.classList.add("status-passive");
-            }
+        // Update preview title on input
+        if (nameInput) {
+            nameInput.addEventListener("input", function () {
+                previewName.textContent = this.value.trim() || "Ürün adı burada görünecek";
+            });
         }
 
-        if (isActiveSwitch) {
-            updateStatusLabel();
-            isActiveSwitch.addEventListener("change", updateStatusLabel);
+        // Update preview description on input
+        if (descInput) {
+            descInput.addEventListener("input", function () {
+                previewDescription.textContent = this.value.trim() || "Ürün açıklaması burada görünecek.";
+            });
         }
 
-        if (imageFile) {
-            imageFile.addEventListener("change", function () {
-                const file = this.files && this.files[0];
+        // Update preview image on file selection
+        if (imageInput) {
+            imageInput.addEventListener("change", function (e) {
+                const file = e.target.files[0];
+
                 if (!file) {
-                    imagePreviewWrap.style.display = "none";
-                    imagePreview.src = "";
                     return;
                 }
 
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    imagePreview.src = e.target.result;
-                    imagePreviewWrap.style.display = "block";
+                reader.onload = function (event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.classList.remove("d-none");
+
+                    if (imagePreviewPlaceholder) {
+                        imagePreviewPlaceholder.classList.add("d-none");
+                    }
                 };
+
                 reader.readAsDataURL(file);
             });
         }

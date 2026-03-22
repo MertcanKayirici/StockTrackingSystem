@@ -2,16 +2,25 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
+    // Page title
     ViewData["Title"] = "Ürün Ekle";
+
+    // Dropdown data
     var categories = ViewBag.Categories as List<SelectListItem> ?? new List<SelectListItem>();
     var suppliers = ViewBag.Suppliers as List<SelectListItem> ?? new List<SelectListItem>();
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           MAIN CARDS
+        ========================= */
     .create-page-card, .create-form-card {
         border: 0;
         border-radius: 24px;
@@ -24,6 +33,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .create-page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -37,6 +49,9 @@
         margin-bottom: 0;
     }
 
+    /* =========================
+           FORM CARD
+        ========================= */
     .create-form-card {
         overflow: hidden;
     }
@@ -63,6 +78,9 @@
         padding: 28px;
     }
 
+    /* =========================
+           FORM ELEMENTS
+        ========================= */
     .form-label {
         font-size: 0.96rem;
         font-weight: 700;
@@ -99,6 +117,9 @@
         margin-top: 8px;
     }
 
+    /* =========================
+           VALIDATION ALERT
+        ========================= */
     .alert-danger {
         border-radius: 16px;
         border: 0;
@@ -108,6 +129,9 @@
         margin-bottom: 20px;
     }
 
+    /* =========================
+           STATUS / IMAGE BOXES
+        ========================= */
     .status-box, .image-box {
         border: 1px solid #e2e8f0;
         border-radius: 18px;
@@ -135,6 +159,9 @@
         font-size: 0.9rem;
     }
 
+    /* =========================
+           MODERN SWITCH
+        ========================= */
     .modern-switch {
         position: relative;
         display: inline-block;
@@ -196,6 +223,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           IMAGE PREVIEW
+        ========================= */
     .image-preview-wrap {
         margin-top: 16px;
         display: none;
@@ -210,6 +240,9 @@
         background: #fff;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .form-actions {
         display: flex;
         flex-wrap: wrap;
@@ -238,6 +271,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="create-page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -251,6 +287,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         CREATE FORM CARD
+    ========================= -->
     <div class="create-form-card">
         <div class="create-form-header">
             <div class="create-form-title">Ürün Bilgileri</div>
@@ -262,18 +301,21 @@
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                 <div class="row g-4">
+                    <!-- Product name -->
                     <div class="col-md-6">
                         <label asp-for="Name" class="form-label">Ürün Adı</label>
                         <input asp-for="Name" class="form-control" placeholder="Örn: Laptop, Klavye, Kahve" />
                         <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Product code -->
                     <div class="col-md-6">
                         <label asp-for="ProductCode" class="form-label">Ürün Kodu</label>
                         <input asp-for="ProductCode" class="form-control" placeholder="Örn: PRD-1001" />
                         <span asp-validation-for="ProductCode" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Category -->
                     <div class="col-md-6">
                         <label asp-for="CategoryId" class="form-label">Kategori</label>
                         <select asp-for="CategoryId" class="form-select">
@@ -286,6 +328,7 @@
                         <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Supplier -->
                     <div class="col-md-6">
                         <label asp-for="SupplierId" class="form-label">Tedarikçi</label>
                         <select asp-for="SupplierId" class="form-select">
@@ -298,30 +341,35 @@
                         <span asp-validation-for="SupplierId" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Description -->
                     <div class="col-12">
                         <label asp-for="Description" class="form-label">Açıklama</label>
                         <textarea asp-for="Description" class="form-control" rows="5" placeholder="Ürünle ilgili kısa açıklama giriniz..."></textarea>
                         <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Unit price -->
                     <div class="col-md-3">
                         <label asp-for="UnitPrice" class="form-label">Birim Fiyat</label>
                         <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
                         <span asp-validation-for="UnitPrice" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Stock quantity -->
                     <div class="col-md-3">
                         <label asp-for="StockQuantity" class="form-label">Stok Miktarı</label>
                         <input asp-for="StockQuantity" class="form-control" type="number" min="0" placeholder="0" />
                         <span asp-validation-for="StockQuantity" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Critical stock level -->
                     <div class="col-md-3">
                         <label asp-for="CriticalStockLevel" class="form-label">Kritik Stok</label>
                         <input asp-for="CriticalStockLevel" class="form-control" type="number" min="0" placeholder="5" />
                         <span asp-validation-for="CriticalStockLevel" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Unit type -->
                     <div class="col-md-3">
                         <label asp-for="UnitType" class="form-label">Birim Türü</label>
                         <select asp-for="UnitType" class="form-select">
@@ -334,6 +382,7 @@
                         <span asp-validation-for="UnitType" class="text-danger small mt-1 d-block"></span>
                     </div>
 
+                    <!-- Product image -->
                     <div class="col-12">
                         <label class="form-label">Ürün Görseli</label>
                         <div class="image-box">
@@ -348,6 +397,7 @@
                         </div>
                     </div>
 
+                    <!-- Product status -->
                     <div class="col-12">
                         <label class="form-label">Durum</label>
 
@@ -371,6 +421,7 @@
                     </div>
                 </div>
 
+                <!-- Form actions -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary save-btn">
                         <i class="bi bi-check2-circle me-2"></i>Kaydet
@@ -389,12 +440,16 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // =========================
+        // FORM ELEMENTS
+        // =========================
         const isActiveSwitch = document.getElementById("isActiveSwitch");
         const statusLabel = document.getElementById("statusLabel");
         const imageFile = document.getElementById("imageFile");
         const imagePreview = document.getElementById("imagePreview");
         const imagePreviewWrap = document.getElementById("imagePreviewWrap");
 
+        // Update active/passive status text
         function updateStatusLabel() {
             if (!isActiveSwitch || !statusLabel) return;
 
@@ -414,6 +469,7 @@
             isActiveSwitch.addEventListener("change", updateStatusLabel);
         }
 
+        // Show image preview before upload
         if (imageFile) {
             imageFile.addEventListener("change", function () {
                 const file = this.files && this.files[0];

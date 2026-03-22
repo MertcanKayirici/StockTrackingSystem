@@ -5,6 +5,11 @@ namespace StockTrackingSystem.Helpers
 {
     public static class AuditLogHelper
     {
+        // =========================
+        // ADD LOG
+        // =========================
+
+        // Adds a new audit log entry to the database context
         public static void AddLog(
             AppDbContext context,
             string actionType,
@@ -12,6 +17,7 @@ namespace StockTrackingSystem.Helpers
             int? entityId,
             string description)
         {
+            // Create new audit log object
             var log = new AuditLog
             {
                 ActionType = actionType,
@@ -21,6 +27,7 @@ namespace StockTrackingSystem.Helpers
                 CreatedDate = DateTime.Now
             };
 
+            // Add log to context (will be saved with SaveChanges)
             context.AuditLogs.Add(log);
         }
     }

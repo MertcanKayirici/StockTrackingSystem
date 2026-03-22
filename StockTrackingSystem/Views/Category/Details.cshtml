@@ -1,14 +1,21 @@
 ﻿@model StockTrackingSystem.Models.Category
 
 @{
+    // Page title
     ViewData["Title"] = "Kategori Detayı";
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           CARD STYLES
+        ========================= */
     .details-page-card,
     .details-info-card,
     .details-stat-card {
@@ -23,6 +30,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .details-page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -36,6 +46,9 @@
         margin-bottom: 0;
     }
 
+    /* =========================
+           INFO CARD
+        ========================= */
     .details-info-card {
         overflow: hidden;
     }
@@ -62,6 +75,9 @@
         padding: 28px;
     }
 
+    /* =========================
+           DETAIL ITEMS
+        ========================= */
     .detail-item {
         padding: 18px 20px;
         border: 1px solid #eef2f7;
@@ -94,6 +110,9 @@
         white-space: pre-line;
     }
 
+    /* =========================
+           STATUS BADGE
+        ========================= */
     .status-badge {
         display: inline-flex;
         align-items: center;
@@ -114,6 +133,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           STAT CARDS
+        ========================= */
     .details-stat-card {
         padding: 22px 24px;
         display: flex;
@@ -149,6 +171,9 @@
         color: #0f172a;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .action-buttons {
         display: flex;
         flex-wrap: wrap;
@@ -170,6 +195,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="details-page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -183,6 +211,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         STATISTICS
+    ========================= -->
     <div class="row g-4 mb-4">
         <div class="col-md-6 col-xl-4">
             <div class="details-stat-card">
@@ -223,6 +254,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         CATEGORY DETAILS
+    ========================= -->
     <div class="details-info-card">
         <div class="details-info-header">
             <div class="details-info-title">Kategori Bilgileri</div>
@@ -231,6 +265,7 @@
 
         <div class="details-info-body">
             <div class="row g-4">
+                <!-- Name -->
                 <div class="col-md-6">
                     <div class="detail-item">
                         <div class="detail-label">Kategori Adı</div>
@@ -238,6 +273,7 @@
                     </div>
                 </div>
 
+                <!-- Status -->
                 <div class="col-md-6">
                     <div class="detail-item">
                         <div class="detail-label">Durum</div>
@@ -250,6 +286,7 @@
                     </div>
                 </div>
 
+                <!-- ID -->
                 <div class="col-md-6">
                     <div class="detail-item">
                         <div class="detail-label">Kategori ID</div>
@@ -257,6 +294,7 @@
                     </div>
                 </div>
 
+                <!-- Created Date -->
                 <div class="col-md-6">
                     <div class="detail-item">
                         <div class="detail-label">Oluşturulma Tarihi</div>
@@ -264,6 +302,7 @@
                     </div>
                 </div>
 
+                <!-- Description -->
                 <div class="col-12">
                     <div class="detail-item">
                         <div class="detail-label">Açıklama</div>
@@ -276,6 +315,7 @@
                 </div>
             </div>
 
+            <!-- Action buttons -->
             <div class="action-buttons">
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning action-btn-main">
                     <i class="bi bi-pencil-square me-2"></i>Düzenle

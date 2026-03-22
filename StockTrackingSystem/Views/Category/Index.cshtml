@@ -1,14 +1,17 @@
 ﻿@model List<StockTrackingSystem.Models.Category>
 
 @{
+    // Page title
     ViewData["Title"] = "Kategori Yönetimi";
 
+    // Current filter values
     var currentSearch = ViewBag.Search as string;
     var currentStatus = ViewBag.StatusFilter as string;
     var currentSort = ViewBag.SortOrder as string;
     var currentStartDate = ViewBag.StartDate as string;
     var currentEndDate = ViewBag.EndDate as string;
 
+    // Summary statistics
     int totalCount = ViewBag.TotalCount != null ? (int)ViewBag.TotalCount : 0;
     int activeCount = ViewBag.ActiveCount != null ? (int)ViewBag.ActiveCount : 0;
     int passiveCount = ViewBag.PassiveCount != null ? (int)ViewBag.PassiveCount : 0;
@@ -16,10 +19,16 @@
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     }
 
+    /* =========================
+           MAIN CARDS
+        ========================= */
     .page-card,
     .stats-card,
     .filter-card,
@@ -35,6 +44,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -49,6 +61,9 @@
         margin-bottom: 0;
     }
 
+    /* =========================
+           ADD BUTTON
+        ========================= */
     .add-btn {
         border-radius: 999px;
         padding: 13px 26px;
@@ -63,6 +78,9 @@
             box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
         }
 
+    /* =========================
+           STATISTICS CARDS
+        ========================= */
     .stats-card {
         position: relative;
         display: flex;
@@ -163,6 +181,9 @@
             color: #2563eb;
         }
 
+    /* =========================
+           FILTER SECTION
+        ========================= */
     .filter-card {
         padding: 28px;
         margin-bottom: 24px;
@@ -238,6 +259,9 @@
         color: #334155;
     }
 
+    /* =========================
+           TABLE SECTION
+        ========================= */
     .table-card {
         overflow: hidden;
     }
@@ -319,6 +343,9 @@
         font-weight: 700;
     }
 
+    /* =========================
+           STATUS SWITCH
+        ========================= */
     .status-switch-wrap {
         display: inline-flex;
         align-items: center;
@@ -386,6 +413,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .action-btn {
         width: 44px;
         height: 44px;
@@ -437,6 +467,9 @@
             color: #ffffff;
         }
 
+    /* =========================
+           EMPTY STATE
+        ========================= */
     .empty-state {
         padding: 72px 20px;
         text-align: center;
@@ -447,6 +480,9 @@
         margin-bottom: 12px;
     }
 
+    /* =========================
+           LOADING / ALERTS
+        ========================= */
     .loading-toggle {
         opacity: 0.65;
         pointer-events: none;
@@ -457,6 +493,9 @@
         border-radius: 18px;
     }
 
+    /* =========================
+           RESPONSIVE
+        ========================= */
     @@media (max-width: 991.98px) {
         .page-card,
         .filter-card,
@@ -504,11 +543,12 @@
             padding: 8px 14px;
         }
     }
-
-   
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -522,6 +562,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         STATISTICS
+    ========================= -->
     <div class="row g-3 mb-4">
         <div class="col-md-6 col-xl-3">
             <div class="stats-card stats-card-total">
@@ -572,6 +615,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         FILTER FORM
+    ========================= -->
     <div class="filter-card">
         <form method="get" asp-action="Index" id="filterForm">
             <div class="row g-3">
@@ -700,6 +746,9 @@
         </form>
     </div>
 
+    <!-- =========================
+         ALERT MESSAGES
+    ========================= -->
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
@@ -716,6 +765,9 @@
         </div>
     }
 
+    <!-- =========================
+         CATEGORY TABLE
+    ========================= -->
     <div class="table-card">
         <div class="table-header d-flex justify-content-between align-items-center">
             <div>
@@ -746,12 +798,12 @@
                                     <div class="category-name">@item.Name</div>
                                     <div class="category-desc">
                                         @(string.IsNullOrWhiteSpace(item.Description)
-                                            ? "Açıklama bulunmuyor."
-                                            : item.Description.Length > 70
-                                                ? item.Description.Substring(0, 70) + "..."
-                                                : item.Description)
-                                    </div>
-                                </td>
+                                                                        ? "Açıklama bulunmuyor."
+                                                                        : item.Description.Length > 70
+                                                                        ? item.Description.Substring(0, 70) + "..."
+                                                                        : item.Description)
+                            </div>
+                        </td>
 
                                 <td>
                                     <div class="status-switch-wrap">
@@ -786,16 +838,18 @@
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
-                                        <button type="button" class="action-btn btn-delete delete-btn"  title="Sil"   data-id="@item.Id"  data-name="@item.Name">
+                                        <button type="button" class="action-btn btn-delete delete-btn" title="Sil" data-id="@item.Id" data-name="@item.Name">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                        }
+                                        }
                     </tbody>
                 </table>
             </div>
+
+            <!-- Delete confirmation modal -->
             <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content border-0 rounded-4 shadow">
@@ -836,6 +890,7 @@
         }
         else
         {
+            <!-- Empty state -->
             <div class="empty-state">
                 <div class="empty-icon">📁</div>
                 <h5 class="fw-bold">Kategori bulunamadı</h5>
@@ -848,6 +903,9 @@
 
 @section Scripts {
     <script>
+        // =========================
+        // FILTER FORM ELEMENTS
+        // =========================
         const filterForm = document.getElementById("filterForm");
         const searchInput = document.getElementById("searchInput");
         const statusFilter = document.getElementById("statusFilter");
@@ -857,10 +915,12 @@
 
         let debounceTimer;
 
+        // Submit filter form
         function submitFilterForm() {
             filterForm.submit();
         }
 
+        // Auto-submit with debounce on search
         if (searchInput) {
             searchInput.addEventListener("input", function () {
                 clearTimeout(debounceTimer);
@@ -870,11 +930,15 @@
             });
         }
 
+        // Auto-submit on filter changes
         if (statusFilter) statusFilter.addEventListener("change", submitFilterForm);
         if (startDate) startDate.addEventListener("change", submitFilterForm);
         if (endDate) endDate.addEventListener("change", submitFilterForm);
         if (sortOrder) sortOrder.addEventListener("change", submitFilterForm);
 
+        // =========================
+        // STATUS TOGGLE (AJAX)
+        // =========================
         document.querySelectorAll(".status-toggle").forEach(toggle => {
             toggle.addEventListener("change", async function () {
                 const checkbox = this;
@@ -920,12 +984,16 @@
             });
         });
 
+        // =========================
+        // DELETE MODAL ELEMENTS
+        // =========================
         let selectedDeleteId = null;
         const deleteModalElement = document.getElementById("deleteCategoryModal");
         const deleteModal = new bootstrap.Modal(deleteModalElement);
         const deleteCategoryName = document.getElementById("deleteCategoryName");
         const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
+        // Open delete modal
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", function () {
                 selectedDeleteId = this.dataset.id;
@@ -936,6 +1004,9 @@
             });
         });
 
+        // =========================
+        // DELETE ACTION (AJAX)
+        // =========================
         confirmDeleteBtn.addEventListener("click", async function () {
             if (!selectedDeleteId) return;
 

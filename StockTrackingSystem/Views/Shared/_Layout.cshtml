@@ -1,16 +1,23 @@
 ﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
+    <!-- Basic meta settings -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Page title -->
     <title>@ViewData["Title"] - StockTrackingSystem</title>
 
+    <!-- External styles -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StockTrackingSystem.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+        /* =========================
+                   GLOBAL SETTINGS
+                ========================= */
         html {
             font-size: 14px;
         }
@@ -23,6 +30,9 @@
             flex-direction: column;
         }
 
+        /* =========================
+                   NAVBAR
+                ========================= */
         .app-navbar {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(12px);
@@ -117,6 +127,9 @@
                     color: #2563eb !important;
                 }
 
+        /* =========================
+                   QUICK ACTIONS
+                ========================= */
         .quick-actions {
             display: flex;
             align-items: center;
@@ -157,6 +170,9 @@
                 color: #0f172a;
             }
 
+        /* =========================
+                   PAGE LAYOUT
+                ========================= */
         .page-wrapper {
             flex: 1;
             padding-top: 28px;
@@ -167,6 +183,9 @@
             max-width: 1400px;
         }
 
+        /* =========================
+                   FOOTER (FIRST BLOCK)
+                ========================= */
         .app-footer {
             margin-top: auto;
             border-top: 1px solid #e2e8f0;
@@ -185,7 +204,9 @@
             font-size: 0.95rem;
         }
 
-
+        /* =========================
+                   RESPONSIVE NAVBAR
+                ========================= */
         @@media (max-width: 991.98px) {
             .nav-shell {
                 margin-top: 16px;
@@ -215,6 +236,9 @@
             }
         }
 
+        /* =========================
+                   FOOTER (SECOND BLOCK)
+                ========================= */
         .app-footer {
             margin-top: auto;
             background: rgba(255, 255, 255, 0.9);
@@ -300,21 +324,25 @@
             color: #64748b;
         }
 
+        /* =========================
+                   MOBILE FOOTER
+                ========================= */
         @@media (max-width: 768px) {
-            .footer-inner, .footer-bottom
+            .footer-inner, .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .footer-right {
-            gap: 12px;
-        }
-
+            .footer-right {
+                gap: 12px;
+            }
         }
     </style>
+
     <style>
+        /* =========================
+                   GLOBAL SETTINGS (DUPLICATE BLOCK)
+                ========================= */
         html {
             font-size: 14px;
         }
@@ -338,6 +366,9 @@
             padding-bottom: 28px;
         }
 
+        /* =========================
+                   NAVBAR (DUPLICATE BLOCK)
+                ========================= */
         .app-navbar {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(12px);
@@ -432,6 +463,9 @@
                     color: #2563eb !important;
                 }
 
+        /* =========================
+                   QUICK ACTIONS (DUPLICATE BLOCK)
+                ========================= */
         .quick-actions {
             display: flex;
             align-items: center;
@@ -472,6 +506,9 @@
                 color: #0f172a;
             }
 
+        /* =========================
+                   FOOTER (DUPLICATE BLOCK)
+                ========================= */
         .app-footer {
             margin-top: 32px;
             background: rgba(255, 255, 255, 0.92);
@@ -559,54 +596,57 @@
             color: #64748b;
         }
 
+        /* =========================
+                   RESPONSIVE NAVBAR (DUPLICATE BLOCK)
+                ========================= */
         @@media (max-width: 991.98px) {
-            .nav-shell
-
-        {
-            margin-top: 16px;
-            padding: 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            background: #ffffff;
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
-        }
-
-        .main-nav {
-            gap: 6px;
-        }
-
-            .main-nav .nav-link {
-                width: 100%;
+            .nav-shell {
+                margin-top: 16px;
+                padding: 16px;
+                border: 1px solid #e2e8f0;
+                border-radius: 20px;
+                background: #ffffff;
+                box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
             }
 
-        .quick-actions {
-            margin-top: 12px;
-            flex-direction: column;
-            align-items: stretch;
+            .main-nav {
+                gap: 6px;
+            }
+
+                .main-nav .nav-link {
+                    width: 100%;
+                }
+
+            .quick-actions {
+                margin-top: 12px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .quick-btn {
+                justify-content: center;
+            }
         }
 
-        .quick-btn {
-            justify-content: center;
-        }
-
-        }
-
+        /* =========================
+                   MOBILE FOOTER (DUPLICATE BLOCK)
+                ========================= */
         @@media (max-width: 768px) {
-            .footer-inner, .footer-bottom
+            .footer-inner, .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .footer-right {
-            gap: 12px;
-        }
-
+            .footer-right {
+                gap: 12px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- =========================
+         HEADER / NAVBAR
+    ========================= -->
     <header>
         <nav class="navbar navbar-expand-lg app-navbar">
             <div class="container page-container">
@@ -672,12 +712,18 @@
         </nav>
     </header>
 
+    <!-- =========================
+         PAGE CONTENT
+    ========================= -->
     <div class="page-wrapper">
         <main role="main" class="container page-container">
             @RenderBody()
         </main>
     </div>
 
+    <!-- =========================
+         FOOTER
+    ========================= -->
     <footer class="app-footer">
         <div class="container page-container">
             <div class="footer-inner">
@@ -707,6 +753,9 @@
         </div>
     </footer>
 
+    <!-- =========================
+         SCRIPTS
+    ========================= -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

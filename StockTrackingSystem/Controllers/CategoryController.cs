@@ -10,11 +10,17 @@ namespace StockTrackingSystem.Controllers
     {
         private readonly AppDbContext _context;
 
+        // Constructor
         public CategoryController(AppDbContext context)
         {
             _context = context;
         }
 
+        // =========================
+        // INDEX (LIST)
+        // =========================
+
+        // Display categories with filtering, search and sorting
         [HttpGet]
         public async Task<IActionResult> Index(
             string? search,
@@ -25,6 +31,7 @@ namespace StockTrackingSystem.Controllers
         {
             var query = _context.Categories.AsQueryable();
 
+            // Search filter
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var searchText = search.Trim();
@@ -34,6 +41,7 @@ namespace StockTrackingSystem.Controllers
                     (x.Description != null && x.Description.Contains(searchText)));
             }
 
+            // Status filter
             if (!string.IsNullOrWhiteSpace(statusFilter))
             {
                 if (statusFilter == "active")
@@ -42,17 +50,20 @@ namespace StockTrackingSystem.Controllers
                     query = query.Where(x => !x.IsActive);
             }
 
+            // Start date filter
             if (startDate.HasValue)
             {
                 query = query.Where(x => x.CreatedDate >= startDate.Value.Date);
             }
 
+            // End date filter
             if (endDate.HasValue)
             {
                 var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
                 query = query.Where(x => x.CreatedDate <= end);
             }
 
+            // Sorting
             query = sortOrder switch
             {
                 "name_asc" => query.OrderBy(x => x.Name),
@@ -72,12 +83,14 @@ namespace StockTrackingSystem.Controllers
                 })
                 .ToListAsync();
 
+            // UI state
             ViewBag.Search = search;
             ViewBag.StatusFilter = statusFilter;
             ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
             ViewBag.SortOrder = sortOrder;
 
+            // Summary data
             ViewBag.TotalCount = await _context.Categories.CountAsync();
             ViewBag.ActiveCount = await _context.Categories.CountAsync(x => x.IsActive);
             ViewBag.PassiveCount = await _context.Categories.CountAsync(x => !x.IsActive);
@@ -86,12 +99,18 @@ namespace StockTrackingSystem.Controllers
             return View(categories);
         }
 
+        // =========================
+        // CREATE
+        // =========================
+
+        // Show create form
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        // Handle create post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category)
@@ -116,6 +135,11 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DETAILS
+        // =========================
+
+        // Show category details
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -129,6 +153,11 @@ namespace StockTrackingSystem.Controllers
             return View(category);
         }
 
+        // =========================
+        // EDIT
+        // =========================
+
+        // Show edit form
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -140,6 +169,7 @@ namespace StockTrackingSystem.Controllers
             return View(category);
         }
 
+        // Handle edit post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
@@ -170,6 +200,11 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DELETE
+        // =========================
+
+        // Delete category
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -179,20 +214,12 @@ namespace StockTrackingSystem.Controllers
 
             if (category == null)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Kategori bulunamadı."
-                });
+                return Json(new { success = false, message = "Kategori bulunamadı." });
             }
 
             if (category.Products != null && category.Products.Any())
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Bu kategoriye bağlı ürünler olduğu için silinemez."
-                });
+                return Json(new { success = false, message = "Bu kategoriye bağlı ürünler olduğu için silinemez." });
             }
 
             var categoryName = category.Name;
@@ -224,6 +251,11 @@ namespace StockTrackingSystem.Controllers
             });
         }
 
+        // =========================
+        // STATUS TOGGLE
+        // =========================
+
+        // Toggle active/passive status
         [HttpPost]
         public async Task<IActionResult> ToggleStatus(int id)
         {
@@ -231,11 +263,7 @@ namespace StockTrackingSystem.Controllers
 
             if (category == null)
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Kategori bulunamadı."
-                });
+                return Json(new { success = false, message = "Kategori bulunamadı." });
             }
 
             category.IsActive = !category.IsActive;

@@ -1,14 +1,21 @@
 ﻿@model StockTrackingSystem.Models.Category
 
 @{
+    // Page title
     ViewData["Title"] = "Kategori Ekle";
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           CARD STYLES
+        ========================= */
     .create-page-card,
     .create-form-card {
         border: 0;
@@ -22,6 +29,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .create-page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -35,6 +45,9 @@
         margin-bottom: 0;
     }
 
+    /* =========================
+           FORM HEADER
+        ========================= */
     .create-form-card {
         overflow: hidden;
     }
@@ -57,6 +70,9 @@
         font-size: 0.96rem;
     }
 
+    /* =========================
+           FORM BODY
+        ========================= */
     .create-form-body {
         padding: 28px;
     }
@@ -88,6 +104,7 @@
         resize: vertical;
     }
 
+        /* Focus states */
         .form-control:focus,
         .form-select:focus,
         textarea.form-control:focus {
@@ -101,6 +118,9 @@
         margin-top: 8px;
     }
 
+    /* =========================
+           VALIDATION
+        ========================= */
     .validation-summary-errors,
     .alert-danger {
         border-radius: 16px;
@@ -111,6 +131,9 @@
         margin-bottom: 20px;
     }
 
+    /* =========================
+           STATUS SWITCH
+        ========================= */
     .status-box {
         border: 1px solid #e2e8f0;
         border-radius: 18px;
@@ -196,6 +219,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .form-actions {
         display: flex;
         flex-wrap: wrap;
@@ -203,7 +229,8 @@
         margin-top: 28px;
     }
 
-    .save-btn {
+    .save-btn,
+    .cancel-btn {
         min-height: 52px;
         border-radius: 16px;
         padding: 0 24px;
@@ -212,11 +239,6 @@
     }
 
     .cancel-btn {
-        min-height: 52px;
-        border-radius: 16px;
-        padding: 0 24px;
-        font-weight: 700;
-        font-size: 0.98rem;
         display: inline-flex;
         align-items: center;
         text-decoration: none;
@@ -224,6 +246,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="create-page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -237,6 +262,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         FORM CARD
+    ========================= -->
     <div class="create-form-card">
         <div class="create-form-header">
             <div class="create-form-title">Kategori Bilgileri</div>
@@ -244,10 +272,14 @@
         </div>
 
         <div class="create-form-body">
+            <!-- =========================
+                 FORM
+            ========================= -->
             <form asp-action="Create" method="post">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                 <div class="row g-4">
+                    <!-- Category Name -->
                     <div class="col-12">
                         <label asp-for="Name" class="form-label">Kategori Adı</label>
                         <input asp-for="Name" class="form-control" placeholder="Örn: Elektronik, Ofis, Gıda" />
@@ -255,6 +287,7 @@
                         <div class="form-hint">Kısa, anlaşılır ve tekrar etmeyen bir isim kullan.</div>
                     </div>
 
+                    <!-- Description -->
                     <div class="col-12">
                         <label asp-for="Description" class="form-label">Açıklama</label>
                         <textarea asp-for="Description" class="form-control" rows="5" placeholder="Kategori ile ilgili kısa bir açıklama giriniz..."></textarea>
@@ -262,6 +295,7 @@
                         <div class="form-hint">İsteğe bağlıdır. Liste ekranında kısa özet olarak gösterilir.</div>
                     </div>
 
+                    <!-- Status -->
                     <div class="col-12">
                         <label class="form-label">Durum</label>
 
@@ -285,6 +319,7 @@
                     </div>
                 </div>
 
+                <!-- Buttons -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary save-btn">
                         <i class="bi bi-check2-circle me-2"></i>Kaydet
@@ -303,6 +338,7 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // Handle active/passive switch UI
         const isActiveSwitch = document.getElementById("isActiveSwitch");
         const statusLabel = document.getElementById("statusLabel");
 

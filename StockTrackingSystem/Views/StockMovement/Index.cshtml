@@ -2,9 +2,13 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
+    // Page title
     ViewData["Title"] = "Stok Hareketleri";
+
+    // Product dropdown data
     var products = ViewBag.Products as List<SelectListItem> ?? new List<SelectListItem>();
 
+    // Current filter values
     var currentSearch = ViewBag.Search as string;
     int? currentProductId = ViewBag.ProductId as int?;
     var currentMovementType = ViewBag.MovementType as string;
@@ -13,10 +17,16 @@
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           MAIN CARDS
+        ========================= */
     .page-card, .filter-card, .table-card {
         border: 0;
         border-radius: 24px;
@@ -29,6 +39,9 @@
         margin-bottom: 24px;
     }
 
+    /* =========================
+           PAGE HEADER
+        ========================= */
     .page-title {
         font-size: 2rem;
         font-weight: 800;
@@ -51,6 +64,9 @@
         align-items: center;
     }
 
+    /* =========================
+           FILTER CARD
+        ========================= */
     .filter-card {
         padding: 28px;
         margin-bottom: 24px;
@@ -75,6 +91,9 @@
         box-shadow: none;
     }
 
+    /* =========================
+           TABLE CARD
+        ========================= */
     .table-card {
         overflow: hidden;
     }
@@ -109,6 +128,9 @@
         border-color: #f1f5f9;
     }
 
+    /* =========================
+           PRODUCT IMAGE
+        ========================= */
     .product-thumb {
         width: 52px;
         height: 52px;
@@ -131,6 +153,9 @@
         border: 2px solid #e2e8f0;
     }
 
+    /* =========================
+           MOVEMENT BADGES
+        ========================= */
     .movement-badge {
         display: inline-flex;
         align-items: center;
@@ -178,6 +203,9 @@
         text-decoration: none;
     }
 
+    /* =========================
+           ACTION BUTTONS
+        ========================= */
     .action-btn {
         width: 44px;
         height: 44px;
@@ -225,6 +253,9 @@
             color: white;
         }
 
+    /* =========================
+           DELETE MODAL
+        ========================= */
     .delete-modal-content {
         border: 0;
         border-radius: 24px;
@@ -295,6 +326,9 @@
         font-weight: 700;
     }
 
+    /* =========================
+           EMPTY STATE
+        ========================= */
     .empty-state {
         padding: 70px 20px;
         text-align: center;
@@ -302,6 +336,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         PAGE HEADER
+    ========================= -->
     <div class="page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -315,14 +352,19 @@
         </div>
     </div>
 
+    <!-- =========================
+         FILTER FORM
+    ========================= -->
     <div class="filter-card">
         <form method="get" asp-action="Index" id="filterForm">
             <div class="row g-3">
+                <!-- Search -->
                 <div class="col-lg-4">
                     <label class="filter-title">Arama</label>
                     <input type="text" name="search" id="searchInput" value="@currentSearch" class="form-control" placeholder="Ürün, referans kodu veya açıklama ara..." />
                 </div>
 
+                <!-- Product -->
                 <div class="col-lg-3">
                     <label class="filter-title">Ürün</label>
                     <select name="productId" id="productId" class="form-select">
@@ -341,6 +383,7 @@
                     </select>
                 </div>
 
+                <!-- Movement type -->
                 <div class="col-lg-2">
                     <label class="filter-title">Hareket Tipi</label>
                     <select name="movementType" id="movementType" class="form-select">
@@ -364,11 +407,13 @@
                     </select>
                 </div>
 
+                <!-- Start date -->
                 <div class="col-lg-3">
                     <label class="filter-title">Başlangıç Tarihi</label>
                     <input type="date" name="startDate" id="startDate" value="@currentStartDate" class="form-control" />
                 </div>
 
+                <!-- End date -->
                 <div class="col-lg-3">
                     <label class="filter-title">Bitiş Tarihi</label>
                     <input type="date" name="endDate" id="endDate" value="@currentEndDate" class="form-control" />
@@ -384,11 +429,17 @@
         </form>
     </div>
 
+    <!-- =========================
+         SUCCESS MESSAGE
+    ========================= -->
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success rounded-4 shadow-sm">@TempData["SuccessMessage"]</div>
     }
 
+    <!-- =========================
+         MOVEMENT TABLE
+    ========================= -->
     <div class="table-card">
         <div class="table-header">
             <div class="table-title">Hareket Listesi</div>
@@ -415,6 +466,7 @@
                         @foreach (var item in Model)
                         {
                             <tr id="row-@item.Id">
+                                <!-- Product image -->
                                 <td class="ps-4">
                                     @if (!string.IsNullOrWhiteSpace(item.Product?.ImageUrl))
                                     {
@@ -428,33 +480,41 @@
                                     }
                                 </td>
 
+                                <!-- Product info -->
                                 <td>
                                     <div class="fw-bold">@item.Product?.Name</div>
                                     <div class="text-muted small">@item.Product?.Category?.Name</div>
                                 </td>
 
+                                <!-- Movement type -->
                                 <td>
                                     <span class="movement-badge @(item.MovementType == "In" ? "movement-in" : "movement-out")">
                                         @(item.MovementType == "In" ? "Giriş" : "Çıkış")
                                     </span>
                                 </td>
 
+                                <!-- Quantity -->
                                 <td class="fw-bold">@item.Quantity</td>
 
+                                <!-- Unit price -->
                                 <td>
                                     @(item.UnitPrice.HasValue? item.UnitPrice.Value.ToString("C") : "-")
                                 </td>
 
+                                <!-- Reference code -->
                                 <td>@(string.IsNullOrWhiteSpace(item.ReferenceCode) ? "-" : item.ReferenceCode)</td>
 
+                                <!-- Date -->
                                 <td>
                                     <span class="date-badge">@item.MovementDate.ToString("dd.MM.yyyy HH:mm")</span>
                                 </td>
 
+                                <!-- Description -->
                                 <td>
                                     @(string.IsNullOrWhiteSpace(item.Description) ? "-" : item.Description)
                                 </td>
 
+                                <!-- Actions -->
                                 <td class="text-end pe-4">
                                     <div class="d-inline-flex gap-2">
                                         <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-detail" title="Detay">
@@ -481,6 +541,7 @@
         }
         else
         {
+            <!-- Empty state -->
             <div class="empty-state">
                 <div style="font-size:2.4rem;">📊</div>
                 <h5 class="fw-bold mt-3">Hareket bulunamadı</h5>
@@ -490,6 +551,9 @@
     </div>
 </div>
 
+<!-- =========================
+     DELETE MODAL
+========================= -->
 <div class="modal fade" id="deleteMovementModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content delete-modal-content">
@@ -528,6 +592,9 @@
 
 @section Scripts {
     <script>
+        // =========================
+        // FILTER FORM ELEMENTS
+        // =========================
         const filterForm = document.getElementById("filterForm");
         const searchInput = document.getElementById("searchInput");
         const productId = document.getElementById("productId");
@@ -537,10 +604,12 @@
 
         let debounceTimer;
 
+        // Submit filter form
         function submitFilterForm() {
             filterForm.submit();
         }
 
+        // Debounced search submit
         if (searchInput) {
             searchInput.addEventListener("input", function () {
                 clearTimeout(debounceTimer);
@@ -550,14 +619,19 @@
             });
         }
 
+        // Auto submit on filter changes
         if (productId) productId.addEventListener("change", submitFilterForm);
         if (movementType) movementType.addEventListener("change", submitFilterForm);
         if (startDate) startDate.addEventListener("change", submitFilterForm);
         if (endDate) endDate.addEventListener("change", submitFilterForm);
 
+        // =========================
+        // DELETE MODAL
+        // =========================
         let selectedMovementId = null;
         let deleteModalInstance = null;
 
+        // Open delete confirmation modal
         function openDeleteModal(id, name) {
             selectedMovementId = id;
 
@@ -575,6 +649,7 @@
             deleteModalInstance.show();
         }
 
+        // Delete selected movement
         async function deleteSelectedMovement() {
             if (!selectedMovementId) return;
 

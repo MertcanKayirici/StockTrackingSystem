@@ -1,8 +1,10 @@
 ﻿@using StockTrackingSystem.Models
 
 @{
+    // Page title
     ViewData["Title"] = "Dashboard";
 
+    // Summary statistics
     int totalProducts = ViewBag.TotalProducts ?? 0;
     int totalCategories = ViewBag.TotalCategories ?? 0;
     int totalSuppliers = ViewBag.TotalSuppliers ?? 0;
@@ -13,11 +15,13 @@
     int outOfStockCount = ViewBag.OutOfStockCount ?? 0;
     decimal totalStockValue = ViewBag.TotalStockValue ?? 0m;
 
+    // Latest records
     var latestAuditLogs = ViewBag.LatestAuditLogs as List<AuditLog> ?? new List<AuditLog>();
     var latestProducts = ViewBag.LatestProducts as List<Product> ?? new List<Product>();
     var latestMovements = ViewBag.LatestMovements as List<StockMovement> ?? new List<StockMovement>();
     var lowStockProducts = ViewBag.LowStockProducts as List<Product> ?? new List<Product>();
 
+    // Chart data
     var categoryLabels = ViewBag.CategoryLabels as string ?? "[]";
     var categoryCounts = ViewBag.CategoryCounts as string ?? "[]";
     var movementLabels = ViewBag.MovementLabels as string ?? "[]";
@@ -31,10 +35,16 @@
 }
 
 <style>
+    /* =========================
+           PAGE BACKGROUND
+        ========================= */
     body {
         background: #f8fafc;
     }
 
+    /* =========================
+           MAIN CARDS
+        ========================= */
     .hero-card,
     .stats-card,
     .panel-card {
@@ -44,6 +54,9 @@
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
 
+    /* =========================
+           HERO SECTION
+        ========================= */
     .hero-card {
         padding: 34px;
         margin-bottom: 24px;
@@ -91,6 +104,9 @@
         align-items: center;
     }
 
+    /* =========================
+           STATS CARDS
+        ========================= */
     .stats-card {
         position: relative;
         overflow: hidden;
@@ -200,6 +216,9 @@
         color: #0f172a;
     }
 
+    /* =========================
+           PANEL CARDS
+        ========================= */
     .panel-card {
         overflow: hidden;
         height: 100%;
@@ -232,6 +251,9 @@
         min-height: 0;
     }
 
+    /* =========================
+           MINI LISTS
+        ========================= */
     .mini-list {
         display: flex;
         flex-direction: column;
@@ -313,6 +335,9 @@
         color: #ef4444;
     }
 
+    /* =========================
+           ALERT BOXES
+        ========================= */
     .alert-box {
         padding: 18px 20px;
         border-radius: 18px;
@@ -334,6 +359,9 @@
         border: 1px solid rgba(22, 163, 74, 0.14);
     }
 
+    /* =========================
+           CHARTS
+        ========================= */
     .chart-box {
         position: relative;
         width: 100%;
@@ -361,6 +389,9 @@
             display: block;
         }
 
+    /* =========================
+           EMPTY STATE
+        ========================= */
     .empty-box {
         text-align: center;
         padding: 42px 10px;
@@ -369,6 +400,9 @@
 </style>
 
 <div class="container py-4">
+    <!-- =========================
+         HERO SECTION
+    ========================= -->
     <div class="hero-card">
         <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-4">
             <div>
@@ -392,6 +426,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         STATISTICS
+    ========================= -->
     <div class="row g-3 mb-4">
         <div class="col-md-6 col-xl-4">
             <div class="stats-card card-blue">
@@ -466,6 +503,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         ALERT SUMMARY
+    ========================= -->
     <div class="row g-4 mb-4">
         <div class="col-xl-8">
             @if (criticalStockCount > 0 || outOfStockCount > 0)
@@ -495,6 +535,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         LATEST PRODUCTS / MOVEMENTS
+    ========================= -->
     <div class="row g-4 mb-4">
         <div class="col-xl-6">
             <div class="panel-card">
@@ -588,6 +631,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         LATEST AUDIT LOGS
+    ========================= -->
     <div class="row g-4 mb-4">
         <div class="col-12">
             <div class="panel-card">
@@ -628,6 +674,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         LOW STOCK / SYSTEM SUMMARY
+    ========================= -->
     <div class="row g-4 mb-4">
         <div class="col-xl-6">
             <div class="panel-card">
@@ -726,6 +775,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         MAIN CHARTS
+    ========================= -->
     <div class="row g-4 mb-4">
         <div class="col-xl-7">
             <div class="panel-card">
@@ -756,6 +808,9 @@
         </div>
     </div>
 
+    <!-- =========================
+         TREND CHARTS
+    ========================= -->
     <div class="row g-4">
         <div class="col-xl-6">
             <div class="panel-card">
@@ -804,6 +859,9 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // =========================
+        // CHART DATA
+        // =========================
         const categoryLabels = @Html.Raw(categoryLabels);
         const categoryCounts = @Html.Raw(categoryCounts);
         const movementLabels = @Html.Raw(movementLabels);
@@ -815,6 +873,7 @@
         const yearlyMovementLabels = @Html.Raw(yearlyMovementLabels);
         const yearlyMovementCounts = @Html.Raw(yearlyMovementCounts);
 
+        // Create category distribution chart
         function createCategoryChart() {
             const el = document.getElementById("categoryChart");
             if (!el) return;
@@ -847,6 +906,7 @@
             });
         }
 
+        // Create movement summary chart
         function createMovementChart() {
             const el = document.getElementById("movementChart");
             if (!el) return;
@@ -868,6 +928,7 @@
             });
         }
 
+        // Create daily movement trend chart
         function createDailyMovementChart() {
             const el = document.getElementById("dailyMovementChart");
             if (!el) return;
@@ -901,6 +962,7 @@
             });
         }
 
+        // Create monthly movement chart
         function createMonthlyMovementChart() {
             const el = document.getElementById("monthlyMovementChart");
             if (!el) return;
@@ -933,6 +995,7 @@
             });
         }
 
+        // Create yearly movement chart
         function createYearlyMovementChart() {
             const el = document.getElementById("yearlyMovementChart");
             if (!el) return;
@@ -965,6 +1028,9 @@
             });
         }
 
+        // =========================
+        // INITIALIZE CHARTS
+        // =========================
         createCategoryChart();
         createMovementChart();
         createDailyMovementChart();

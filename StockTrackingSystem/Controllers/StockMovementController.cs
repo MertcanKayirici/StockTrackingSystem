@@ -11,11 +11,17 @@ namespace StockTrackingSystem.Controllers
     {
         private readonly AppDbContext _context;
 
+        // Constructor
         public StockMovementController(AppDbContext context)
         {
             _context = context;
         }
 
+        // =========================
+        // INDEX
+        // =========================
+
+        // Display stock movements with filters
         [HttpGet]
         public async Task<IActionResult> Index(
             string? search,
@@ -29,6 +35,7 @@ namespace StockTrackingSystem.Controllers
                 .ThenInclude(x => x!.Category)
                 .AsQueryable();
 
+            // Search filter
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var searchText = search.Trim();
@@ -39,21 +46,25 @@ namespace StockTrackingSystem.Controllers
                     (x.Description != null && x.Description.Contains(searchText)));
             }
 
+            // Product filter
             if (productId.HasValue && productId.Value > 0)
             {
                 query = query.Where(x => x.ProductId == productId.Value);
             }
 
+            // Movement type filter
             if (!string.IsNullOrWhiteSpace(movementType))
             {
                 query = query.Where(x => x.MovementType == movementType);
             }
 
+            // Start date filter
             if (startDate.HasValue)
             {
                 query = query.Where(x => x.MovementDate >= startDate.Value.Date);
             }
 
+            // End date filter
             if (endDate.HasValue)
             {
                 var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
@@ -65,12 +76,14 @@ namespace StockTrackingSystem.Controllers
                 .ThenByDescending(x => x.Id)
                 .ToListAsync();
 
+            // UI state
             ViewBag.Search = search;
             ViewBag.ProductId = productId;
             ViewBag.MovementType = movementType;
             ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
 
+            // Product dropdown
             ViewBag.Products = await _context.Products
                 .Where(x => x.IsActive)
                 .OrderBy(x => x.Name)
@@ -84,6 +97,11 @@ namespace StockTrackingSystem.Controllers
             return View(movements);
         }
 
+        // =========================
+        // CREATE
+        // =========================
+
+        // Show create form
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -97,6 +115,7 @@ namespace StockTrackingSystem.Controllers
             });
         }
 
+        // Handle create post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StockMovement movement)
@@ -113,6 +132,7 @@ namespace StockTrackingSystem.Controllers
                 ModelState.AddModelError("MovementType", "Geçersiz hareket tipi.");
             }
 
+            // Stock validation for OUT operation
             if (product != null && movement.MovementType == "Out" && product.StockQuantity < movement.Quantity)
             {
                 ModelState.AddModelError("Quantity", "Çıkış işlemi için yeterli stok yok.");
@@ -124,10 +144,12 @@ namespace StockTrackingSystem.Controllers
                 return View(movement);
             }
 
+            // Apply movement to product
             ApplyMovementToProduct(product!, movement);
 
             product!.UpdatedDate = DateTime.Now;
 
+            // Update unit price if provided
             if (movement.UnitPrice.HasValue && movement.UnitPrice.Value > 0)
             {
                 product.UnitPrice = movement.UnitPrice.Value;
@@ -135,6 +157,7 @@ namespace StockTrackingSystem.Controllers
 
             movement.CreatedDate = DateTime.Now;
 
+            // Audit log
             AuditLogHelper.AddLog(
                 _context,
                 movement.MovementType == "In" ? "StockIn" : "StockOut",
@@ -150,6 +173,11 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DETAILS
+        // =========================
+
+        // Show movement details
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -164,6 +192,11 @@ namespace StockTrackingSystem.Controllers
             return View(movement);
         }
 
+        // =========================
+        // EDIT
+        // =========================
+
+        // Show edit form
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -177,6 +210,7 @@ namespace StockTrackingSystem.Controllers
             return View(movement);
         }
 
+        // Handle edit post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(StockMovement movement)
@@ -212,13 +246,12 @@ namespace StockTrackingSystem.Controllers
                 return View(movement);
             }
 
-            // Eski hareketi geri al
+            // Revert old movement
             RevertMovementFromProduct(oldProduct!, existingMovement);
 
-            // Yeni hareket uygulanmadan önce stok kontrolü
+            // Validate stock before applying new movement
             if (movement.MovementType == "Out" && newProduct!.StockQuantity < movement.Quantity)
             {
-                // Geri alınan eski hareketi tekrar uygula, sistem bozulmasın
                 ApplyMovementToProduct(oldProduct!, existingMovement);
 
                 ModelState.AddModelError("Quantity", "Düzenleme sonrası çıkış işlemi için yeterli stok yok.");
@@ -226,7 +259,7 @@ namespace StockTrackingSystem.Controllers
                 return View(movement);
             }
 
-            // Yeni hareketi uygula
+            // Apply new movement
             ApplyMovementToProduct(newProduct!, movement);
 
             if (movement.UnitPrice.HasValue && movement.UnitPrice.Value > 0)
@@ -238,6 +271,7 @@ namespace StockTrackingSystem.Controllers
             newProduct!.UpdatedDate = DateTime.Now;
             movement.CreatedDate = existingMovement.CreatedDate;
 
+            // Audit log
             AuditLogHelper.AddLog(
                 _context,
                 "Update",
@@ -253,6 +287,11 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
+        // DELETE
+        // =========================
+
+        // Delete stock movement
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -271,12 +310,11 @@ namespace StockTrackingSystem.Controllers
                 return Json(new { success = false, message = "Bağlı ürün bulunamadı." });
             }
 
-            // Silmeden önce hareketin etkisini geri al
+            // Revert movement effect before delete
             RevertMovementFromProduct(product, movement);
 
             if (product.StockQuantity < 0)
             {
-                // güvenlik için
                 ApplyMovementToProduct(product, movement);
                 return Json(new { success = false, message = "Bu hareket silinirse stok geçersiz hale geliyor." });
             }
@@ -285,6 +323,7 @@ namespace StockTrackingSystem.Controllers
 
             _context.StockMovements.Remove(movement);
 
+            // Audit log
             AuditLogHelper.AddLog(
                 _context,
                 "Delete",
@@ -298,6 +337,11 @@ namespace StockTrackingSystem.Controllers
             return Json(new { success = true, message = "Stok hareketi başarıyla silindi." });
         }
 
+        // =========================
+        // HELPERS
+        // =========================
+
+        // Load product dropdown data
         private async Task LoadProductsAsync()
         {
             ViewBag.Products = await _context.Products
@@ -311,6 +355,7 @@ namespace StockTrackingSystem.Controllers
                 .ToListAsync();
         }
 
+        // Apply stock movement to product
         private static void ApplyMovementToProduct(Product product, StockMovement movement)
         {
             if (movement.MovementType == "In")
@@ -323,6 +368,7 @@ namespace StockTrackingSystem.Controllers
             }
         }
 
+        // Revert stock movement from product
         private static void RevertMovementFromProduct(Product product, StockMovement movement)
         {
             if (movement.MovementType == "In")
@@ -335,6 +381,11 @@ namespace StockTrackingSystem.Controllers
             }
         }
 
+        // =========================
+        // API
+        // =========================
+
+        // Get product stock info (AJAX)
         [HttpGet]
         public async Task<IActionResult> GetProductStockInfo(int productId)
         {
