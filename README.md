@@ -1,39 +1,53 @@
 # 🚀 Stock Tracking System
 
-> ⚡ Developed with modern admin panel architecture and real-world stock management logic
+A modern and fully dynamic **stock tracking and management system** built with **ASP.NET Core MVC, Entity Framework Core, and SQL Server**.
 
-A fully dynamic **stock tracking and management system** built with **ASP.NET Core MVC, Entity Framework Core, and SQL Server**.
-
-This project provides a complete solution for managing **products, suppliers, categories, and stock movements** through a powerful and user-friendly **admin dashboard**.
+This project provides a complete solution for managing **products, suppliers, categories, and stock movements** through a powerful **admin dashboard**, while delivering a clean and responsive management experience.
 
 ---
 
-## 🎬 Demo
+### 🎬 Demo GIFs
 
-> Full system overview (dashboard, stock flow, CRUD operations)
+| 🖥️ System Overview |
+|-------------------|
+| ![](Screenshots/app_overview.gif) |
 
-![App Demo](Screenshots/app_overview.gif)
-
-### ⚡ AJAX Live Update
-![AJAX Demo](Screenshots/ajax_live_update.gif)
-
-### 🔄 Stock Movement Create
-![Stock Movement](Screenshots/stock_movement_create.gif)
+| ⚡ AJAX Live Updates | 🔄 Stock Movement |
+|---------------------|------------------|
+| ![](Screenshots/ajax_live_update.gif) | ![](Screenshots/stock_movement_create.gif) |
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
-- 📦 Product Management (CRUD)  
-- 🏢 Supplier Management (CRUD + status toggle)  
-- 🗂️ Category Management  
-- 🔄 Stock In / Stock Out System  
-- 📊 Real-time Dashboard Statistics  
-- ⚡ AJAX-based Status Updates (Active / Passive toggle)  
-- 🧾 Audit Log System (tracking all actions)  
-- 🔍 Advanced Filtering & Search (supplier panel)  
-- 📅 Date-based filtering & sorting  
-- 🎨 Modern UI (custom CSS + Bootstrap 5)  
+### 📦 Product Management
+- Full CRUD operations  
+- Category-based organization  
+- Stock quantity tracking  
+- Active / Passive status system  
+
+### 🏢 Supplier Management
+- Supplier CRUD operations  
+- Status toggle (Active / Passive)  
+- Contact & company information tracking  
+- Advanced filtering & search  
+
+### 🔄 Stock Movement System
+- Stock In / Stock Out operations  
+- Movement history tracking  
+- Real-time stock updates  
+- Data consistency with relational structure  
+
+### 📊 Dashboard & Analytics
+- Real-time system statistics  
+- Product, supplier and stock insights  
+- Clean and modern dashboard UI  
+
+### ⚡ System Features
+- AJAX-based dynamic updates  
+- Audit log system (action tracking)  
+- Date-based filtering & sorting  
+- Responsive and modern UI (Bootstrap 5)  
 
 ---
 
@@ -48,113 +62,157 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 ---
 
-## 🎥 Feature Demonstrations
+## 📸 Screenshots
 
-### 📦 Product & Stock Management
+### 📊 Dashboard
 
-| Product List | Product Create |
-|--------------|----------------|
-| ![](Screenshots/product_list.png) | ![](Screenshots/product_create.png) |
-
-| Product Details | Product Edit |
-|-----------------|--------------|
-| ![](Screenshots/product_details.png) | ![](Screenshots/product_edit.png) |
+![](Screenshots/dashboard.png)
 
 ---
 
-### 🔄 Stock Movement System
+### 📦 Product Management
 
-| Stock List | Create Movement |
-|------------|-----------------|
-| ![](Screenshots/stock_movement_list.png) | ![](Screenshots/stock_movement_create.png) |
+| List | Create | Edit |
+|------|--------|------|
+| ![](Screenshots/product_list.png) | ![](Screenshots/product_create.png) | ![](Screenshots/product_edit.png) |
 
-| Details | Edit |
-|---------|------|
-| ![](Screenshots/stock_movement_details.png) | ![](Screenshots/stock_movement_edit.png) |
+---
+
+### 🔄 Stock Movement
+
+| List | Create | Details |
+|------|--------|---------|
+| ![](Screenshots/stock_movement_list.png) | ![](Screenshots/stock_movement_create.png) | ![](Screenshots/stock_movement_details.png) |
 
 ---
 
 ### 🏢 Supplier Management
 
-| Supplier List | Create |
-|---------------|--------|
-| ![](Screenshots/supplier_list.png) | ![](Screenshots/supplier_create.png) |
-
-| Details | Edit |
-|---------|------|
-| ![](Screenshots/supplier_details.png) | ![](Screenshots/supplier_edit.png) |
+| List | Create | Edit |
+|------|--------|------|
+| ![](Screenshots/supplier_list.png) | ![](Screenshots/supplier_create.png) | ![](Screenshots/supplier_edit.png) |
 
 ---
 
 ### 🗂️ Category Management
 
-| Category List | Create |
-|---------------|--------|
-| ![](Screenshots/category_list.png) | ![](Screenshots/category_create.png) |
-
-| Details | Edit |
-|---------|------|
-| ![](Screenshots/category_details.png) | ![](Screenshots/category_edit.png) |
+| List | Create | Edit |
+|------|--------|------|
+| ![](Screenshots/category_list.png) | ![](Screenshots/category_create.png) | ![](Screenshots/category_edit.png) |
 
 ---
 
-### 📊 Dashboard Overview
+### 🧠 Database Diagram
 
-![Dashboard](Screenshots/dashboard.png)
+![](Screenshots/database_diagram.png)
 
 ---
 
-## 🧠 Database Design
+## 🚀 Key Highlights
 
-> Relational database structure designed for scalability
+- Fully dynamic stock management system  
+- Real-time AJAX interactions  
+- Clean and scalable database design  
+- Audit logging system for tracking actions  
+- Modern admin panel UI  
 
-![Database Diagram](Screenshots/database_diagram.png)
+---
+
+## 🏗️ Architecture
+
+This project follows a **layered MVC architecture**:
+
+- Controllers → Handle application flow  
+- Models → Represent database entities (Entity Framework Core)  
+- Views → Razor-based UI  
+- Database → SQL Server relational structure  
+
+The system is designed with **clean architecture principles and scalability in mind**.
+
+---
+
+## 🔄 How It Works
+
+### 👤 User / Admin Flow
+1. Admin accesses the dashboard  
+2. Performs CRUD operations (products, suppliers, categories)  
+3. Stock movements update quantities in real-time  
+4. Changes are reflected instantly via AJAX  
+
+### 🔄 Stock Logic
+- Stock In → increases quantity  
+- Stock Out → decreases quantity  
+- All actions are logged in the system  
 
 ---
 
 ## ⚙️ Installation
 
+### 1. Clone the repository
 ```bash
 git clone https://github.com/MertcanKayirici/StockManagementSystem.git
 ```
-1️⃣ Database Setup
+### 2. Open the project
 
-Run SQL script:
+Open the project using Visual Studio / VS Code
 
+### 3. Create database
+
+Create a database named:
+```bash
+StockTrackingDb
+```
+### 4. Run SQL script
+
+Execute:
+```bash
 /Database/StockTrackingDb.sql
-2️⃣ Configure Connection String
+```
+### 5. Configure connection string
+
+Update your appsettings.json:
+```xml
 "ConnectionStrings": {
-  "DefaultConnection": "Server=.;Database=StockTrackingDb;Trusted_Connection=True;"
+  "DefaultConnection": "Server=.;Database=StockTrackingDb;Trusted_Connection=True;TrustServerCertificate=True;"
 }
-3️⃣ Run Project
+```
+> ⚠️ You may need to adjust the server name depending on your local SQL Server configuration.
+
+### 6. Run the project
 dotnet run
 
 ---
 
-## 📌 Architecture Highlights
-- Layered MVC structure
-- Entity relationships (Foreign Keys & constraints)
-- Clean UI component system
-- AJAX-driven interactions
-- Logging & tracking system
+## 📌 Important Notes
+- Ensure SQL Server is running
+- Update the connection string if needed
+- Do not share sensitive credentials
+- 
+---
+
+## 📂 Project Structure
+Controllers → MVC Controllers
+Models → Entity Framework Models
+Views → Razor Views
+Database → SQL Scripts
+Screenshots → Images & GIFs
 
 ---
 
-## 🚀 Future Improvements
-📊 Chart.js dashboard (monthly / yearly stats)
-🔔 Notification system (low stock alerts)
-📱 Mobile-first UI improvements
-🔐 Role-based authentication
-📡 RESTful API layer
-
----
-
-## 👨‍💻 Author
+## 👨‍💻 Developer
 
 Mertcan Kayırıcı
 
-GitHub: https://github.com/MertcanKayirici
-LinkedIn: https://www.linkedin.com/in/mertcankayirici
-⭐️ Support
+Backend-focused Full Stack Developer
+ASP.NET Core & SQL Server
 
-If you like this project, don't forget to star ⭐ the repository.
+---
+
+## ⭐ Project Purpose
+
+This project was developed to simulate a real-world stock tracking system, focusing on:
+
+- Clean architecture
+- Scalable database design
+- Admin panel usability
+- Real-time data management
