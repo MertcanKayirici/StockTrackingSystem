@@ -6,15 +6,17 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 ---
 
-### 🎬 Demo GIFs
+## 🎬 Demo GIFs
+
+> Overview of system features and real-time interactions
 
 | 🖥️ System Overview |
 |-------------------|
-| ![](Screenshots/app_overview.gif) |
+| ![Application Overview](Screenshots/app_overview.gif) |
 
 | ⚡ AJAX Live Updates | 🔄 Stock Movement |
 |---------------------|------------------|
-| ![](Screenshots/ajax_live_update.gif) | ![](Screenshots/stock_movement_create.gif) |
+| ![AJAX Live Update](Screenshots/ajax_live_update.gif) | ![Stock Movement Create](Screenshots/stock_movement_create.gif) |
 
 ---
 
@@ -66,7 +68,7 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 ### 📊 Dashboard
 
-![](Screenshots/dashboard.png)
+![Dashboard Overview](Screenshots/dashboard.png)
 
 ---
 
@@ -74,7 +76,7 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 | List | Create | Edit |
 |------|--------|------|
-| ![](Screenshots/product_list.png) | ![](Screenshots/product_create.png) | ![](Screenshots/product_edit.png) |
+| ![Product List](Screenshots/product_list.png) | ![Product Create](Screenshots/product_create.png) | ![Product Edit](Screenshots/product_edit.png) |
 
 ---
 
@@ -82,7 +84,7 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 | List | Create | Details |
 |------|--------|---------|
-| ![](Screenshots/stock_movement_list.png) | ![](Screenshots/stock_movement_create.png) | ![](Screenshots/stock_movement_details.png) |
+| ![Stock Movement List](Screenshots/stock_movement_list.png) | ![Stock Movement Create](Screenshots/stock_movement_create.png) | ![Stock Movement Details](Screenshots/stock_movement_details.png) |
 
 ---
 
@@ -90,7 +92,7 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 | List | Create | Edit |
 |------|--------|------|
-| ![](Screenshots/supplier_list.png) | ![](Screenshots/supplier_create.png) | ![](Screenshots/supplier_edit.png) |
+| ![Supplier List](Screenshots/supplier_list.png) | ![Supplier Create](Screenshots/supplier_create.png) | ![Supplier Edit](Screenshots/supplier_edit.png) |
 
 ---
 
@@ -98,13 +100,13 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 | List | Create | Edit |
 |------|--------|------|
-| ![](Screenshots/category_list.png) | ![](Screenshots/category_create.png) | ![](Screenshots/category_edit.png) |
+| ![Category List](Screenshots/category_list.png) | ![Category Create](Screenshots/category_create.png) | ![Category Edit](Screenshots/category_edit.png) |
 
 ---
 
 ### 🧠 Database Diagram
 
-![](Screenshots/database_diagram.png)
+![Database Diagram](Screenshots/database_diagram.png)
 
 ---
 
@@ -171,7 +173,7 @@ Execute:
 ### 5. Configure connection string
 
 Update your appsettings.json:
-```xml
+```json
 "ConnectionStrings": {
   "DefaultConnection": "Server=.;Database=StockTrackingDb;Trusted_Connection=True;TrustServerCertificate=True;"
 }
@@ -179,7 +181,7 @@ Update your appsettings.json:
 > ⚠️ You may need to adjust the server name depending on your local SQL Server configuration.
 
 ### 6. Run the project
-dotnet run
+Run the project using **Visual Studio (F5)** 🚀
 
 ---
 
@@ -187,15 +189,15 @@ dotnet run
 - Ensure SQL Server is running
 - Update the connection string if needed
 - Do not share sensitive credentials
-- 
+ 
 ---
 
 ## 📂 Project Structure
-Controllers → MVC Controllers
-Models → Entity Framework Models
-Views → Razor Views
-Database → SQL Scripts
-Screenshots → Images & GIFs
+- Controllers → MVC Controllers  
+- Models → Entity Framework Models  
+- Views → Razor Views  
+- Database → SQL Scripts  
+- Screenshots → Images & GIFs  
 
 ---
 
@@ -216,3 +218,5 @@ This project was developed to simulate a real-world stock tracking system, focus
 - Scalable database design
 - Admin panel usability
 - Real-time data management
+
+---
