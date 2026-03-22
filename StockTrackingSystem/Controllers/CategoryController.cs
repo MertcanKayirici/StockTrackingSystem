@@ -153,39 +153,46 @@ namespace StockTrackingSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
-        {
-            var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (category == null)
-                return NotFound();
-
-            return View(category);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await _context.Categories
                 .Include(x => x.Products)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (category == null)
-                return NotFound();
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Kategori bulunamadı."
+                });
+            }
 
             if (category.Products != null && category.Products.Any())
             {
-                TempData["ErrorMessage"] = "Bu kategoriye bağlı ürünler olduğu için silinemez.";
-                return RedirectToAction(nameof(Index));
+                return Json(new
+                {
+                    success = false,
+                    message = "Bu kategoriye bağlı ürünler olduğu için silinemez."
+                });
             }
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Kategori başarıyla silindi.";
-            return RedirectToAction(nameof(Index));
+            var totalCount = await _context.Categories.CountAsync();
+            var activeCount = await _context.Categories.CountAsync(x => x.IsActive);
+            var passiveCount = await _context.Categories.CountAsync(x => !x.IsActive);
+
+            return Json(new
+            {
+                success = true,
+                message = "Kategori başarıyla silindi.",
+                totalCount,
+                activeCount,
+                passiveCount
+            });
         }
 
         [HttpPost]

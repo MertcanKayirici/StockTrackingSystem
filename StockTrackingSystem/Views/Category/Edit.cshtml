@@ -4,34 +4,341 @@
     ViewData["Title"] = "Kategori Düzenle";
 }
 
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .edit-page-card,
+    .edit-form-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .edit-page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .edit-page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .edit-page-subtitle {
+        color: #64748b;
+        font-size: 1.02rem;
+        margin-bottom: 0;
+    }
+
+    .edit-form-card {
+        overflow: hidden;
+    }
+
+    .edit-form-header {
+        padding: 24px 28px 12px 28px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .edit-form-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .edit-form-text {
+        color: #64748b;
+        margin-bottom: 0;
+        font-size: 0.96rem;
+    }
+
+    .edit-form-body {
+        padding: 28px;
+    }
+
+    .form-label {
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .form-control,
+    .form-select,
+    textarea.form-control {
+        min-height: 54px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+        padding-left: 16px;
+        padding-right: 16px;
+        background: #fff;
+        font-size: 1rem;
+        box-shadow: none;
+        transition: all 0.2s ease;
+    }
+
+    textarea.form-control {
+        min-height: 130px;
+        padding-top: 14px;
+        resize: vertical;
+    }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea.form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
+        }
+
+    .form-hint {
+        color: #64748b;
+        font-size: 0.88rem;
+        margin-top: 8px;
+    }
+
+    .validation-summary-errors,
+    .alert-danger {
+        border-radius: 16px;
+        border: 0;
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+    }
+
+    .status-box {
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 16px 18px;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+    }
+
+    .status-box-left h6 {
+        margin: 0 0 4px 0;
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 1rem;
+    }
+
+    .status-box-left p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .modern-switch {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 30px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+        .modern-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .modern-switch .slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: #e5e7eb;
+            transition: .25s ease;
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+        }
+
+            .modern-switch .slider:before {
+                content: "";
+                position: absolute;
+                height: 22px;
+                width: 22px;
+                left: 4px;
+                top: 4px;
+                background: white;
+                transition: .25s ease;
+                border-radius: 50%;
+                box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+            }
+
+        .modern-switch input:checked + .slider {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+        }
+
+            .modern-switch input:checked + .slider:before {
+                transform: translateX(24px);
+            }
+
+    .status-text {
+        min-width: 56px;
+        text-align: right;
+        font-size: 0.92rem;
+        font-weight: 800;
+    }
+
+    .status-active {
+        color: #16a34a;
+    }
+
+    .status-passive {
+        color: #ef4444;
+    }
+
+    .meta-card {
+        border: 1px solid #eef2f7;
+        background: #f8fafc;
+        border-radius: 18px;
+        padding: 18px 20px;
+        height: 100%;
+    }
+
+    .meta-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .meta-value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .save-btn {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        font-size: 0.98rem;
+    }
+
+    .cancel-btn {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        font-size: 0.98rem;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+</style>
+
 <div class="container py-4">
-    <div class="mb-4">
-        <h2 class="fw-bold mb-1">Kategori Düzenle</h2>
-        <p class="text-muted mb-0">Kategori bilgilerini güncelleyebilirsiniz.</p>
+    <div class="edit-page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="edit-page-title">Kategori Düzenle</h1>
+                <p class="edit-page-subtitle">Kategori bilgilerini güncelleyerek yapını daha düzenli hale getirebilirsin.</p>
+            </div>
+
+            <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
+                <i class="bi bi-arrow-left me-2"></i>Listeye Dön
+            </a>
+        </div>
     </div>
 
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-4">
+    <div class="edit-form-card">
+        <div class="edit-form-header">
+            <div class="edit-form-title">Kategori Düzenleme Formu</div>
+            <p class="edit-form-text">Aşağıdaki alanları güncelleyerek kategori kaydını düzenleyebilirsin.</p>
+        </div>
+
+        <div class="edit-form-body">
             <form asp-action="Edit" method="post">
                 <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CreatedDate" />
 
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label fw-semibold"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger small"></span>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="meta-card">
+                            <div class="meta-label">Kategori ID</div>
+                            <div class="meta-value">#@Model.Id</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="meta-card">
+                            <div class="meta-label">Oluşturulma Tarihi</div>
+                            <div class="meta-value">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Description" class="form-label fw-semibold"></label>
-                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                    <span asp-validation-for="Description" class="text-danger small"></span>
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label">Kategori Adı</label>
+                        <input asp-for="Name" class="form-control" placeholder="Kategori adını giriniz" />
+                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-hint">Liste ekranında görünecek ana kategori ismi.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Kategori açıklamasını giriniz..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-hint">Kısa ve açıklayıcı bir özet yazman yeterli.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Durum</label>
+
+                        <div class="status-box">
+                            <div class="status-box-left">
+                                <h6>Kategori Durumu</h6>
+                                <p>Bu kategorinin aktif veya pasif olmasını buradan değiştirebilirsin.</p>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="modern-switch">
+                                    <input asp-for="IsActive" id="isActiveSwitch" />
+                                    <span class="slider"></span>
+                                </label>
+
+                                <span id="statusLabel" class="status-text @(Model.IsActive ? "status-active" : "status-passive")">
+                                    @(Model.IsActive ? "Aktif" : "Pasif")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-warning">Güncelle</button>
-                    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-warning save-btn">
+                        <i class="bi bi-check2-circle me-2"></i>Güncelle
+                    </button>
+
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary cancel-btn">
+                        <i class="bi bi-eye me-2"></i>Detaya Git
+                    </a>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
+                        <i class="bi bi-x-circle me-2"></i>Vazgeç
+                    </a>
                 </div>
             </form>
         </div>
@@ -40,4 +347,28 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const isActiveSwitch = document.getElementById("isActiveSwitch");
+        const statusLabel = document.getElementById("statusLabel");
+
+        function updateStatusLabel() {
+            if (!isActiveSwitch || !statusLabel) return;
+
+            if (isActiveSwitch.checked) {
+                statusLabel.textContent = "Aktif";
+                statusLabel.classList.remove("status-passive");
+                statusLabel.classList.add("status-active");
+            } else {
+                statusLabel.textContent = "Pasif";
+                statusLabel.classList.remove("status-active");
+                statusLabel.classList.add("status-passive");
+            }
+        }
+
+        if (isActiveSwitch) {
+            updateStatusLabel();
+            isActiveSwitch.addEventListener("change", updateStatusLabel);
+        }
+    </script>
 }
