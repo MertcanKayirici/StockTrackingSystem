@@ -185,28 +185,6 @@
             font-size: 0.95rem;
         }
 
-        .footer-brand {
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .footer-links {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-            .footer-links a {
-                text-decoration: none;
-                color: #64748b;
-                font-weight: 600;
-                transition: color 0.2s ease;
-            }
-
-                .footer-links a:hover {
-                    color: #2563eb;
-                }
 
         @@media (max-width: 991.98px) {
             .nav-shell {
@@ -235,6 +213,105 @@
             .quick-btn {
                 justify-content: center;
             }
+        }
+
+        .app-footer {
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid #e2e8f0;
+            backdrop-filter: blur(8px);
+            padding-top: 20px;
+            padding-bottom: 16px;
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding-bottom: 14px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            font-size: 1rem;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+        }
+
+        .footer-brand-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .footer-brand-subtitle {
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.1;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+            .footer-right a {
+                text-decoration: none;
+                color: #64748b;
+                font-weight: 600;
+                transition: color 0.2s ease;
+            }
+
+                .footer-right a:hover {
+                    color: #2563eb;
+                }
+
+        .footer-bottom {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.88rem;
+            color: #64748b;
+        }
+
+        @@media (max-width: 768px) {
+            .footer-inner, .footer-bottom
+
+        {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .footer-right {
+            gap: 12px;
+        }
+
         }
     </style>
 </head>
@@ -313,16 +390,28 @@
     <footer class="app-footer">
         <div class="container page-container">
             <div class="footer-inner">
-                <div>
-                    <span class="footer-brand">StockTrackingSystem</span>
-                    <span> • 2026 Yönetim Paneli</span>
+                <div class="footer-left">
+                    <div class="footer-brand">
+                        <span class="footer-logo">
+                            <i class="bi bi-box-seam-fill"></i>
+                        </span>
+                        <div>
+                            <div class="footer-brand-title">StockTrackingSystem</div>
+                            <div class="footer-brand-subtitle">Inventory Management Panel</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="footer-links">
+                <div class="footer-right">
                     <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                     <a asp-controller="Product" asp-action="Index">Ürünler</a>
                     <a asp-controller="StockMovement" asp-action="Index">Hareketler</a>
                 </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© 2026 StockTrackingSystem</span>
+                <span>Developed by Mertcan</span>
             </div>
         </div>
     </footer>
