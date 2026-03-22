@@ -1,0 +1,41 @@
+﻿@model StockTrackingSystem.Models.Category
+
+@{
+    ViewData["Title"] = "Kategori Detayı";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Kategori Detayı</h2>
+        <p class="text-muted mb-0">Kategoriye ait bilgileri görüntüleyebilirsiniz.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <strong>ID:</strong> @Model.Id
+            </div>
+
+            <div class="mb-3">
+                <strong>Kategori Adı:</strong> @Model.Name
+            </div>
+
+            <div class="mb-3">
+                <strong>Açıklama:</strong> @Model.Description
+            </div>
+
+            <div class="mb-3">
+                <strong>Oluşturulma Tarihi:</strong> @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
+            </div>
+
+            <div class="mb-4">
+                <strong>Bağlı Ürün Sayısı:</strong> @(Model.Products?.Count ?? 0)
+            </div>
+
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+                <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+            </div>
+        </div>
+    </div>
+</div>

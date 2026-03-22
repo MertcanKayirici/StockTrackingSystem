@@ -1,25 +1,702 @@
 ﻿@model List<StockTrackingSystem.Models.Category>
 
-<h2>Categories</h2>
+@{
+    ViewData["Title"] = "Kategori Yönetimi";
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Created Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-                <td>@item.CreatedDate</td>
-            </tr>
+    var currentSearch = ViewBag.Search as string;
+    var currentStatus = ViewBag.StatusFilter as string;
+    var currentSort = ViewBag.SortOrder as string;
+    var currentStartDate = ViewBag.StartDate as string;
+    var currentEndDate = ViewBag.EndDate as string;
+
+    int totalCount = ViewBag.TotalCount != null ? (int)ViewBag.TotalCount : 0;
+    int activeCount = ViewBag.ActiveCount != null ? (int)ViewBag.ActiveCount : 0;
+    int passiveCount = ViewBag.PassiveCount != null ? (int)ViewBag.PassiveCount : 0;
+    int filteredCount = ViewBag.FilteredCount != null ? (int)ViewBag.FilteredCount : 0;
+}
+
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .page-card,
+    .stats-card,
+    .filter-card,
+    .table-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+
+    .add-btn {
+        border-radius: 999px;
+        padding: 14px 28px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .stats-card {
+        padding: 24px;
+        height: 100%;
+    }
+
+    .stats-label {
+        color: #64748b;
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .stats-value {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        color: #0f172a;
+    }
+
+        .stats-value.active {
+            color: #16a34a;
         }
-    </tbody>
-</table>
+
+        .stats-value.passive {
+            color: #ef4444;
+        }
+
+        .stats-value.filtered {
+            color: #2563eb;
+        }
+
+    .filter-card {
+        padding: 28px;
+        margin-bottom: 24px;
+    }
+
+    .filter-title {
+        display: block;
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 54px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+        padding-left: 16px;
+        padding-right: 16px;
+        background: #fff;
+        font-size: 1rem;
+        box-shadow: none;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
+        }
+
+    .btn-soft {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 22px;
+        font-weight: 700;
+    }
+
+    .table-card {
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 26px 28px 16px 28px;
+    }
+
+    .table-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .table-subtitle {
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
+    .category-table {
+        margin-bottom: 0;
+    }
+
+        .category-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 800;
+            border-bottom: 1px solid #edf2f7;
+            padding-top: 18px;
+            padding-bottom: 18px;
+            white-space: nowrap;
+        }
+
+        .category-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+            .category-table tbody tr:hover {
+                background: #f8fbff;
+                transform: translateY(-1px);
+            }
+
+        .category-table tbody td {
+            vertical-align: middle;
+            padding-top: 18px;
+            padding-bottom: 18px;
+            border-color: #f1f5f9;
+        }
+
+    .category-name {
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 4px;
+        font-size: 1rem;
+    }
+
+    .category-desc {
+        color: #64748b;
+        font-size: 0.93rem;
+        max-width: 420px;
+    }
+
+    .date-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 112px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #334155;
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+
+    .status-switch-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .modern-switch {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 30px;
+        margin: 0;
+    }
+
+        .modern-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .modern-switch .slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: #e5e7eb;
+            transition: .25s ease;
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+        }
+
+            .modern-switch .slider:before {
+                content: "";
+                position: absolute;
+                height: 22px;
+                width: 22px;
+                left: 4px;
+                top: 4px;
+                background: white;
+                transition: .25s ease;
+                border-radius: 50%;
+                box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+            }
+
+        .modern-switch input:checked + .slider {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+        }
+
+            .modern-switch input:checked + .slider:before {
+                transform: translateX(24px);
+            }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        min-width: 64px;
+        font-size: 0.94rem;
+        font-weight: 800;
+    }
+
+    .status-active {
+        color: #16a34a;
+    }
+
+    .status-passive {
+        color: #ef4444;
+    }
+
+    .action-btn {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.22s ease;
+        background: #fff;
+    }
+
+        .action-btn i {
+            font-size: 1.05rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        }
+
+    .btn-detail {
+        border: 1.5px solid #0ea5e9;
+        color: #0ea5e9;
+    }
+
+        .btn-detail:hover {
+            background: #0ea5e9;
+            color: white;
+        }
+
+    .btn-edit {
+        border: 1.5px solid #f59e0b;
+        color: #f59e0b;
+    }
+
+        .btn-edit:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+    .btn-delete {
+        border: 1.5px solid #ef4444;
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+    .quick-pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        color: #374151;
+    }
+
+    .empty-state {
+        padding: 70px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 2.4rem;
+        margin-bottom: 12px;
+    }
+
+    .loading-toggle {
+        opacity: 0.65;
+        pointer-events: none;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="page-title">Kategori Yönetimi</h1>
+                <p class="page-subtitle">Kategorileri filtrele, durumlarını görüntüle ve işlemleri hızlıca yönet.</p>
+            </div>
+
+            <a asp-controller="Category" asp-action="Create" class="btn btn-primary add-btn">
+                + Yeni Kategori
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-label">Toplam Kategori</div>
+                <div class="stats-value" id="totalCount">@totalCount</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-label">Aktif</div>
+                <div class="stats-value active" id="activeCount">@activeCount</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-label">Pasif</div>
+                <div class="stats-value passive" id="passiveCount">@passiveCount</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-label">Filtre Sonucu</div>
+                <div class="stats-value filtered" id="filteredCount">@filteredCount</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <form method="get" asp-action="Index" id="filterForm">
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <label class="filter-title">Arama</label>
+                    <input type="text"
+                           name="search"
+                           id="searchInput"
+                           value="@currentSearch"
+                           class="form-control"
+                           placeholder="Kategori adı veya açıklama ara..." />
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Durum</label>
+                    <select name="statusFilter" id="statusFilter" class="form-select">
+                        <option value="">Tümü</option>
+                        @if (currentStatus == "active")
+                        {
+                            <option value="active" selected>Aktif</option>
+                        }
+                        else
+                        {
+                            <option value="active">Aktif</option>
+                        }
+
+                        @if (currentStatus == "passive")
+                        {
+                            <option value="passive" selected>Pasif</option>
+                        }
+                        else
+                        {
+                            <option value="passive">Pasif</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Başlangıç Tarihi</label>
+                    <input type="date"
+                           name="startDate"
+                           id="startDate"
+                           value="@currentStartDate"
+                           class="form-control" />
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Bitiş Tarihi</label>
+                    <input type="date"
+                           name="endDate"
+                           id="endDate"
+                           value="@currentEndDate"
+                           class="form-control" />
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Sıralama</label>
+                    <select name="sortOrder" id="sortOrder" class="form-select">
+                        @if (string.IsNullOrEmpty(currentSort))
+                        {
+                            <option value="" selected>Yeniye göre</option>
+                        }
+                        else
+                        {
+                            <option value="">Yeniye göre</option>
+                        }
+
+                        @if (currentSort == "date_asc")
+                        {
+                            <option value="date_asc" selected>Eskiye göre</option>
+                        }
+                        else
+                        {
+                            <option value="date_asc">Eskiye göre</option>
+                        }
+
+                        @if (currentSort == "name_asc")
+                        {
+                            <option value="name_asc" selected>A-Z</option>
+                        }
+                        else
+                        {
+                            <option value="name_asc">A-Z</option>
+                        }
+
+                        @if (currentSort == "name_desc")
+                        {
+                            <option value="name_desc" selected>Z-A</option>
+                        }
+                        else
+                        {
+                            <option value="name_desc">Z-A</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-soft">Temizle</a>
+
+                @if (!string.IsNullOrWhiteSpace(currentSearch))
+                {
+                    <span class="quick-pill">Arama: @currentSearch</span>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(currentStatus))
+                {
+                    <span class="quick-pill">
+                        Durum: @(currentStatus == "active" ? "Aktif" : "Pasif")
+                    </span>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(currentStartDate))
+                {
+                    <span class="quick-pill">Başlangıç: @currentStartDate</span>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(currentEndDate))
+                {
+                    <span class="quick-pill">Bitiş: @currentEndDate</span>
+                }
+            </div>
+        </form>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="table-card">
+        <div class="table-header d-flex justify-content-between align-items-center">
+            <div>
+                <div class="table-title">Kategori Listesi</div>
+                <p class="table-subtitle mb-0">
+                    <span id="filteredText">@filteredCount</span> kayıt listeleniyor
+                </p>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table category-table align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Kategori</th>
+                            <th>Durum</th>
+                            <th>Oluşturulma</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="row-@item.Id">
+                                <td class="ps-4">
+                                    <div class="category-name">@item.Name</div>
+                                    <div class="category-desc">
+                                        @(string.IsNullOrWhiteSpace(item.Description)
+                                                                        ? "Açıklama bulunmuyor."
+                                                                        : item.Description.Length > 70
+                                                                        ? item.Description.Substring(0, 70) + "..."
+                                                                        : item.Description)
+                            </div>
+                        </td>
+
+                                <td>
+                                    <div class="status-switch-wrap">
+                                        <label class="modern-switch">
+                                            <input type="checkbox"
+                                                   class="status-toggle"
+                                                   data-id="@item.Id"
+                                                   @(item.IsActive ? "checked" : null) />
+                                            <span class="slider"></span>
+                                        </label>
+
+                                        <span class="status-badge @(item.IsActive ? "status-active" : "status-passive")"
+                                              id="statusText-@item.Id">
+                                            @(item.IsActive ? "Aktif" : "Pasif")
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="date-badge">
+                                        @item.CreatedDate.ToString("dd.MM.yyyy")
+                                    </span>
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-detail" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn-edit" title="Düzenle">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="action-btn btn-delete" title="Sil">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">📁</div>
+                <h5 class="fw-bold">Kategori bulunamadı</h5>
+                <p class="text-muted mb-3">Filtrelere uyan bir kayıt bulunmuyor.</p>
+                <a asp-action="Index" class="btn btn-outline-dark rounded-pill px-4">Filtreleri Temizle</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const filterForm = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        const statusFilter = document.getElementById("statusFilter");
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        const sortOrder = document.getElementById("sortOrder");
+
+        let debounceTimer;
+
+        function submitFilterForm() {
+            filterForm.submit();
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    submitFilterForm();
+                }, 400);
+            });
+        }
+
+        if (statusFilter) statusFilter.addEventListener("change", submitFilterForm);
+        if (startDate) startDate.addEventListener("change", submitFilterForm);
+        if (endDate) endDate.addEventListener("change", submitFilterForm);
+        if (sortOrder) sortOrder.addEventListener("change", submitFilterForm);
+
+        document.querySelectorAll(".status-toggle").forEach(toggle => {
+            toggle.addEventListener("change", async function () {
+                const checkbox = this;
+                const categoryId = checkbox.dataset.id;
+                const statusText = document.getElementById(`statusText-${categoryId}`);
+                const row = document.getElementById(`row-${categoryId}`);
+
+                checkbox.classList.add("loading-toggle");
+                if (row) row.classList.add("loading-toggle");
+
+                try {
+                    const response = await fetch(`/Category/ToggleStatus?id=${categoryId}`, {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        checkbox.checked = !checkbox.checked;
+                        alert(result.message);
+                        return;
+                    }
+
+                    statusText.textContent = result.isActive ? "Aktif" : "Pasif";
+                    statusText.classList.remove("status-active", "status-passive");
+                    statusText.classList.add(result.isActive ? "status-active" : "status-passive");
+
+                    document.getElementById("totalCount").textContent = result.totalCount;
+                    document.getElementById("activeCount").textContent = result.activeCount;
+                    document.getElementById("passiveCount").textContent = result.passiveCount;
+                }
+                catch (error) {
+                    checkbox.checked = !checkbox.checked;
+                    alert("Durum güncellenirken hata oluştu.");
+                }
+                finally {
+                    checkbox.classList.remove("loading-toggle");
+                    if (row) row.classList.remove("loading-toggle");
+                }
+            });
+        });
+    </script>
+}

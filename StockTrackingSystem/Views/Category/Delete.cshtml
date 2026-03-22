@@ -1,0 +1,35 @@
+﻿@model StockTrackingSystem.Models.Category
+
+@{
+    ViewData["Title"] = "Kategori Sil";
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold text-danger mb-1">Kategori Sil</h2>
+        <p class="text-muted mb-0">Bu işlemi geri alamazsınız.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <h5 class="mb-3">Bu kategoriyi silmek istediğine emin misin?</h5>
+
+            <div class="mb-3">
+                <strong>Kategori Adı:</strong> @Model.Name
+            </div>
+
+            <div class="mb-4">
+                <strong>Açıklama:</strong> @Model.Description
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                    <a asp-action="Index" class="btn btn-secondary">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
