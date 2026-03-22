@@ -1,0 +1,238 @@
+﻿@model StockTrackingSystem.Models.StockMovement
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Stok Hareketi Ekle";
+    var products = ViewBag.Products as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .page-card, .form-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1.02rem;
+        margin-bottom: 0;
+    }
+
+    .form-card {
+        overflow: hidden;
+    }
+
+    .form-header {
+        padding: 24px 28px 12px 28px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .form-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .form-text {
+        color: #64748b;
+        margin-bottom: 0;
+        font-size: 0.96rem;
+    }
+
+    .form-body {
+        padding: 28px;
+    }
+
+    .form-label {
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .form-control, .form-select, textarea.form-control {
+        min-height: 54px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+        padding-left: 16px;
+        padding-right: 16px;
+        background: #fff;
+        font-size: 1rem;
+        box-shadow: none;
+        transition: all 0.2s ease;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        padding-top: 14px;
+        resize: vertical;
+    }
+
+        .form-control:focus, .form-select:focus, textarea.form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
+        }
+
+    .form-hint {
+        color: #64748b;
+        font-size: 0.88rem;
+        margin-top: 8px;
+    }
+
+    .alert-danger {
+        border-radius: 16px;
+        border: 0;
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+    }
+
+    .movement-type-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        background: #f8fafc;
+        padding: 16px 18px;
+    }
+
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .save-btn, .cancel-btn {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        font-size: 0.98rem;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="page-title">Stok Hareketi Ekle</h1>
+                <p class="page-subtitle">Ürün için giriş veya çıkış hareketi oluşturarak stok miktarını güncelleyebilirsin.</p>
+            </div>
+
+            <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
+                <i class="bi bi-arrow-left me-2"></i>Listeye Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="form-header">
+            <div class="form-title">Hareket Bilgileri</div>
+            <p class="form-text">Ürün, hareket tipi, miktar ve açıklama bilgilerini doldur.</p>
+        </div>
+
+        <div class="form-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label asp-for="ProductId" class="form-label">Ürün</label>
+                        <select asp-for="ProductId" class="form-select">
+                            <option value="">Ürün Seçiniz</option>
+                            @foreach (var product in products)
+                            {
+                                <option value="@product.Value">@product.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="ProductId" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="MovementType" class="form-label">Hareket Tipi</label>
+                        <select asp-for="MovementType" class="form-select">
+                            <option value="In">Giriş (In)</option>
+                            <option value="Out">Çıkış (Out)</option>
+                        </select>
+                        <span asp-validation-for="MovementType" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Quantity" class="form-label">Miktar</label>
+                        <input asp-for="Quantity" class="form-control" type="number" min="1" />
+                        <span asp-validation-for="Quantity" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="UnitPrice" class="form-label">Birim Fiyat</label>
+                        <input asp-for="UnitPrice" class="form-control" type="number" min="0" step="0.01" />
+                        <span asp-validation-for="UnitPrice" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-hint">Girersen ürünün birim fiyatı da güncellenir.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="ReferenceCode" class="form-label">Referans Kodu</label>
+                        <input asp-for="ReferenceCode" class="form-control" placeholder="Örn: REF-1001" />
+                        <span asp-validation-for="ReferenceCode" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="MovementDate" class="form-label">Hareket Tarihi</label>
+                        <input asp-for="MovementDate" class="form-control" type="datetime-local"
+                               value="@Model.MovementDate.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="MovementDate" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="movement-type-card h-100 d-flex flex-column justify-content-center">
+                            <strong class="mb-2">Hareket Mantığı</strong>
+                            <span class="text-muted">Giriş seçilirse stok artar, çıkış seçilirse stok azalır.</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Hareketle ilgili kısa açıklama giriniz..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary save-btn">
+                        <i class="bi bi-check2-circle me-2"></i>Kaydet
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
+                        <i class="bi bi-x-circle me-2"></i>Vazgeç
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -465,6 +465,110 @@
         font-size: 2.4rem;
         margin-bottom: 12px;
     }
+
+    .product-thumb {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e2e8f0;
+        box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+        background: #fff;
+    }
+
+    .product-thumb-placeholder {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        background: #f8fafc;
+        font-size: 1rem;
+    }
+
+    .delete-modal-content {
+        border: 0;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .delete-modal-header {
+        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 24px;
+    }
+
+    .delete-modal-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .delete-modal-body {
+        padding: 28px 24px 18px 24px;
+        text-align: center;
+    }
+
+    .delete-icon-wrap {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        margin: 0 auto 16px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+        font-size: 2rem;
+    }
+
+    .delete-main-text {
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .delete-sub-text {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+
+    .delete-product-name {
+        color: #ef4444;
+        font-weight: 800;
+    }
+
+    .delete-modal-footer {
+        border-top: 0;
+        padding: 0 24px 24px 24px;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .delete-cancel-btn,
+    .delete-confirm-btn {
+        min-height: 50px;
+        border-radius: 16px;
+        padding: 0 22px;
+        font-weight: 700;
+    }
+
+    .delete-confirm-btn {
+        background: #ef4444;
+        border-color: #ef4444;
+    }
+
+        .delete-confirm-btn:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+    .delete-loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
 </style>
 
 <div class="container py-4">
@@ -714,7 +818,8 @@
                 <table class="table product-table align-middle">
                     <thead>
                         <tr>
-                            <th class="ps-4">Ürün</th>
+                            <th class="ps-4">Görsel</th>
+                            <th>Ürün</th>
                             <th>Kategori</th>
                             <th>Fiyat</th>
                             <th>Stok</th>
@@ -731,13 +836,26 @@
 
                             <tr id="row-@item.Id">
                                 <td class="ps-4">
-                                    <div class="product-name">@item.Name</div>
-                                    <div class="product-desc">
-                                        @(string.IsNullOrWhiteSpace(item.Description)
-                                                                        ? "Açıklama bulunmuyor."
-                                                                        : item.Description.Length > 55
-                                                                        ? item.Description.Substring(0, 55) + "..."
-                                                                        : item.Description)
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.Name" class="product-thumb" />
+                                    }
+                                    else
+                                    {
+                                        <div class="product-thumb product-thumb-placeholder">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    }
+                            </td>
+
+                            <td>
+                                <div class="product-name">@item.Name</div>
+                                <div class="product-desc">
+                                    @(string.IsNullOrWhiteSpace(item.Description)
+                                                                    ? "Açıklama bulunmuyor."
+                                                                    : item.Description.Length > 55
+                                                                    ? item.Description.Substring(0, 55) + "..."
+                                                                    : item.Description)
                             </div>
                         </td>
 
@@ -798,18 +916,53 @@
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
-                                        <a href="javascript:void(0);"
-                                           class="action-btn btn-delete"
-                                           title="Sil"
-                                           onclick="deleteProduct(@item.Id, '@item.Name')">
+                                        <button type="button"
+                                                class="action-btn btn-delete border-0"
+                                                title="Sil"
+                                                onclick="openDeleteModal(@item.Id, '@item.Name.Replace("'", "\\'")')">
                                             <i class="bi bi-trash"></i>
-                                        </a>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+            </div>
+            <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content delete-modal-content">
+                        <div class="modal-header delete-modal-header">
+                            <h5 class="modal-title delete-modal-title">Ürünü Sil</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                        </div>
+
+                        <div class="modal-body delete-modal-body">
+                            <div class="delete-icon-wrap">
+                                <i class="bi bi-trash3-fill"></i>
+                            </div>
+
+                            <div class="delete-main-text">
+                                Bu ürünü silmek istediğine emin misin?
+                            </div>
+
+                            <p class="delete-sub-text">
+                                <span id="deleteProductName" class="delete-product-name"></span>
+                                adlı ürün silinecek. Kayıtla birlikte ürün görseli de klasörden kaldırılacak.
+                            </p>
+                        </div>
+
+                        <div class="modal-footer delete-modal-footer">
+                            <button type="button" class="btn btn-outline-secondary delete-cancel-btn" data-bs-dismiss="modal">
+                                Vazgeç
+                            </button>
+
+                            <button type="button" class="btn btn-danger delete-confirm-btn" id="confirmDeleteBtn">
+                                Evet, Sil
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         }
         else
@@ -897,12 +1050,35 @@
     </script>
 
     <script>
-        async function deleteProduct(id, name) {
-            const ok = confirm(`"${name}" ürününü silmek istediğinize emin misiniz? Bu işlem görseli de klasörden siler.`);
-            if (!ok) return;
+        let selectedProductId = null;
+        let deleteModalInstance = null;
+
+        function openDeleteModal(id, name) {
+            selectedProductId = id;
+
+            const deleteNameEl = document.getElementById("deleteProductName");
+            const modalEl = document.getElementById("deleteProductModal");
+
+            if (deleteNameEl) {
+                deleteNameEl.textContent = `"${name}"`;
+            }
+
+            if (!deleteModalInstance) {
+                deleteModalInstance = new bootstrap.Modal(modalEl);
+            }
+
+            deleteModalInstance.show();
+        }
+
+        async function deleteSelectedProduct() {
+            if (!selectedProductId) return;
+
+            const confirmBtn = document.getElementById("confirmDeleteBtn");
+            confirmBtn.classList.add("delete-loading");
+            confirmBtn.textContent = "Siliniyor...";
 
             try {
-                const response = await fetch(`/Product/Delete?id=${id}`, {
+                const response = await fetch(`/Product/Delete?id=${selectedProductId}`, {
                     method: "POST",
                     headers: {
                         "X-Requested-With": "XMLHttpRequest"
@@ -916,15 +1092,28 @@
                     return;
                 }
 
-                const row = document.getElementById(`row-${id}`);
-                if (row) row.remove();
+                const row = document.getElementById(`row-${selectedProductId}`);
+                if (row) {
+                    row.remove();
+                }
 
-                alert(result.message);
+                if (deleteModalInstance) {
+                    deleteModalInstance.hide();
+                }
+
                 location.reload();
             }
-            catch {
+            catch (error) {
                 alert("Silme işlemi sırasında hata oluştu.");
             }
+            finally {
+                confirmBtn.classList.remove("delete-loading");
+                confirmBtn.textContent = "Evet, Sil";
+                selectedProductId = null;
+            }
         }
+
+        document.getElementById("confirmDeleteBtn")?.addEventListener("click", deleteSelectedProduct);
     </script>
+
 }

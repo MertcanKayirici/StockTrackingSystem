@@ -1,0 +1,621 @@
+﻿@model List<StockTrackingSystem.Models.StockMovement>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Stok Hareketleri";
+    var products = ViewBag.Products as List<SelectListItem> ?? new List<SelectListItem>();
+
+    var currentSearch = ViewBag.Search as string;
+    int? currentProductId = ViewBag.ProductId as int?;
+    var currentMovementType = ViewBag.MovementType as string;
+    var currentStartDate = ViewBag.StartDate as string;
+    var currentEndDate = ViewBag.EndDate as string;
+}
+
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .page-card, .filter-card, .table-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1.02rem;
+        margin-bottom: 0;
+    }
+
+    .add-btn {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .filter-card {
+        padding: 28px;
+        margin-bottom: 24px;
+    }
+
+    .filter-title {
+        display: block;
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .form-control, .form-select {
+        min-height: 54px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+        padding-left: 16px;
+        padding-right: 16px;
+        background: #fff;
+        font-size: 1rem;
+        box-shadow: none;
+    }
+
+    .table-card {
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 24px 28px 12px;
+    }
+
+    .table-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .movement-table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-weight: 800;
+        border-bottom: 1px solid #edf2f7;
+        padding-top: 18px;
+        padding-bottom: 18px;
+    }
+
+    .movement-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+    .movement-table tbody td {
+        vertical-align: middle;
+        padding-top: 18px;
+        padding-bottom: 18px;
+        border-color: #f1f5f9;
+    }
+
+    .product-thumb {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e2e8f0;
+        box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+        background: #fff;
+    }
+
+    .product-thumb-placeholder {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+    }
+
+    .movement-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        font-weight: 800;
+    }
+
+    .movement-in {
+        background: rgba(22, 163, 74, 0.10);
+        color: #16a34a;
+    }
+
+    .movement-out {
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+    }
+
+    .date-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 140px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #334155;
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+
+    .clear-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 20px;
+        border-radius: 16px;
+        background: #f8fafc;
+        border: 1px solid #dbe2ea;
+        color: #334155;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .action-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.22s ease;
+        background: #fff;
+    }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        }
+
+    .btn-detail {
+        border: 1.5px solid #0ea5e9;
+        color: #0ea5e9;
+    }
+
+        .btn-detail:hover {
+            background: #0ea5e9;
+            color: white;
+        }
+
+    .btn-edit {
+        border: 1.5px solid #f59e0b;
+        color: #f59e0b;
+    }
+
+        .btn-edit:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+    .btn-delete {
+        border: 1.5px solid #ef4444;
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+    .delete-modal-content {
+        border: 0;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .delete-modal-header {
+        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 24px;
+    }
+
+    .delete-modal-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .delete-modal-body {
+        padding: 28px 24px 18px 24px;
+        text-align: center;
+    }
+
+    .delete-icon-wrap {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        margin: 0 auto 16px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+        font-size: 2rem;
+    }
+
+    .delete-main-text {
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .delete-sub-text {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+
+    .delete-item-name {
+        color: #ef4444;
+        font-weight: 800;
+    }
+
+    .delete-modal-footer {
+        border-top: 0;
+        padding: 0 24px 24px 24px;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .delete-cancel-btn,
+    .delete-confirm-btn {
+        min-height: 50px;
+        border-radius: 16px;
+        padding: 0 22px;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        padding: 70px 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="page-title">Stok Hareketleri</h1>
+                <p class="page-subtitle">Giriş ve çıkış kayıtlarını filtreleyebilir ve yeni hareket ekleyebilirsin.</p>
+            </div>
+
+            <a asp-action="Create" class="btn btn-primary add-btn">
+                <i class="bi bi-plus-lg me-2"></i>Yeni Hareket
+            </a>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <form method="get" asp-action="Index" id="filterForm">
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <label class="filter-title">Arama</label>
+                    <input type="text" name="search" id="searchInput" value="@currentSearch" class="form-control" placeholder="Ürün, referans kodu veya açıklama ara..." />
+                </div>
+
+                <div class="col-lg-3">
+                    <label class="filter-title">Ürün</label>
+                    <select name="productId" id="productId" class="form-select">
+                        <option value="">Tümü</option>
+                        @foreach (var product in products)
+                        {
+                            if (currentProductId.HasValue && currentProductId.Value.ToString() == product.Value)
+                            {
+                                <option value="@product.Value" selected>@product.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@product.Value">@product.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Hareket Tipi</label>
+                    <select name="movementType" id="movementType" class="form-select">
+                        <option value="">Tümü</option>
+                        @if (currentMovementType == "In")
+                        {
+                            <option value="In" selected>Giriş</option>
+                        }
+                        else
+                        {
+                            <option value="In">Giriş</option>
+                        }
+                        @if (currentMovementType == "Out")
+                        {
+                            <option value="Out" selected>Çıkış</option>
+                        }
+                        else
+                        {
+                            <option value="Out">Çıkış</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-3">
+                    <label class="filter-title">Başlangıç Tarihi</label>
+                    <input type="date" name="startDate" id="startDate" value="@currentStartDate" class="form-control" />
+                </div>
+
+                <div class="col-lg-3">
+                    <label class="filter-title">Bitiş Tarihi</label>
+                    <input type="date" name="endDate" id="endDate" value="@currentEndDate" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                <a asp-action="Index" class="clear-filter-btn">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Temizle
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success rounded-4 shadow-sm">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="table-card">
+        <div class="table-header">
+            <div class="table-title">Hareket Listesi</div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table movement-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Görsel</th>
+                            <th>Ürün</th>
+                            <th>Tip</th>
+                            <th>Miktar</th>
+                            <th>Birim Fiyat</th>
+                            <th>Referans</th>
+                            <th>Tarih</th>
+                            <th>Açıklama</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="row-@item.Id">
+                                <td class="ps-4">
+                                    @if (!string.IsNullOrWhiteSpace(item.Product?.ImageUrl))
+                                    {
+                                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="product-thumb" />
+                                    }
+                                    else
+                                    {
+                                        <div class="product-thumb-placeholder">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold">@item.Product?.Name</div>
+                                    <div class="text-muted small">@item.Product?.Category?.Name</div>
+                                </td>
+
+                                <td>
+                                    <span class="movement-badge @(item.MovementType == "In" ? "movement-in" : "movement-out")">
+                                        @(item.MovementType == "In" ? "Giriş" : "Çıkış")
+                                    </span>
+                                </td>
+
+                                <td class="fw-bold">@item.Quantity</td>
+
+                                <td>
+                                    @(item.UnitPrice.HasValue? item.UnitPrice.Value.ToString("C") : "-")
+                                </td>
+
+                                <td>@(string.IsNullOrWhiteSpace(item.ReferenceCode) ? "-" : item.ReferenceCode)</td>
+
+                                <td>
+                                    <span class="date-badge">@item.MovementDate.ToString("dd.MM.yyyy HH:mm")</span>
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(item.Description) ? "-" : item.Description)
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-detail" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn-edit" title="Düzenle">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <button type="button"
+                                                class="action-btn btn-delete border-0"
+                                                title="Sil"
+                                                onclick="openDeleteModal(@item.Id, '@(item.Product?.Name?.Replace("'", "\\'"))')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div style="font-size:2.4rem;">📊</div>
+                <h5 class="fw-bold mt-3">Hareket bulunamadı</h5>
+                <p class="text-muted">Filtrelere uyan stok hareketi kaydı yok.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="deleteMovementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content delete-modal-content">
+            <div class="modal-header delete-modal-header">
+                <h5 class="modal-title delete-modal-title">Hareketi Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+
+            <div class="modal-body delete-modal-body">
+                <div class="delete-icon-wrap">
+                    <i class="bi bi-trash3-fill"></i>
+                </div>
+
+                <div class="delete-main-text">
+                    Bu stok hareketini silmek istediğine emin misin?
+                </div>
+
+                <p class="delete-sub-text">
+                    <span id="deleteMovementName" class="delete-item-name"></span>
+                    ürününe ait bu hareket silinecek ve stok miktarı otomatik olarak geri düzeltilecek.
+                </p>
+            </div>
+
+            <div class="modal-footer delete-modal-footer">
+                <button type="button" class="btn btn-outline-secondary delete-cancel-btn" data-bs-dismiss="modal">
+                    Vazgeç
+                </button>
+
+                <button type="button" class="btn btn-danger delete-confirm-btn" id="confirmDeleteBtn">
+                    Evet, Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const filterForm = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        const productId = document.getElementById("productId");
+        const movementType = document.getElementById("movementType");
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+
+        let debounceTimer;
+
+        function submitFilterForm() {
+            filterForm.submit();
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    submitFilterForm();
+                }, 400);
+            });
+        }
+
+        if (productId) productId.addEventListener("change", submitFilterForm);
+        if (movementType) movementType.addEventListener("change", submitFilterForm);
+        if (startDate) startDate.addEventListener("change", submitFilterForm);
+        if (endDate) endDate.addEventListener("change", submitFilterForm);
+
+        let selectedMovementId = null;
+        let deleteModalInstance = null;
+
+        function openDeleteModal(id, name) {
+            selectedMovementId = id;
+
+            const nameEl = document.getElementById("deleteMovementName");
+            const modalEl = document.getElementById("deleteMovementModal");
+
+            if (nameEl) {
+                nameEl.textContent = `"${name}"`;
+            }
+
+            if (!deleteModalInstance) {
+                deleteModalInstance = new bootstrap.Modal(modalEl);
+            }
+
+            deleteModalInstance.show();
+        }
+
+        async function deleteSelectedMovement() {
+            if (!selectedMovementId) return;
+
+            const confirmBtn = document.getElementById("confirmDeleteBtn");
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = "Siliniyor...";
+
+            try {
+                const response = await fetch(`/StockMovement/Delete?id=${selectedMovementId}`, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    alert(result.message);
+                    return;
+                }
+
+                const row = document.getElementById(`row-${selectedMovementId}`);
+                if (row) row.remove();
+
+                if (deleteModalInstance) {
+                    deleteModalInstance.hide();
+                }
+
+                location.reload();
+            }
+            catch {
+                alert("Silme işlemi sırasında hata oluştu.");
+            }
+            finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "Evet, Sil";
+                selectedMovementId = null;
+            }
+        }
+
+        document.getElementById("confirmDeleteBtn")?.addEventListener("click", deleteSelectedMovement);
+    </script>
+}
