@@ -23,6 +23,10 @@
     var movementCounts = ViewBag.MovementCounts as string ?? "[]";
     var dailyMovementLabels = ViewBag.DailyMovementLabels as string ?? "[]";
     var dailyMovementCounts = ViewBag.DailyMovementCounts as string ?? "[]";
+    var monthlyMovementLabels = ViewBag.MonthlyMovementLabels as string ?? "[]";
+    var monthlyMovementCounts = ViewBag.MonthlyMovementCounts as string ?? "[]";
+    var yearlyMovementLabels = ViewBag.YearlyMovementLabels as string ?? "[]";
+    var yearlyMovementCounts = ViewBag.YearlyMovementCounts as string ?? "[]";
 }
 
 <style>
@@ -198,6 +202,9 @@
     .panel-card {
         overflow: hidden;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
     }
 
     .panel-header {
@@ -220,6 +227,8 @@
 
     .panel-body {
         padding: 24px 28px 28px 28px;
+        flex: 1;
+        min-height: 0;
     }
 
     .mini-list {
@@ -326,8 +335,30 @@
 
     .chart-box {
         position: relative;
+        width: 100%;
         height: 320px;
+        min-height: 320px;
+        max-height: 320px;
+        overflow: hidden;
     }
+
+        .chart-box.chart-sm {
+            height: 260px;
+            min-height: 260px;
+            max-height: 260px;
+        }
+
+        .chart-box.chart-xs {
+            height: 220px;
+            min-height: 220px;
+            max-height: 220px;
+        }
+
+        .chart-box canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
 
     .empty-box {
         text-align: center;
@@ -654,7 +685,7 @@
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 mb-4">
         <div class="col-xl-7">
             <div class="panel-card">
                 <div class="panel-header">
@@ -670,26 +701,58 @@
         </div>
 
         <div class="col-xl-5">
-            <div class="panel-card mb-4">
+            <div class="panel-card">
                 <div class="panel-header">
                     <div class="panel-title">Giriş / Çıkış Özeti</div>
                     <p class="panel-subtitle">Toplam hareket tipi dağılımı</p>
                 </div>
                 <div class="panel-body">
-                    <div class="chart-box" style="height:260px;">
+                    <div class="chart-box chart-sm">
                         <canvas id="movementChart"></canvas>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <div class="row g-4">
+        <div class="col-xl-6">
             <div class="panel-card">
                 <div class="panel-header">
                     <div class="panel-title">Son 7 Gün Hareket Sayısı</div>
                     <p class="panel-subtitle">Günlük işlem yoğunluğu</p>
                 </div>
                 <div class="panel-body">
-                    <div class="chart-box" style="height:220px;">
+                    <div class="chart-box chart-xs">
                         <canvas id="dailyMovementChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">Aylık Hareketler</div>
+                    <p class="panel-subtitle">Bu yılın aylık hareket dağılımı</p>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-box chart-xs">
+                        <canvas id="monthlyMovementChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">Yıllık Hareketler</div>
+                    <p class="panel-subtitle">Yıllara göre toplam hareket</p>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-box chart-xs">
+                        <canvas id="yearlyMovementChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -706,10 +769,16 @@
         const movementCounts = @Html.Raw(movementCounts);
         const dailyMovementLabels = @Html.Raw(dailyMovementLabels);
         const dailyMovementCounts = @Html.Raw(dailyMovementCounts);
+        const monthlyMovementLabels = @Html.Raw(monthlyMovementLabels);
+        const monthlyMovementCounts = @Html.Raw(monthlyMovementCounts);
+        const yearlyMovementLabels = @Html.Raw(yearlyMovementLabels);
+        const yearlyMovementCounts = @Html.Raw(yearlyMovementCounts);
 
-        const categoryCtx = document.getElementById("categoryChart");
-        if (categoryCtx) {
-            new Chart(categoryCtx, {
+        function createCategoryChart() {
+            const el = document.getElementById("categoryChart");
+            if (!el) return;
+
+            new Chart(el, {
                 type: "bar",
                 data: {
                     labels: categoryLabels,
@@ -723,6 +792,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     plugins: {
                         legend: { display: false }
                     },
@@ -736,9 +806,11 @@
             });
         }
 
-        const movementCtx = document.getElementById("movementChart");
-        if (movementCtx) {
-            new Chart(movementCtx, {
+        function createMovementChart() {
+            const el = document.getElementById("movementChart");
+            if (!el) return;
+
+            new Chart(el, {
                 type: "doughnut",
                 data: {
                     labels: movementLabels,
@@ -750,6 +822,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     cutout: "68%",
                     plugins: {
                         legend: {
@@ -760,9 +833,11 @@
             });
         }
 
-        const dailyCtx = document.getElementById("dailyMovementChart");
-        if (dailyCtx) {
-            new Chart(dailyCtx, {
+        function createDailyMovementChart() {
+            const el = document.getElementById("dailyMovementChart");
+            if (!el) return;
+
+            new Chart(el, {
                 type: "line",
                 data: {
                     labels: dailyMovementLabels,
@@ -776,6 +851,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     plugins: {
                         legend: { display: false }
                     },
@@ -788,5 +864,77 @@
                 }
             });
         }
+
+        function createMonthlyMovementChart() {
+            const el = document.getElementById("monthlyMovementChart");
+            if (!el) return;
+
+            new Chart(el, {
+                type: "bar",
+                data: {
+                    labels: monthlyMovementLabels,
+                    datasets: [{
+                        label: "Aylık Hareket",
+                        data: monthlyMovementCounts,
+                        borderRadius: 8,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createYearlyMovementChart() {
+            const el = document.getElementById("yearlyMovementChart");
+            if (!el) return;
+
+            new Chart(el, {
+                type: "line",
+                data: {
+                    labels: yearlyMovementLabels,
+                    datasets: [{
+                        label: "Yıllık Hareket",
+                        data: yearlyMovementCounts,
+                        tension: 0.35,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener("load", function () {
+            createCategoryChart();
+            createMovementChart();
+            createDailyMovementChart();
+            createMonthlyMovementChart();
+            createYearlyMovementChart();
+        });
     </script>
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
+using StockTrackingSystem.Helpers;
 using StockTrackingSystem.Models;
 
 namespace StockTrackingSystem.Controllers
@@ -134,6 +135,14 @@ namespace StockTrackingSystem.Controllers
 
             movement.CreatedDate = DateTime.Now;
 
+            AuditLogHelper.AddLog(
+                _context,
+                movement.MovementType == "In" ? "StockIn" : "StockOut",
+                "StockMovement",
+                movement.Id,
+                $"{product.Name} için {movement.Quantity} adet {(movement.MovementType == "In" ? "giriş" : "çıkış")} hareketi oluşturuldu."
+            );
+
             _context.StockMovements.Add(movement);
             await _context.SaveChangesAsync();
 
@@ -229,6 +238,14 @@ namespace StockTrackingSystem.Controllers
             newProduct!.UpdatedDate = DateTime.Now;
             movement.CreatedDate = existingMovement.CreatedDate;
 
+            AuditLogHelper.AddLog(
+                _context,
+                "Update",
+                "StockMovement",
+                movement.Id,
+                $"{newProduct.Name} için stok hareketi güncellendi."
+            );
+
             _context.StockMovements.Update(movement);
             await _context.SaveChangesAsync();
 
@@ -267,6 +284,15 @@ namespace StockTrackingSystem.Controllers
             product.UpdatedDate = DateTime.Now;
 
             _context.StockMovements.Remove(movement);
+
+            AuditLogHelper.AddLog(
+                _context,
+                "Delete",
+                "StockMovement",
+                movement.Id,
+                $"{product.Name} için {movement.Quantity} adet {(movement.MovementType == "In" ? "giriş" : "çıkış")} hareketi silindi."
+            );
+
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Stok hareketi başarıyla silindi." });

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
+using StockTrackingSystem.Helpers;
 using StockTrackingSystem.Models;
 
 namespace StockTrackingSystem.Controllers
@@ -100,6 +101,16 @@ namespace StockTrackingSystem.Controllers
             supplier.UpdatedDate = null;
 
             _context.Suppliers.Add(supplier);
+
+
+            AuditLogHelper.AddLog(
+                _context,
+                "Create",
+                "Supplier",
+                supplier.Id,
+                $"{supplier.CompanyName} tedarikçisi eklendi."
+            );
+
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Tedarikçi başarıyla eklendi.";
@@ -152,6 +163,15 @@ namespace StockTrackingSystem.Controllers
             existingSupplier.IsActive = supplier.IsActive;
             existingSupplier.UpdatedDate = DateTime.Now;
 
+
+            AuditLogHelper.AddLog(
+                _context,
+                "Update",
+                "Supplier",
+                existingSupplier.Id,
+                $"{existingSupplier.CompanyName} tedarikçisi güncellendi."
+            );
+
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Tedarikçi başarıyla güncellendi.";
@@ -170,6 +190,16 @@ namespace StockTrackingSystem.Controllers
 
             supplier.IsActive = !supplier.IsActive;
             supplier.UpdatedDate = DateTime.Now;
+
+
+            AuditLogHelper.AddLog(
+                _context,
+                "StatusChange",
+                "Supplier",
+                supplier.Id,
+                $"{supplier.CompanyName} tedarikçisi {(supplier.IsActive ? "aktif" : "pasif")} yapıldı."
+            );
+
             await _context.SaveChangesAsync();
 
             var totalCount = await _context.Suppliers.CountAsync();
@@ -207,7 +237,20 @@ namespace StockTrackingSystem.Controllers
                 });
             }
 
+            var supplierName = supplier.CompanyName;
+            var supplierId = supplier.Id;
+
             _context.Suppliers.Remove(supplier);
+
+            AuditLogHelper.AddLog(
+                _context,
+                "Delete",
+                "Supplier",
+                supplierId,
+                $"{supplierName} tedarikçisi silindi."
+            );
+
+
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Tedarikçi başarıyla silindi." });

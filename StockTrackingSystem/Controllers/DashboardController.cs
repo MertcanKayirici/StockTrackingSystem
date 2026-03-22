@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
-using StockTrackingSystem.Models;
 using System.Text.Json;
 
 namespace StockTrackingSystem.Controllers
@@ -17,6 +16,10 @@ namespace StockTrackingSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var today = DateTime.Today;
+            var startOfYear = new DateTime(today.Year, 1, 1);
+            var last7Days = today.AddDays(-6);
+
             var totalProducts = await _context.Products.CountAsync();
             var totalCategories = await _context.Categories.CountAsync();
             var totalSuppliers = await _context.Suppliers.CountAsync();
@@ -76,7 +79,7 @@ namespace StockTrackingSystem.Controllers
                 .ToListAsync();
 
             var recentDailyMovements = await _context.StockMovements
-                .Where(x => x.MovementDate >= DateTime.Today.AddDays(-6))
+                .Where(x => x.MovementDate >= last7Days)
                 .GroupBy(x => x.MovementDate.Date)
                 .Select(g => new
                 {
@@ -85,6 +88,33 @@ namespace StockTrackingSystem.Controllers
                 })
                 .OrderBy(x => x.Date)
                 .ToListAsync();
+
+            var monthlyMovementData = await _context.StockMovements
+                .Where(x => x.MovementDate >= startOfYear)
+                .GroupBy(x => x.MovementDate.Month)
+                .Select(g => new
+                {
+                    Month = g.Key,
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Month)
+                .ToListAsync();
+
+            var yearlyMovementData = await _context.StockMovements
+                .GroupBy(x => x.MovementDate.Year)
+                .Select(g => new
+                {
+                    Year = g.Key,
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Year)
+                .ToListAsync();
+
+            var monthNames = new[]
+            {
+        "", "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    };
 
             ViewBag.TotalProducts = totalProducts;
             ViewBag.TotalCategories = totalCategories;
@@ -112,6 +142,20 @@ namespace StockTrackingSystem.Controllers
                 recentDailyMovements.Select(x => x.Date.ToString("dd.MM"))
             );
             ViewBag.DailyMovementCounts = JsonSerializer.Serialize(recentDailyMovements.Select(x => x.Count));
+
+            ViewBag.MonthlyMovementLabels = JsonSerializer.Serialize(
+                monthlyMovementData.Select(x => monthNames[x.Month])
+            );
+            ViewBag.MonthlyMovementCounts = JsonSerializer.Serialize(
+                monthlyMovementData.Select(x => x.Count)
+            );
+
+            ViewBag.YearlyMovementLabels = JsonSerializer.Serialize(
+                yearlyMovementData.Select(x => x.Year.ToString())
+            );
+            ViewBag.YearlyMovementCounts = JsonSerializer.Serialize(
+                yearlyMovementData.Select(x => x.Count)
+            );
 
             return View();
         }

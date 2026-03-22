@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
+using StockTrackingSystem.Helpers;
 using StockTrackingSystem.Models;
 
 namespace StockTrackingSystem.Controllers
@@ -103,6 +104,14 @@ namespace StockTrackingSystem.Controllers
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
+            AuditLogHelper.AddLog(
+                _context,
+                "Create",
+                "Category",
+                category.Id,
+                $"{category.Name} kategorisi eklendi."
+            );
+
             TempData["SuccessMessage"] = "Kategori başarıyla eklendi.";
             return RedirectToAction(nameof(Index));
         }
@@ -147,6 +156,14 @@ namespace StockTrackingSystem.Controllers
             existingCategory.Description = category.Description;
             existingCategory.IsActive = category.IsActive;
 
+            AuditLogHelper.AddLog(
+                _context,
+                "Update",
+                "Category",
+                existingCategory.Id,
+                $"{existingCategory.Name} kategorisi güncellendi."
+            );
+
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Kategori başarıyla güncellendi.";
@@ -178,7 +195,19 @@ namespace StockTrackingSystem.Controllers
                 });
             }
 
+            var categoryName = category.Name;
+            var categoryId = category.Id;
+
             _context.Categories.Remove(category);
+
+            AuditLogHelper.AddLog(
+                _context,
+                "Delete",
+                "Category",
+                categoryId,
+                $"{categoryName} kategorisi silindi."
+            );
+
             await _context.SaveChangesAsync();
 
             var totalCount = await _context.Categories.CountAsync();
@@ -210,6 +239,15 @@ namespace StockTrackingSystem.Controllers
             }
 
             category.IsActive = !category.IsActive;
+
+            AuditLogHelper.AddLog(
+                _context,
+                "StatusChange",
+                "Category",
+                category.Id,
+                $"{category.Name} kategorisi {(category.IsActive ? "aktif" : "pasif")} yapıldı."
+            );
+
             await _context.SaveChangesAsync();
 
             var totalCount = await _context.Categories.CountAsync();

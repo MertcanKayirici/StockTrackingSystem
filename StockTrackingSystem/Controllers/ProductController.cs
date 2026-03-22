@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
 using StockTrackingSystem.Models;
+using StockTrackingSystem.Helpers;
 
 namespace StockTrackingSystem.Controllers
 {
@@ -150,6 +151,16 @@ namespace StockTrackingSystem.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
+            AuditLogHelper.AddLog(
+                _context,
+                "Create",
+                "Product",
+                product.Id,
+                $"{product.Name} adlı ürün eklendi."
+            );
+
+            await _context.SaveChangesAsync();
+
             TempData["SuccessMessage"] = "Ürün başarıyla eklendi.";
             return RedirectToAction(nameof(Index));
         }
@@ -227,11 +238,22 @@ namespace StockTrackingSystem.Controllers
                 existingProduct.ImageUrl = await SaveImageAsync(imageFile);
             }
 
+            AuditLogHelper.AddLog(
+                _context,
+                "Update",
+                "Product",
+                existingProduct.Id,
+                $"{existingProduct.Name} adlı ürün güncellendi."
+            );
+
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Ürün başarıyla güncellendi.";
             return RedirectToAction(nameof(Index));
+
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
@@ -239,6 +261,9 @@ namespace StockTrackingSystem.Controllers
             var product = await _context.Products
                 .Include(x => x.StockMovements)
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+            var productName = product.Name;
+            var productId = product.Id;
 
             if (product == null)
             {
@@ -249,6 +274,14 @@ namespace StockTrackingSystem.Controllers
             {
                 DeleteImageFile(product.ImageUrl);
             }
+
+            AuditLogHelper.AddLog(
+                _context,
+                "Delete",
+                "Product",
+                productId,
+                $"{productName} adlı ürün silindi."
+            );
 
             _context.StockMovements.RemoveRange(product.StockMovements ?? Enumerable.Empty<StockMovement>());
             _context.Products.Remove(product);
@@ -269,6 +302,15 @@ namespace StockTrackingSystem.Controllers
 
             product.IsActive = !product.IsActive;
             product.UpdatedDate = DateTime.Now;
+
+            AuditLogHelper.AddLog(
+                _context,
+                "StatusChange",
+                "Product",
+                product.Id,
+                $"{product.Name} adlı ürün {(product.IsActive ? "aktif" : "pasif")} yapıldı."
+            );
+
             await _context.SaveChangesAsync();
 
             var totalCount = await _context.Products.CountAsync();
@@ -285,6 +327,8 @@ namespace StockTrackingSystem.Controllers
                 passiveCount,
                 criticalCount
             });
+
+
         }
 
         private async Task LoadDropdownsAsync()
