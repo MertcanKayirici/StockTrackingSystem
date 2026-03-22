@@ -1,5 +1,4 @@
 ﻿@using StockTrackingSystem.Models
-@using System.Text.Json
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -7,18 +6,23 @@
     int totalProducts = ViewBag.TotalProducts ?? 0;
     int totalCategories = ViewBag.TotalCategories ?? 0;
     int totalSuppliers = ViewBag.TotalSuppliers ?? 0;
-    int criticalStockCount = ViewBag.CriticalStockCount ?? 0;
-    int passiveProductCount = ViewBag.PassiveProductCount ?? 0;
     int totalMovements = ViewBag.TotalMovements ?? 0;
+    int activeProducts = ViewBag.ActiveProducts ?? 0;
+    int passiveProducts = ViewBag.PassiveProducts ?? 0;
+    int criticalStockCount = ViewBag.CriticalStockCount ?? 0;
+    int outOfStockCount = ViewBag.OutOfStockCount ?? 0;
+    decimal totalStockValue = ViewBag.TotalStockValue ?? 0m;
 
     var latestProducts = ViewBag.LatestProducts as List<Product> ?? new List<Product>();
     var latestMovements = ViewBag.LatestMovements as List<StockMovement> ?? new List<StockMovement>();
+    var lowStockProducts = ViewBag.LowStockProducts as List<Product> ?? new List<Product>();
 
-    var categoryLabelsJson = JsonSerializer.Serialize(ViewBag.CategoryLabels ?? new List<string>());
-    var categoryCountsJson = JsonSerializer.Serialize(ViewBag.CategoryCounts ?? new List<int>());
-
-    var movementLabelsJson = JsonSerializer.Serialize(ViewBag.MovementLabels ?? new List<string>());
-    var movementCountsJson = JsonSerializer.Serialize(ViewBag.MovementCounts ?? new List<int>());
+    var categoryLabels = ViewBag.CategoryLabels as string ?? "[]";
+    var categoryCounts = ViewBag.CategoryCounts as string ?? "[]";
+    var movementLabels = ViewBag.MovementLabels as string ?? "[]";
+    var movementCounts = ViewBag.MovementCounts as string ?? "[]";
+    var dailyMovementLabels = ViewBag.DailyMovementLabels as string ?? "[]";
+    var dailyMovementCounts = ViewBag.DailyMovementCounts as string ?? "[]";
 }
 
 <style>
@@ -26,143 +30,172 @@
         background: #f8fafc;
     }
 
-    .dashboard-header,
-    .dashboard-card,
-    .dashboard-panel {
+    .hero-card,
+    .stats-card,
+    .panel-card {
         border: 0;
-        border-radius: 24px;
+        border-radius: 26px;
         background: #ffffff;
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
 
-    .dashboard-header {
-        padding: 32px;
+    .hero-card {
+        padding: 34px;
         margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
     }
 
-    .dashboard-title {
-        font-size: 2.3rem;
+        .hero-card::after {
+            content: "";
+            position: absolute;
+            right: -80px;
+            top: -80px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+    .hero-title {
+        font-size: 2.4rem;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 8px;
     }
 
-    .dashboard-subtitle {
+    .hero-subtitle {
         color: #64748b;
         font-size: 1.02rem;
+        max-width: 760px;
         margin-bottom: 0;
     }
 
-    .dashboard-card {
+    .hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .hero-btn {
+        min-height: 50px;
+        border-radius: 16px;
+        padding: 0 22px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .stats-card {
         position: relative;
         overflow: hidden;
-        padding: 24px;
+        padding: 22px;
         height: 100%;
         transition: all 0.22s ease;
     }
 
-        .dashboard-card:hover {
+        .stats-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
         }
 
-        .dashboard-card::after {
+        .stats-card::after {
             content: "";
             position: absolute;
-            right: -16px;
-            top: -16px;
+            right: -18px;
+            top: -18px;
             width: 90px;
             height: 90px;
             border-radius: 50%;
             opacity: 0.08;
         }
 
-    .card-products::after {
+    .card-blue::after {
         background: #2563eb;
     }
 
-    .card-categories::after {
+    .card-purple::after {
         background: #8b5cf6;
     }
 
-    .card-suppliers::after {
+    .card-teal::after {
         background: #14b8a6;
     }
 
-    .card-critical::after {
+    .card-red::after {
         background: #ef4444;
     }
 
-    .card-passive::after {
+    .card-orange::after {
         background: #f59e0b;
     }
 
-    .card-movements::after {
+    .card-slate::after {
         background: #0f172a;
     }
 
-    .stat-wrap {
+    .stats-wrap {
         display: flex;
         align-items: center;
         gap: 16px;
     }
 
-    .stat-icon {
-        width: 58px;
-        height: 58px;
+    .stats-icon {
+        width: 56px;
+        height: 56px;
         border-radius: 18px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
+        font-size: 1.25rem;
         flex-shrink: 0;
     }
 
-    .card-products .stat-icon {
+    .card-blue .stats-icon {
         background: rgba(37, 99, 235, 0.10);
         color: #2563eb;
     }
 
-    .card-categories .stat-icon {
+    .card-purple .stats-icon {
         background: rgba(139, 92, 246, 0.10);
         color: #8b5cf6;
     }
 
-    .card-suppliers .stat-icon {
+    .card-teal .stats-icon {
         background: rgba(20, 184, 166, 0.10);
         color: #14b8a6;
     }
 
-    .card-critical .stat-icon {
+    .card-red .stats-icon {
         background: rgba(239, 68, 68, 0.10);
         color: #ef4444;
     }
 
-    .card-passive .stat-icon {
+    .card-orange .stats-icon {
         background: rgba(245, 158, 11, 0.10);
         color: #f59e0b;
     }
 
-    .card-movements .stat-icon {
+    .card-slate .stats-icon {
         background: rgba(15, 23, 42, 0.08);
         color: #0f172a;
     }
 
-    .stat-label {
+    .stats-label {
         color: #64748b;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         font-weight: 600;
         margin-bottom: 6px;
     }
 
-    .stat-value {
-        font-size: 2rem;
+    .stats-value {
+        font-size: 1.9rem;
         font-weight: 800;
         line-height: 1;
         color: #0f172a;
     }
 
-    .dashboard-panel {
+    .panel-card {
         overflow: hidden;
         height: 100%;
     }
@@ -173,7 +206,7 @@
     }
 
     .panel-title {
-        font-size: 1.15rem;
+        font-size: 1.12rem;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 4px;
@@ -181,8 +214,8 @@
 
     .panel-subtitle {
         color: #64748b;
+        font-size: 0.93rem;
         margin-bottom: 0;
-        font-size: 0.94rem;
     }
 
     .panel-body {
@@ -222,9 +255,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        color: #94a3b8;
         border: 2px solid #e2e8f0;
         background: #fff;
-        color: #94a3b8;
         flex-shrink: 0;
     }
 
@@ -250,6 +283,16 @@
         white-space: nowrap;
     }
 
+    .badge-ok {
+        background: rgba(22, 163, 74, 0.10);
+        color: #16a34a;
+    }
+
+    .badge-critical {
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+    }
+
     .badge-in {
         background: rgba(22, 163, 74, 0.10);
         color: #16a34a;
@@ -260,14 +303,25 @@
         color: #ef4444;
     }
 
-    .badge-stock-ok {
-        background: rgba(22, 163, 74, 0.10);
-        color: #16a34a;
+    .alert-box {
+        padding: 18px 20px;
+        border-radius: 18px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
-    .badge-stock-critical {
-        background: rgba(239, 68, 68, 0.10);
-        color: #ef4444;
+    .alert-critical {
+        background: rgba(239, 68, 68, 0.08);
+        color: #b91c1c;
+        border: 1px solid rgba(239, 68, 68, 0.14);
+    }
+
+    .alert-ok {
+        background: rgba(22, 163, 74, 0.08);
+        color: #15803d;
+        border: 1px solid rgba(22, 163, 74, 0.14);
     }
 
     .chart-box {
@@ -277,25 +331,30 @@
 
     .empty-box {
         text-align: center;
-        padding: 40px 10px;
+        padding: 42px 10px;
         color: #64748b;
     }
 </style>
 
 <div class="container py-4">
-    <div class="dashboard-header">
-        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+    <div class="hero-card">
+        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-4">
             <div>
-                <h1 class="dashboard-title">Admin Dashboard</h1>
-                <p class="dashboard-subtitle">Sistemin genel durumunu, kritik verileri ve son hareketleri tek ekranda takip edebilirsin.</p>
+                <h1 class="hero-title">Dashboard</h1>
+                <p class="hero-subtitle">
+                    Sistemin genel durumunu, kritik stokları, son eklenen ürünleri ve hareket özetlerini tek ekrandan takip edebilirsin.
+                </p>
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
-                <a asp-controller="Product" asp-action="Create" class="btn btn-primary rounded-pill px-4">
+            <div class="hero-actions">
+                <a asp-controller="Product" asp-action="Create" class="btn btn-primary hero-btn">
                     <i class="bi bi-plus-lg me-2"></i>Yeni Ürün
                 </a>
-                <a asp-controller="StockMovement" asp-action="Create" class="btn btn-outline-dark rounded-pill px-4">
+                <a asp-controller="StockMovement" asp-action="Create" class="btn btn-outline-dark hero-btn">
                     <i class="bi bi-arrow-left-right me-2"></i>Yeni Hareket
+                </a>
+                <a asp-controller="Supplier" asp-action="Create" class="btn btn-outline-secondary hero-btn">
+                    <i class="bi bi-buildings me-2"></i>Tedarikçi Ekle
                 </a>
             </div>
         </div>
@@ -303,72 +362,72 @@
 
     <div class="row g-3 mb-4">
         <div class="col-md-6 col-xl-4">
-            <div class="dashboard-card card-products">
-                <div class="stat-wrap">
-                    <div class="stat-icon"><i class="bi bi-box-seam-fill"></i></div>
+            <div class="stats-card card-blue">
+                <div class="stats-wrap">
+                    <div class="stats-icon"><i class="bi bi-box-seam-fill"></i></div>
                     <div>
-                        <div class="stat-label">Toplam Ürün</div>
-                        <div class="stat-value">@totalProducts</div>
+                        <div class="stats-label">Toplam Ürün</div>
+                        <div class="stats-value">@totalProducts</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-4">
-            <div class="dashboard-card card-categories">
-                <div class="stat-wrap">
-                    <div class="stat-icon"><i class="bi bi-grid-1x2-fill"></i></div>
+            <div class="stats-card card-purple">
+                <div class="stats-wrap">
+                    <div class="stats-icon"><i class="bi bi-grid-1x2-fill"></i></div>
                     <div>
-                        <div class="stat-label">Toplam Kategori</div>
-                        <div class="stat-value">@totalCategories</div>
+                        <div class="stats-label">Toplam Kategori</div>
+                        <div class="stats-value">@totalCategories</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-4">
-            <div class="dashboard-card card-suppliers">
-                <div class="stat-wrap">
-                    <div class="stat-icon"><i class="bi bi-buildings-fill"></i></div>
+            <div class="stats-card card-teal">
+                <div class="stats-wrap">
+                    <div class="stats-icon"><i class="bi bi-buildings-fill"></i></div>
                     <div>
-                        <div class="stat-label">Toplam Tedarikçi</div>
-                        <div class="stat-value">@totalSuppliers</div>
+                        <div class="stats-label">Toplam Tedarikçi</div>
+                        <div class="stats-value">@totalSuppliers</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-4">
-            <div class="dashboard-card card-critical">
-                <div class="stat-wrap">
-                    <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div class="stats-card card-red">
+                <div class="stats-wrap">
+                    <div class="stats-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
                     <div>
-                        <div class="stat-label">Kritik Stok</div>
-                        <div class="stat-value">@criticalStockCount</div>
+                        <div class="stats-label">Kritik Stok</div>
+                        <div class="stats-value">@criticalStockCount</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-4">
-            <div class="dashboard-card card-passive">
-                <div class="stat-wrap">
-                    <div class="stat-icon"><i class="bi bi-pause-circle-fill"></i></div>
+            <div class="stats-card card-orange">
+                <div class="stats-wrap">
+                    <div class="stats-icon"><i class="bi bi-pause-circle-fill"></i></div>
                     <div>
-                        <div class="stat-label">Pasif Ürün</div>
-                        <div class="stat-value">@passiveProductCount</div>
+                        <div class="stats-label">Pasif Ürün</div>
+                        <div class="stats-value">@passiveProducts</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-xl-4">
-            <div class="dashboard-card card-movements">
-                <div class="stat-wrap">
-                    <div class="stat-icon"><i class="bi bi-arrow-left-right"></i></div>
+            <div class="stats-card card-slate">
+                <div class="stats-wrap">
+                    <div class="stats-icon"><i class="bi bi-arrow-left-right"></i></div>
                     <div>
-                        <div class="stat-label">Toplam Hareket</div>
-                        <div class="stat-value">@totalMovements</div>
+                        <div class="stats-label">Toplam Hareket</div>
+                        <div class="stats-value">@totalMovements</div>
                     </div>
                 </div>
             </div>
@@ -376,11 +435,40 @@
     </div>
 
     <div class="row g-4 mb-4">
+        <div class="col-xl-8">
+            @if (criticalStockCount > 0 || outOfStockCount > 0)
+            {
+                <div class="alert-box alert-critical">
+                    <i class="bi bi-exclamation-octagon-fill"></i>
+                    <span>
+                        Kritik stokta <strong>@criticalStockCount</strong> ürün var.
+                        Tükenen ürün sayısı: <strong>@outOfStockCount</strong>
+                    </span>
+                </div>
+            }
+            else
+            {
+                <div class="alert-box alert-ok">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Harika! Şu anda kritik stokta veya tükenen ürün bulunmuyor.</span>
+                </div>
+            }
+        </div>
+
+        <div class="col-xl-4">
+            <div class="alert-box alert-ok h-100">
+                <i class="bi bi-cash-stack"></i>
+                <span>Toplam stok değeri: <strong>@totalStockValue.ToString("C")</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
         <div class="col-xl-6">
-            <div class="dashboard-panel">
+            <div class="panel-card">
                 <div class="panel-header">
                     <div class="panel-title">Son Eklenen Ürünler</div>
-                    <p class="panel-subtitle">Sisteme en son eklenen ürün kayıtları</p>
+                    <p class="panel-subtitle">Sisteme son eklenen ürün kayıtları</p>
                 </div>
 
                 <div class="panel-body">
@@ -389,7 +477,7 @@
                         <div class="mini-list">
                             @foreach (var item in latestProducts)
                             {
-                                var isCritical = item.StockQuantity <= item.CriticalStockLevel && item.StockQuantity > 0;
+                                var isCritical = item.StockQuantity <= item.CriticalStockLevel;
                                 <div class="mini-item">
                                     @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                     {
@@ -407,7 +495,7 @@
                                         <p class="mini-subtitle">@(item.Category?.Name ?? "Kategori yok") • @item.UnitPrice.ToString("C")</p>
                                     </div>
 
-                                    <span class="mini-badge @(isCritical ? "badge-stock-critical" : "badge-stock-ok")">
+                                    <span class="mini-badge @(isCritical ? "badge-critical" : "badge-ok")">
                                         Stok: @item.StockQuantity
                                     </span>
                                 </div>
@@ -423,10 +511,10 @@
         </div>
 
         <div class="col-xl-6">
-            <div class="dashboard-panel">
+            <div class="panel-card">
                 <div class="panel-header">
                     <div class="panel-title">Son Stok Hareketleri</div>
-                    <p class="panel-subtitle">En son eklenen giriş ve çıkış kayıtları</p>
+                    <p class="panel-subtitle">En son eklenen giriş ve çıkış hareketleri</p>
                 </div>
 
                 <div class="panel-body">
@@ -449,13 +537,7 @@
 
                                     <div>
                                         <div class="mini-title">@item.Product?.Name</div>
-                                        <p class="mini-subtitle">
-                                            @item.MovementDate.ToString("dd.MM.yyyy HH:mm")
-                                            @if (!string.IsNullOrWhiteSpace(item.Description))
-                                            {
-                                                @: • @item.Description
-                                            }
-                                        </p>
+                                        <p class="mini-subtitle">@item.MovementDate.ToString("dd.MM.yyyy HH:mm")</p>
                                     </div>
 
                                     <span class="mini-badge @(item.MovementType == "In" ? "badge-in" : "badge-out")">
@@ -474,14 +556,111 @@
         </div>
     </div>
 
+    <div class="row g-4 mb-4">
+        <div class="col-xl-6">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">En Düşük Stoklu Ürünler</div>
+                    <p class="panel-subtitle">Kritik seviyeye yaklaşan veya düşen ürünler</p>
+                </div>
+
+                <div class="panel-body">
+                    @if (lowStockProducts.Any())
+                    {
+                        <div class="mini-list">
+                            @foreach (var item in lowStockProducts)
+                            {
+                                <div class="mini-item">
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.Name" class="mini-thumb" />
+                                    }
+                                    else
+                                    {
+                                        <div class="mini-thumb-placeholder">
+                                            <i class="bi bi-exclamation"></i>
+                                        </div>
+                                    }
+
+                                    <div>
+                                        <div class="mini-title">@item.Name</div>
+                                        <p class="mini-subtitle">
+                                            @(item.Category?.Name ?? "Kategori yok") • Kritik: @item.CriticalStockLevel
+                                        </p>
+                                    </div>
+
+                                    <span class="mini-badge badge-critical">
+                                        Stok: @item.StockQuantity
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-box">Kritik stok ürünü bulunmuyor.</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">Sistem Özeti</div>
+                    <p class="panel-subtitle">Temel sayısal görünüm</p>
+                </div>
+
+                <div class="panel-body">
+                    <div class="mini-list">
+                        <div class="mini-item">
+                            <div class="mini-thumb-placeholder"><i class="bi bi-check-circle"></i></div>
+                            <div>
+                                <div class="mini-title">Aktif Ürün</div>
+                                <p class="mini-subtitle">Sistemde aktif olan ürün sayısı</p>
+                            </div>
+                            <span class="mini-badge badge-ok">@activeProducts</span>
+                        </div>
+
+                        <div class="mini-item">
+                            <div class="mini-thumb-placeholder"><i class="bi bi-pause-circle"></i></div>
+                            <div>
+                                <div class="mini-title">Pasif Ürün</div>
+                                <p class="mini-subtitle">Geçici olarak devre dışı ürünler</p>
+                            </div>
+                            <span class="mini-badge badge-critical">@passiveProducts</span>
+                        </div>
+
+                        <div class="mini-item">
+                            <div class="mini-thumb-placeholder"><i class="bi bi-archive"></i></div>
+                            <div>
+                                <div class="mini-title">Tükenen Ürün</div>
+                                <p class="mini-subtitle">Stoğu sıfır olan ürünler</p>
+                            </div>
+                            <span class="mini-badge badge-critical">@outOfStockCount</span>
+                        </div>
+
+                        <div class="mini-item">
+                            <div class="mini-thumb-placeholder"><i class="bi bi-cash"></i></div>
+                            <div>
+                                <div class="mini-title">Toplam Stok Değeri</div>
+                                <p class="mini-subtitle">Tüm ürünlerin yaklaşık stok değeri</p>
+                            </div>
+                            <span class="mini-badge badge-ok">@totalStockValue.ToString("C")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-4">
         <div class="col-xl-7">
-            <div class="dashboard-panel">
+            <div class="panel-card">
                 <div class="panel-header">
                     <div class="panel-title">Kategoriye Göre Ürün Dağılımı</div>
                     <p class="panel-subtitle">Hangi kategoride kaç ürün olduğunu gösterir</p>
                 </div>
-
                 <div class="panel-body">
                     <div class="chart-box">
                         <canvas id="categoryChart"></canvas>
@@ -491,15 +670,26 @@
         </div>
 
         <div class="col-xl-5">
-            <div class="dashboard-panel">
+            <div class="panel-card mb-4">
                 <div class="panel-header">
-                    <div class="panel-title">Hareket Özeti</div>
-                    <p class="panel-subtitle">Toplam giriş / çıkış dağılımı</p>
+                    <div class="panel-title">Giriş / Çıkış Özeti</div>
+                    <p class="panel-subtitle">Toplam hareket tipi dağılımı</p>
                 </div>
-
                 <div class="panel-body">
-                    <div class="chart-box">
+                    <div class="chart-box" style="height:260px;">
                         <canvas id="movementChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">Son 7 Gün Hareket Sayısı</div>
+                    <p class="panel-subtitle">Günlük işlem yoğunluğu</p>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-box" style="height:220px;">
+                        <canvas id="dailyMovementChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -509,25 +699,25 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-        const categoryLabels = @Html.Raw(categoryLabelsJson);
-        const categoryCounts = @Html.Raw(categoryCountsJson);
+        const categoryLabels = @Html.Raw(categoryLabels);
+        const categoryCounts = @Html.Raw(categoryCounts);
+        const movementLabels = @Html.Raw(movementLabels);
+        const movementCounts = @Html.Raw(movementCounts);
+        const dailyMovementLabels = @Html.Raw(dailyMovementLabels);
+        const dailyMovementCounts = @Html.Raw(dailyMovementCounts);
 
-        const movementLabels = @Html.Raw(movementLabelsJson);
-        const movementCounts = @Html.Raw(movementCountsJson);
-
-        const categoryCtx = document.getElementById('categoryChart');
+        const categoryCtx = document.getElementById("categoryChart");
         if (categoryCtx) {
             new Chart(categoryCtx, {
-                type: 'bar',
+                type: "bar",
                 data: {
                     labels: categoryLabels,
                     datasets: [{
-                        label: 'Ürün Sayısı',
+                        label: "Ürün Sayısı",
                         data: categoryCounts,
-                        borderWidth: 1,
-                        borderRadius: 10
+                        borderRadius: 10,
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -546,10 +736,10 @@
             });
         }
 
-        const movementCtx = document.getElementById('movementChart');
+        const movementCtx = document.getElementById("movementChart");
         if (movementCtx) {
             new Chart(movementCtx, {
-                type: 'doughnut',
+                type: "doughnut",
                 data: {
                     labels: movementLabels,
                     datasets: [{
@@ -560,10 +750,39 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '68%',
+                    cutout: "68%",
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: "bottom"
+                        }
+                    }
+                }
+            });
+        }
+
+        const dailyCtx = document.getElementById("dailyMovementChart");
+        if (dailyCtx) {
+            new Chart(dailyCtx, {
+                type: "line",
+                data: {
+                    labels: dailyMovementLabels,
+                    datasets: [{
+                        label: "Hareket Sayısı",
+                        data: dailyMovementCounts,
+                        tension: 0.35,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
                         }
                     }
                 }

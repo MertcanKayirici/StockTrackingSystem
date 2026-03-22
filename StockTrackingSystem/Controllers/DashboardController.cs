@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockTrackingSystem.Data;
+using StockTrackingSystem.Models;
+using System.Text.Json;
 
 namespace StockTrackingSystem.Controllers
 {
@@ -18,60 +20,98 @@ namespace StockTrackingSystem.Controllers
             var totalProducts = await _context.Products.CountAsync();
             var totalCategories = await _context.Categories.CountAsync();
             var totalSuppliers = await _context.Suppliers.CountAsync();
-            var criticalStockCount = await _context.Products.CountAsync(x => x.StockQuantity <= x.CriticalStockLevel && x.StockQuantity > 0);
-            var passiveProductCount = await _context.Products.CountAsync(x => !x.IsActive);
             var totalMovements = await _context.StockMovements.CountAsync();
+
+            var activeProducts = await _context.Products.CountAsync(x => x.IsActive);
+            var passiveProducts = await _context.Products.CountAsync(x => !x.IsActive);
+            var criticalStockCount = await _context.Products.CountAsync(x => x.StockQuantity <= x.CriticalStockLevel && x.StockQuantity > 0);
+            var outOfStockCount = await _context.Products.CountAsync(x => x.StockQuantity == 0);
+
+            var stockValueData = await _context.Products
+                .Select(x => new
+                {
+                    x.UnitPrice,
+                    x.StockQuantity
+                })
+                .ToListAsync();
+
+            var totalStockValue = stockValueData.Sum(x => x.UnitPrice * x.StockQuantity);
 
             var latestProducts = await _context.Products
                 .Include(x => x.Category)
                 .OrderByDescending(x => x.CreatedDate)
-                .Take(5)
+                .Take(6)
                 .ToListAsync();
 
             var latestMovements = await _context.StockMovements
                 .Include(x => x.Product)
                 .OrderByDescending(x => x.MovementDate)
+                .Take(8)
+                .ToListAsync();
+
+            var lowStockProducts = await _context.Products
+                .Include(x => x.Category)
+                .Where(x => x.StockQuantity <= x.CriticalStockLevel)
+                .OrderBy(x => x.StockQuantity)
+                .ThenBy(x => x.Name)
                 .Take(6)
                 .ToListAsync();
 
-            var categoryData = await _context.Categories
+            var categoryChartData = await _context.Categories
                 .Select(c => new
                 {
-                    CategoryName = c.Name,
-                    ProductCount = _context.Products.Count(p => p.CategoryId == c.Id)
+                    Name = c.Name,
+                    Count = _context.Products.Count(p => p.CategoryId == c.Id)
                 })
-                .OrderByDescending(x => x.ProductCount)
+                .OrderByDescending(x => x.Count)
                 .ToListAsync();
 
-            var movementSummary = await _context.StockMovements
+            var movementChartData = await _context.StockMovements
                 .GroupBy(x => x.MovementType)
                 .Select(g => new
                 {
-                    MovementType = g.Key,
+                    Type = g.Key,
                     Count = g.Count()
                 })
+                .ToListAsync();
+
+            var recentDailyMovements = await _context.StockMovements
+                .Where(x => x.MovementDate >= DateTime.Today.AddDays(-6))
+                .GroupBy(x => x.MovementDate.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Date)
                 .ToListAsync();
 
             ViewBag.TotalProducts = totalProducts;
             ViewBag.TotalCategories = totalCategories;
             ViewBag.TotalSuppliers = totalSuppliers;
-            ViewBag.CriticalStockCount = criticalStockCount;
-            ViewBag.PassiveProductCount = passiveProductCount;
             ViewBag.TotalMovements = totalMovements;
+            ViewBag.ActiveProducts = activeProducts;
+            ViewBag.PassiveProducts = passiveProducts;
+            ViewBag.CriticalStockCount = criticalStockCount;
+            ViewBag.OutOfStockCount = outOfStockCount;
+            ViewBag.TotalStockValue = totalStockValue;
 
             ViewBag.LatestProducts = latestProducts;
             ViewBag.LatestMovements = latestMovements;
+            ViewBag.LowStockProducts = lowStockProducts;
 
-            ViewBag.CategoryLabels = categoryData.Select(x => x.CategoryName).ToList();
-            ViewBag.CategoryCounts = categoryData.Select(x => x.ProductCount).ToList();
+            ViewBag.CategoryLabels = JsonSerializer.Serialize(categoryChartData.Select(x => x.Name));
+            ViewBag.CategoryCounts = JsonSerializer.Serialize(categoryChartData.Select(x => x.Count));
 
-            ViewBag.MovementLabels = movementSummary
-                .Select(x => x.MovementType == "In" ? "Giriş" : "Çıkış")
-                .ToList();
+            ViewBag.MovementLabels = JsonSerializer.Serialize(
+                movementChartData.Select(x => x.Type == "In" ? "Giriş" : "Çıkış")
+            );
+            ViewBag.MovementCounts = JsonSerializer.Serialize(movementChartData.Select(x => x.Count));
 
-            ViewBag.MovementCounts = movementSummary
-                .Select(x => x.Count)
-                .ToList();
+            ViewBag.DailyMovementLabels = JsonSerializer.Serialize(
+                recentDailyMovements.Select(x => x.Date.ToString("dd.MM"))
+            );
+            ViewBag.DailyMovementCounts = JsonSerializer.Serialize(recentDailyMovements.Select(x => x.Count));
 
             return View();
         }
