@@ -1,47 +1,332 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - StockTrackingSystem</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StockTrackingSystem.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        html {
+            font-size: 14px;
+        }
+
+        body {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-navbar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+            padding-top: 0.9rem;
+            padding-bottom: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .brand-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .brand-subtitle {
+            font-size: 0.78rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .navbar-toggler {
+            border: 0;
+            border-radius: 14px;
+            width: 46px;
+            height: 46px;
+            padding: 0;
+            box-shadow: none !important;
+            background: #f8fafc;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .navbar-toggler i {
+                font-size: 1.3rem;
+                color: #0f172a;
+            }
+
+        .nav-shell {
+            gap: 10px;
+        }
+
+        .main-nav {
+            gap: 8px;
+        }
+
+            .main-nav .nav-link {
+                color: #334155 !important;
+                font-weight: 700;
+                border-radius: 14px;
+                padding: 10px 16px !important;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+                .main-nav .nav-link:hover {
+                    background: #eff6ff;
+                    color: #2563eb !important;
+                }
+
+        .quick-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-btn {
+            min-height: 42px;
+            padding: 0 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+        }
+
+            .quick-btn-primary:hover {
+                color: #ffffff;
+                transform: translateY(-1px);
+            }
+
+        .quick-btn-soft {
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+        }
+
+            .quick-btn-soft:hover {
+                background: #f8fafc;
+                color: #0f172a;
+            }
+
+        .page-wrapper {
+            flex: 1;
+            padding-top: 28px;
+            padding-bottom: 28px;
+        }
+
+        .page-container {
+            max-width: 1400px;
+        }
+
+        .app-footer {
+            margin-top: auto;
+            border-top: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .footer-inner {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .footer-brand {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+            .footer-links a {
+                text-decoration: none;
+                color: #64748b;
+                font-weight: 600;
+                transition: color 0.2s ease;
+            }
+
+                .footer-links a:hover {
+                    color: #2563eb;
+                }
+
+        @@media (max-width: 991.98px) {
+            .nav-shell {
+                margin-top: 16px;
+                padding: 16px;
+                border: 1px solid #e2e8f0;
+                border-radius: 20px;
+                background: #ffffff;
+                box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+            }
+
+            .main-nav {
+                gap: 6px;
+            }
+
+                .main-nav .nav-link {
+                    width: 100%;
+                }
+
+            .quick-actions {
+                margin-top: 12px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .quick-btn {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">StockTrackingSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+        <nav class="navbar navbar-expand-lg app-navbar">
+            <div class="container page-container">
+                <a class="brand-wrap" asp-controller="Dashboard" asp-action="Index">
+                    <span class="brand-logo">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </span>
+                    <span class="brand-text">
+                        <span class="brand-title">StockTrackingSystem</span>
+                        <span class="brand-subtitle">Inventory & Management Panel</span>
+                    </span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Menüyü Aç/Kapat">
+                    <i class="bi bi-list"></i>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse justify-content-between nav-shell" id="mainNavbar">
+                    <ul class="navbar-nav main-nav mb-3 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-controller="Category" asp-action="Index">
+                                <i class="bi bi-grid-1x2-fill"></i> Kategoriler
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Product" asp-action="Index">
+                                <i class="bi bi-box-seam"></i> Ürünler
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Supplier" asp-action="Index">
+                                <i class="bi bi-buildings"></i> Tedarikçiler
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="StockMovement" asp-action="Index">
+                                <i class="bi bi-arrow-left-right"></i> Stok Hareketleri
+                            </a>
                         </li>
                     </ul>
+
+                    <div class="quick-actions">
+                        <a class="quick-btn quick-btn-soft" asp-controller="Product" asp-action="Create">
+                            <i class="bi bi-plus-circle"></i> Ürün Ekle
+                        </a>
+
+                        <a class="quick-btn quick-btn-primary" asp-controller="StockMovement" asp-action="Create">
+                            <i class="bi bi-plus-lg"></i> Hareket Ekle
+                        </a>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="page-wrapper">
+        <main role="main" class="container page-container">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - StockTrackingSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="app-footer">
+        <div class="container page-container">
+            <div class="footer-inner">
+                <div>
+                    <span class="footer-brand">StockTrackingSystem</span>
+                    <span> • 2026 Yönetim Paneli</span>
+                </div>
+
+                <div class="footer-links">
+                    <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                    <a asp-controller="Product" asp-action="Index">Ürünler</a>
+                    <a asp-controller="StockMovement" asp-action="Index">Hareketler</a>
+                </div>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
