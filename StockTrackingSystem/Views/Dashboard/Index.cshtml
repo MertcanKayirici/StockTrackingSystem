@@ -1,10 +1,10 @@
 ﻿@using StockTrackingSystem.Models
 
 @{
-    // Page title
+    // Set page title
     ViewData["Title"] = "Dashboard";
 
-    // Summary statistics
+    // Dashboard summary statistics
     int totalProducts = ViewBag.TotalProducts ?? 0;
     int totalCategories = ViewBag.TotalCategories ?? 0;
     int totalSuppliers = ViewBag.TotalSuppliers ?? 0;
@@ -15,13 +15,13 @@
     int outOfStockCount = ViewBag.OutOfStockCount ?? 0;
     decimal totalStockValue = ViewBag.TotalStockValue ?? 0m;
 
-    // Latest records
+    // Recent data collections displayed on the dashboard
     var latestAuditLogs = ViewBag.LatestAuditLogs as List<AuditLog> ?? new List<AuditLog>();
     var latestProducts = ViewBag.LatestProducts as List<Product> ?? new List<Product>();
     var latestMovements = ViewBag.LatestMovements as List<StockMovement> ?? new List<StockMovement>();
     var lowStockProducts = ViewBag.LowStockProducts as List<Product> ?? new List<Product>();
 
-    // Chart data
+    // Chart datasets passed from the controller
     var categoryLabels = ViewBag.CategoryLabels as string ?? "[]";
     var categoryCounts = ViewBag.CategoryCounts as string ?? "[]";
     var movementLabels = ViewBag.MovementLabels as string ?? "[]";
@@ -35,16 +35,12 @@
 }
 
 <style>
-    /* =========================
-           PAGE BACKGROUND
-        ========================= */
+    /* Page background */
     body {
         background: #f8fafc;
     }
 
-    /* =========================
-           MAIN CARDS
-        ========================= */
+    /* Shared card styles */
     .hero-card,
     .stats-card,
     .panel-card {
@@ -54,9 +50,7 @@
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
 
-    /* =========================
-           HERO SECTION
-        ========================= */
+    /* Hero section container */
     .hero-card {
         padding: 34px;
         margin-bottom: 24px;
@@ -64,6 +58,7 @@
         overflow: hidden;
     }
 
+        /* Decorative background circle for hero section */
         .hero-card::after {
             content: "";
             position: absolute;
@@ -75,6 +70,18 @@
             background: rgba(37, 99, 235, 0.08);
         }
 
+    /* Hero content layer above decoration */
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Hero text spacing */
+    .hero-text {
+        margin-bottom: 22px;
+    }
+
+    /* Main dashboard title */
     .hero-title {
         font-size: 2.4rem;
         font-weight: 800;
@@ -82,6 +89,7 @@
         margin-bottom: 8px;
     }
 
+    /* Dashboard subtitle text */
     .hero-subtitle {
         color: #64748b;
         font-size: 1.02rem;
@@ -89,12 +97,15 @@
         margin-bottom: 0;
     }
 
+    /* Hero action buttons wrapper */
     .hero-actions {
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
+        align-items: center;
     }
 
+    /* Shared hero button style */
     .hero-btn {
         min-height: 50px;
         border-radius: 16px;
@@ -102,11 +113,10 @@
         font-weight: 700;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
     }
 
-    /* =========================
-           STATS CARDS
-        ========================= */
+    /* Statistics card styling */
     .stats-card {
         position: relative;
         overflow: hidden;
@@ -115,11 +125,13 @@
         transition: all 0.22s ease;
     }
 
+        /* Hover effect for statistic cards */
         .stats-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
         }
 
+        /* Decorative circle for statistic cards */
         .stats-card::after {
             content: "";
             position: absolute;
@@ -131,6 +143,7 @@
             opacity: 0.08;
         }
 
+    /* Card accent colors */
     .card-blue::after {
         background: #2563eb;
     }
@@ -155,12 +168,14 @@
         background: #0f172a;
     }
 
+    /* Statistic card inner layout */
     .stats-wrap {
         display: flex;
         align-items: center;
         gap: 16px;
     }
 
+    /* Statistic icon container */
     .stats-icon {
         width: 56px;
         height: 56px;
@@ -172,6 +187,7 @@
         flex-shrink: 0;
     }
 
+    /* Icon color themes */
     .card-blue .stats-icon {
         background: rgba(37, 99, 235, 0.10);
         color: #2563eb;
@@ -202,6 +218,7 @@
         color: #0f172a;
     }
 
+    /* Statistic label text */
     .stats-label {
         color: #64748b;
         font-size: 0.92rem;
@@ -209,6 +226,7 @@
         margin-bottom: 6px;
     }
 
+    /* Statistic value text */
     .stats-value {
         font-size: 1.9rem;
         font-weight: 800;
@@ -216,9 +234,7 @@
         color: #0f172a;
     }
 
-    /* =========================
-           PANEL CARDS
-        ========================= */
+    /* Shared panel card layout */
     .panel-card {
         overflow: hidden;
         height: 100%;
@@ -227,11 +243,13 @@
         position: relative;
     }
 
+    /* Panel header area */
     .panel-header {
         padding: 24px 28px 14px 28px;
         border-bottom: 1px solid #f1f5f9;
     }
 
+    /* Panel main title */
     .panel-title {
         font-size: 1.12rem;
         font-weight: 800;
@@ -239,27 +257,28 @@
         margin-bottom: 4px;
     }
 
+    /* Panel subtitle */
     .panel-subtitle {
         color: #64748b;
         font-size: 0.93rem;
         margin-bottom: 0;
     }
 
+    /* Panel content area */
     .panel-body {
         padding: 24px 28px 28px 28px;
         flex: 1;
         min-height: 0;
     }
 
-    /* =========================
-           MINI LISTS
-        ========================= */
+    /* Vertical list container */
     .mini-list {
         display: flex;
         flex-direction: column;
         gap: 14px;
     }
 
+    /* Individual list item card */
     .mini-item {
         display: flex;
         align-items: center;
@@ -270,6 +289,7 @@
         background: #f8fafc;
     }
 
+    /* Circular product image */
     .mini-thumb {
         width: 52px;
         height: 52px;
@@ -280,6 +300,7 @@
         flex-shrink: 0;
     }
 
+    /* Placeholder when no image is available */
     .mini-thumb-placeholder {
         width: 52px;
         height: 52px;
@@ -293,6 +314,7 @@
         flex-shrink: 0;
     }
 
+    /* Item title text */
     .mini-title {
         font-size: 0.98rem;
         font-weight: 800;
@@ -300,12 +322,14 @@
         margin-bottom: 3px;
     }
 
+    /* Item subtitle text */
     .mini-subtitle {
         font-size: 0.88rem;
         color: #64748b;
         margin-bottom: 0;
     }
 
+    /* Status/count badge */
     .mini-badge {
         margin-left: auto;
         border-radius: 999px;
@@ -315,6 +339,7 @@
         white-space: nowrap;
     }
 
+    /* Badge color variants */
     .badge-ok {
         background: rgba(22, 163, 74, 0.10);
         color: #16a34a;
@@ -335,9 +360,7 @@
         color: #ef4444;
     }
 
-    /* =========================
-           ALERT BOXES
-        ========================= */
+    /* Alert box layout */
     .alert-box {
         padding: 18px 20px;
         border-radius: 18px;
@@ -347,21 +370,21 @@
         gap: 12px;
     }
 
+    /* Critical alert style */
     .alert-critical {
         background: rgba(239, 68, 68, 0.08);
         color: #b91c1c;
         border: 1px solid rgba(239, 68, 68, 0.14);
     }
 
+    /* Success/info alert style */
     .alert-ok {
         background: rgba(22, 163, 74, 0.08);
         color: #15803d;
         border: 1px solid rgba(22, 163, 74, 0.14);
     }
 
-    /* =========================
-           CHARTS
-        ========================= */
+    /* Chart container */
     .chart-box {
         position: relative;
         width: 100%;
@@ -371,47 +394,67 @@
         overflow: hidden;
     }
 
+        /* Medium chart height */
         .chart-box.chart-sm {
             height: 260px;
             min-height: 260px;
             max-height: 260px;
         }
 
+        /* Small chart height */
         .chart-box.chart-xs {
             height: 220px;
             min-height: 220px;
             max-height: 220px;
         }
 
+        /* Ensure canvas fills container */
         .chart-box canvas {
             width: 100% !important;
             height: 100% !important;
             display: block;
         }
 
-    /* =========================
-           EMPTY STATE
-        ========================= */
+    /* Empty state message */
     .empty-box {
         text-align: center;
         padding: 42px 10px;
         color: #64748b;
     }
+
+    /* Mobile responsive adjustments */
+    @@media (max-width: 576px) {
+        .hero-card {
+            padding: 24px;
+        }
+
+        .hero-title {
+            font-size: 1.9rem;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hero-btn {
+            width: 100%;
+        }
+    }
 </style>
 
 <div class="container py-4">
-    <!-- =========================
-         HERO SECTION
-    ========================= -->
+    <!-- Dashboard hero section -->
     <div class="hero-card">
-        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-4">
-            <div>
+        <div class="hero-content">
+            <div class="hero-text">
                 <h1 class="hero-title">Dashboard</h1>
                 <p class="hero-subtitle">
                     Sistemin genel durumunu, kritik stokları, son eklenen ürünleri ve hareket özetlerini tek ekrandan takip edebilirsin.
                 </p>
             </div>
 
+            <!-- Quick action buttons -->
             <div class="hero-actions">
                 <a asp-controller="Product" asp-action="Create" class="btn btn-primary hero-btn">
                     <i class="bi bi-plus-lg me-2"></i>Yeni Ürün
@@ -426,9 +469,7 @@
         </div>
     </div>
 
-    <!-- =========================
-         STATISTICS
-    ========================= -->
+    <!-- Summary statistic cards -->
     <div class="row g-3 mb-4">
         <div class="col-md-6 col-xl-4">
             <div class="stats-card card-blue">
@@ -503,9 +544,7 @@
         </div>
     </div>
 
-    <!-- =========================
-         ALERT SUMMARY
-    ========================= -->
+    <!-- Critical stock and stock value alerts -->
     <div class="row g-4 mb-4">
         <div class="col-xl-8">
             @if (criticalStockCount > 0 || outOfStockCount > 0)
@@ -535,9 +574,7 @@
         </div>
     </div>
 
-    <!-- =========================
-         LATEST PRODUCTS / MOVEMENTS
-    ========================= -->
+    <!-- Latest products and stock movements -->
     <div class="row g-4 mb-4">
         <div class="col-xl-6">
             <div class="panel-card">
@@ -552,6 +589,7 @@
                         <div class="mini-list">
                             @foreach (var item in latestProducts)
                             {
+                                // Check whether the product is currently at critical stock level
                                 var isCritical = item.StockQuantity <= item.CriticalStockLevel;
                                 <div class="mini-item">
                                     @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
@@ -631,9 +669,7 @@
         </div>
     </div>
 
-    <!-- =========================
-         LATEST AUDIT LOGS
-    ========================= -->
+    <!-- Latest audit logs -->
     <div class="row g-4 mb-4">
         <div class="col-12">
             <div class="panel-card">
@@ -674,9 +710,7 @@
         </div>
     </div>
 
-    <!-- =========================
-         LOW STOCK / SYSTEM SUMMARY
-    ========================= -->
+    <!-- Low stock products and overall system summary -->
     <div class="row g-4 mb-4">
         <div class="col-xl-6">
             <div class="panel-card">
@@ -775,9 +809,7 @@
         </div>
     </div>
 
-    <!-- =========================
-         MAIN CHARTS
-    ========================= -->
+    <!-- Main charts section -->
     <div class="row g-4 mb-4">
         <div class="col-xl-7">
             <div class="panel-card">
@@ -808,9 +840,7 @@
         </div>
     </div>
 
-    <!-- =========================
-         TREND CHARTS
-    ========================= -->
+    <!-- Trend analysis charts -->
     <div class="row g-4">
         <div class="col-xl-6">
             <div class="panel-card">
@@ -859,9 +889,7 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // =========================
-        // CHART DATA
-        // =========================
+        // Raw chart data received from Razor variables
         const categoryLabels = @Html.Raw(categoryLabels);
         const categoryCounts = @Html.Raw(categoryCounts);
         const movementLabels = @Html.Raw(movementLabels);
@@ -873,7 +901,7 @@
         const yearlyMovementLabels = @Html.Raw(yearlyMovementLabels);
         const yearlyMovementCounts = @Html.Raw(yearlyMovementCounts);
 
-        // Create category distribution chart
+        // Creates the category distribution bar chart
         function createCategoryChart() {
             const el = document.getElementById("categoryChart");
             if (!el) return;
@@ -906,7 +934,7 @@
             });
         }
 
-        // Create movement summary chart
+        // Creates the stock movement doughnut chart
         function createMovementChart() {
             const el = document.getElementById("movementChart");
             if (!el) return;
@@ -928,7 +956,7 @@
             });
         }
 
-        // Create daily movement trend chart
+        // Creates the daily stock movement trend line chart
         function createDailyMovementChart() {
             const el = document.getElementById("dailyMovementChart");
             if (!el) return;
@@ -962,7 +990,7 @@
             });
         }
 
-        // Create monthly movement chart
+        // Creates the monthly stock movement bar chart
         function createMonthlyMovementChart() {
             const el = document.getElementById("monthlyMovementChart");
             if (!el) return;
@@ -995,7 +1023,7 @@
             });
         }
 
-        // Create yearly movement chart
+        // Creates the yearly stock movement bar chart
         function createYearlyMovementChart() {
             const el = document.getElementById("yearlyMovementChart");
             if (!el) return;
@@ -1028,9 +1056,7 @@
             });
         }
 
-        // =========================
-        // INITIALIZE CHARTS
-        // =========================
+        // Initialize all dashboard charts
         createCategoryChart();
         createMovementChart();
         createDailyMovementChart();

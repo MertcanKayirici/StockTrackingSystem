@@ -14,6 +14,12 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 ![App Demo](Screenshots/app_overview.gif)
 
+### ⚡ AJAX Live Update
+![AJAX Demo](Screenshots/ajax_live_update.gif)
+
+### 🔄 Stock Movement Create
+![Stock Movement](Screenshots/stock_movement_create.gif)
+
 ---
 
 ## ✨ Key Features
