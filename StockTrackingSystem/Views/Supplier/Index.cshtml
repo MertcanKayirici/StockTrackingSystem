@@ -1,0 +1,863 @@
+﻿@model List<StockTrackingSystem.Models.Supplier>
+
+@{
+    ViewData["Title"] = "Tedarikçi Yönetimi";
+
+    var currentSearch = ViewBag.Search as string;
+    var currentStatus = ViewBag.StatusFilter as string;
+    var currentSort = ViewBag.SortOrder as string;
+    var currentStartDate = ViewBag.StartDate as string;
+    var currentEndDate = ViewBag.EndDate as string;
+
+    int totalCount = ViewBag.TotalCount != null ? (int)ViewBag.TotalCount : 0;
+    int activeCount = ViewBag.ActiveCount != null ? (int)ViewBag.ActiveCount : 0;
+    int passiveCount = ViewBag.PassiveCount != null ? (int)ViewBag.PassiveCount : 0;
+    int filteredCount = ViewBag.FilteredCount != null ? (int)ViewBag.FilteredCount : 0;
+}
+
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .page-card, .stats-card, .filter-card, .table-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+
+    .add-btn {
+        border-radius: 999px;
+        padding: 14px 28px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .stats-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+        height: 100%;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+        border: 1px solid #eef2f7;
+        transition: all 0.22s ease;
+        overflow: hidden;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+        }
+
+        .stats-card::after {
+            content: "";
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            opacity: 0.08;
+        }
+
+    .stats-card-total::after {
+        background: #0f172a;
+    }
+
+    .stats-card-active::after {
+        background: #16a34a;
+    }
+
+    .stats-card-passive::after {
+        background: #ef4444;
+    }
+
+    .stats-card-filtered::after {
+        background: #2563eb;
+    }
+
+    .stats-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .stats-card-total .stats-icon {
+        background: rgba(15, 23, 42, 0.08);
+        color: #0f172a;
+    }
+
+    .stats-card-active .stats-icon {
+        background: rgba(22, 163, 74, 0.10);
+        color: #16a34a;
+    }
+
+    .stats-card-passive .stats-icon {
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+    }
+
+    .stats-card-filtered .stats-icon {
+        background: rgba(37, 99, 235, 0.10);
+        color: #2563eb;
+    }
+
+    .stats-label {
+        color: #64748b;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .stats-value {
+        font-size: 2.1rem;
+        font-weight: 800;
+        line-height: 1;
+        color: #0f172a;
+    }
+
+    .filter-card {
+        padding: 28px;
+        margin-bottom: 24px;
+    }
+
+    .filter-title {
+        display: block;
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .form-control, .form-select {
+        min-height: 54px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+        padding-left: 16px;
+        padding-right: 16px;
+        background: #fff;
+        font-size: 1rem;
+        box-shadow: none;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
+        }
+
+    .clear-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 20px;
+        border-radius: 16px;
+        background: #f8fafc;
+        border: 1px solid #dbe2ea;
+        color: #334155;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .clear-filter-btn:hover {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+        }
+
+    .table-card {
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 26px 28px 16px 28px;
+    }
+
+    .table-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .table-subtitle {
+        color: #64748b;
+        margin-bottom: 0;
+    }
+
+    .supplier-table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-weight: 800;
+        border-bottom: 1px solid #edf2f7;
+        padding-top: 18px;
+        padding-bottom: 18px;
+        white-space: nowrap;
+    }
+
+    .supplier-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+        .supplier-table tbody tr:hover {
+            background: #f8fbff;
+            transform: translateY(-1px);
+        }
+
+    .supplier-table tbody td {
+        vertical-align: middle;
+        padding-top: 18px;
+        padding-bottom: 18px;
+        border-color: #f1f5f9;
+    }
+
+    .supplier-name {
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 4px;
+        font-size: 1rem;
+    }
+
+    .supplier-sub {
+        color: #64748b;
+        font-size: 0.93rem;
+    }
+
+    .status-switch-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .modern-switch {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 30px;
+        margin: 0;
+    }
+
+        .modern-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .modern-switch .slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: #e5e7eb;
+            transition: .25s ease;
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+        }
+
+            .modern-switch .slider:before {
+                content: "";
+                position: absolute;
+                height: 22px;
+                width: 22px;
+                left: 4px;
+                top: 4px;
+                background: white;
+                transition: .25s ease;
+                border-radius: 50%;
+                box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+            }
+
+        .modern-switch input:checked + .slider {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+        }
+
+            .modern-switch input:checked + .slider:before {
+                transform: translateX(24px);
+            }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        min-width: 64px;
+        font-size: 0.94rem;
+        font-weight: 800;
+    }
+
+    .status-active {
+        color: #16a34a;
+    }
+
+    .status-passive {
+        color: #ef4444;
+    }
+
+    .date-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 112px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #334155;
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+
+    .action-btn {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.22s ease;
+        background: #fff;
+    }
+
+        .action-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        }
+
+    .btn-detail {
+        border: 1.5px solid #0ea5e9;
+        color: #0ea5e9;
+    }
+
+        .btn-detail:hover {
+            background: #0ea5e9;
+            color: white;
+        }
+
+    .btn-edit {
+        border: 1.5px solid #f59e0b;
+        color: #f59e0b;
+    }
+
+        .btn-edit:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+    .btn-delete {
+        border: 1.5px solid #ef4444;
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+    .delete-modal-content {
+        border: 0;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .delete-modal-header {
+        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 24px;
+    }
+
+    .delete-modal-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .delete-modal-body {
+        padding: 28px 24px 18px 24px;
+        text-align: center;
+    }
+
+    .delete-icon-wrap {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        margin: 0 auto 16px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+        font-size: 2rem;
+    }
+
+    .delete-main-text {
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .delete-sub-text {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+
+    .delete-item-name {
+        color: #ef4444;
+        font-weight: 800;
+    }
+
+    .delete-modal-footer {
+        border-top: 0;
+        padding: 0 24px 24px 24px;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .delete-cancel-btn, .delete-confirm-btn {
+        min-height: 50px;
+        border-radius: 16px;
+        padding: 0 22px;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        padding: 70px 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="page-title">Tedarikçi Yönetimi</h1>
+                <p class="page-subtitle">Tedarikçileri filtrele, durumlarını görüntüle ve hızlıca yönet.</p>
+            </div>
+
+            <a asp-controller="Supplier" asp-action="Create" class="btn btn-primary add-btn">
+                <i class="bi bi-plus-lg me-2"></i>Yeni Tedarikçi
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-total">
+                <div class="stats-icon"><i class="bi bi-buildings-fill"></i></div>
+                <div>
+                    <div class="stats-label">Toplam Tedarikçi</div>
+                    <div class="stats-value" id="totalCount">@totalCount</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-active">
+                <div class="stats-icon"><i class="bi bi-check-circle-fill"></i></div>
+                <div>
+                    <div class="stats-label">Aktif</div>
+                    <div class="stats-value" id="activeCount">@activeCount</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-passive">
+                <div class="stats-icon"><i class="bi bi-x-circle-fill"></i></div>
+                <div>
+                    <div class="stats-label">Pasif</div>
+                    <div class="stats-value" id="passiveCount">@passiveCount</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-filtered">
+                <div class="stats-icon"><i class="bi bi-funnel-fill"></i></div>
+                <div>
+                    <div class="stats-label">Filtre Sonucu</div>
+                    <div class="stats-value">@filteredCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <form method="get" asp-action="Index" id="filterForm">
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <label class="filter-title">Arama</label>
+                    <input type="text" name="search" id="searchInput" value="@currentSearch" class="form-control" placeholder="Firma, yetkili, telefon veya e-posta ara..." />
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Durum</label>
+                    <select name="statusFilter" id="statusFilter" class="form-select">
+                        <option value="">Tümü</option>
+                        @if (currentStatus == "active")
+                        {
+                            <option value="active" selected>Aktif</option>
+                        }
+                        else
+                        {
+                            <option value="active">Aktif</option>
+                        }
+                        @if (currentStatus == "passive")
+                        {
+                            <option value="passive" selected>Pasif</option>
+                        }
+                        else
+                        {
+                            <option value="passive">Pasif</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Başlangıç</label>
+                    <input type="date" name="startDate" id="startDate" value="@currentStartDate" class="form-control" />
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Bitiş</label>
+                    <input type="date" name="endDate" id="endDate" value="@currentEndDate" class="form-control" />
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="filter-title">Sıralama</label>
+                    <select name="sortOrder" id="sortOrder" class="form-select">
+                        @if (string.IsNullOrEmpty(currentSort))
+                        {
+                            <option value="" selected>Yeniye göre</option>
+                        }
+                        else
+                        {
+                            <option value="">Yeniye göre</option>
+                        }
+                        @if (currentSort == "date_asc")
+                        {
+                            <option value="date_asc" selected>Eskiye göre</option>
+                        }
+                        else
+                        {
+                            <option value="date_asc">Eskiye göre</option>
+                        }
+                        @if (currentSort == "name_asc")
+                        {
+                            <option value="name_asc" selected>A-Z</option>
+                        }
+                        else
+                        {
+                            <option value="name_asc">A-Z</option>
+                        }
+                        @if (currentSort == "name_desc")
+                        {
+                            <option value="name_desc" selected>Z-A</option>
+                        }
+                        else
+                        {
+                            <option value="name_desc">Z-A</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                <a asp-action="Index" class="clear-filter-btn">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Temizle
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success rounded-4 shadow-sm">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="table-card">
+        <div class="table-header d-flex justify-content-between align-items-center">
+            <div>
+                <div class="table-title">Tedarikçi Listesi</div>
+                <p class="table-subtitle mb-0">@filteredCount kayıt listeleniyor</p>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table supplier-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Firma</th>
+                            <th>İletişim</th>
+                            <th>Durum</th>
+                            <th>Oluşturulma</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="row-@item.Id">
+                                <td class="ps-4">
+                                    <div class="supplier-name">@item.CompanyName</div>
+                                    <div class="supplier-sub">@(string.IsNullOrWhiteSpace(item.ContactName) ? "Yetkili kişi yok" : item.ContactName)</div>
+                                </td>
+
+                                <td>
+                                    <div class="supplier-sub">@(!string.IsNullOrWhiteSpace(item.Phone) ? item.Phone : "Telefon yok")</div>
+                                    <div class="supplier-sub">@(!string.IsNullOrWhiteSpace(item.Email) ? item.Email : "E-posta yok")</div>
+                                </td>
+
+                                <td>
+                                    <div class="status-switch-wrap">
+                                        <label class="modern-switch">
+                                            <input type="checkbox"
+                                                   class="status-toggle"
+                                                   data-id="@item.Id"
+                                                   @(item.IsActive ? "checked" : null) />
+                                            <span class="slider"></span>
+                                        </label>
+
+                                        <span class="status-badge @(item.IsActive ? "status-active" : "status-passive")"
+                                              id="statusText-@item.Id">
+                                            @(item.IsActive ? "Aktif" : "Pasif")
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="date-badge">@item.CreatedDate.ToString("dd.MM.yyyy")</span>
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="action-btn btn-detail" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn btn-edit" title="Düzenle">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <button type="button"
+                                                class="action-btn btn-delete border-0"
+                                                title="Sil"
+                                                onclick="openDeleteModal(@item.Id, '@item.CompanyName.Replace("'", "\\'")')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div style="font-size:2.4rem;">🏢</div>
+                <h5 class="fw-bold mt-3">Tedarikçi bulunamadı</h5>
+                <p class="text-muted">Filtrelere uyan tedarikçi kaydı yok.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="deleteSupplierModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content delete-modal-content">
+            <div class="modal-header delete-modal-header">
+                <h5 class="modal-title delete-modal-title">Tedarikçiyi Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+
+            <div class="modal-body delete-modal-body">
+                <div class="delete-icon-wrap">
+                    <i class="bi bi-trash3-fill"></i>
+                </div>
+
+                <div class="delete-main-text">Bu tedarikçiyi silmek istediğine emin misin?</div>
+
+                <p class="delete-sub-text">
+                    <span id="deleteSupplierName" class="delete-item-name"></span>
+                    adlı tedarikçi silinecek.
+                </p>
+            </div>
+
+            <div class="modal-footer delete-modal-footer">
+                <button type="button" class="btn btn-outline-secondary delete-cancel-btn" data-bs-dismiss="modal">
+                    Vazgeç
+                </button>
+
+                <button type="button" class="btn btn-danger delete-confirm-btn" id="confirmDeleteBtn">
+                    Evet, Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const filterForm = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        const statusFilter = document.getElementById("statusFilter");
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        const sortOrder = document.getElementById("sortOrder");
+
+        let debounceTimer;
+
+        function submitFilterForm() {
+            filterForm.submit();
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    submitFilterForm();
+                }, 400);
+            });
+        }
+
+        if (statusFilter) statusFilter.addEventListener("change", submitFilterForm);
+        if (startDate) startDate.addEventListener("change", submitFilterForm);
+        if (endDate) endDate.addEventListener("change", submitFilterForm);
+        if (sortOrder) sortOrder.addEventListener("change", submitFilterForm);
+
+        document.querySelectorAll(".status-toggle").forEach(toggle => {
+            toggle.addEventListener("change", async function () {
+                const checkbox = this;
+                const supplierId = checkbox.dataset.id;
+                const statusText = document.getElementById(`statusText-${supplierId}`);
+
+                try {
+                    const response = await fetch(`/Supplier/ToggleStatus?id=${supplierId}`, {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        checkbox.checked = !checkbox.checked;
+                        alert(result.message);
+                        return;
+                    }
+
+                    statusText.textContent = result.isActive ? "Aktif" : "Pasif";
+                    statusText.classList.remove("status-active", "status-passive");
+                    statusText.classList.add(result.isActive ? "status-active" : "status-passive");
+
+                    document.getElementById("totalCount").textContent = result.totalCount;
+                    document.getElementById("activeCount").textContent = result.activeCount;
+                    document.getElementById("passiveCount").textContent = result.passiveCount;
+                }
+                catch {
+                    checkbox.checked = !checkbox.checked;
+                    alert("Durum güncellenirken hata oluştu.");
+                }
+            });
+        });
+
+        let selectedSupplierId = null;
+        let deleteModalInstance = null;
+
+        function openDeleteModal(id, name) {
+            selectedSupplierId = id;
+
+            const nameEl = document.getElementById("deleteSupplierName");
+            const modalEl = document.getElementById("deleteSupplierModal");
+
+            if (nameEl) {
+                nameEl.textContent = `"${name}"`;
+            }
+
+            if (!deleteModalInstance) {
+                deleteModalInstance = new bootstrap.Modal(modalEl);
+            }
+
+            deleteModalInstance.show();
+        }
+
+        async function deleteSelectedSupplier() {
+            if (!selectedSupplierId) return;
+
+            const confirmBtn = document.getElementById("confirmDeleteBtn");
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = "Siliniyor...";
+
+            try {
+                const response = await fetch(`/Supplier/Delete?id=${selectedSupplierId}`, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    alert(result.message);
+                    return;
+                }
+
+                const row = document.getElementById(`row-${selectedSupplierId}`);
+                if (row) row.remove();
+
+                if (deleteModalInstance) {
+                    deleteModalInstance.hide();
+                }
+
+                location.reload();
+            }
+            catch {
+                alert("Silme işlemi sırasında hata oluştu.");
+            }
+            finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "Evet, Sil";
+                selectedSupplierId = null;
+            }
+        }
+
+        document.getElementById("confirmDeleteBtn")?.addEventListener("click", deleteSelectedSupplier);
+    </script>
+}

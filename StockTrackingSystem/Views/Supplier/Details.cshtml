@@ -1,0 +1,272 @@
+﻿@model StockTrackingSystem.Models.Supplier
+
+@{
+    ViewData["Title"] = "Tedarikçi Detayı";
+}
+
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .page-card, .details-card, .stat-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1.02rem;
+        margin-bottom: 0;
+    }
+
+    .stat-card {
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 100%;
+    }
+
+    .stat-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        background: rgba(37, 99, 235, 0.10);
+        color: #2563eb;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.92rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .stat-value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .details-card {
+        overflow: hidden;
+    }
+
+    .details-header {
+        padding: 24px 28px 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .details-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .details-body {
+        padding: 28px;
+    }
+
+    .detail-item {
+        padding: 18px 20px;
+        border: 1px solid #eef2f7;
+        border-radius: 18px;
+        background: #f8fafc;
+        height: 100%;
+    }
+
+    .detail-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .detail-value {
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: #0f172a;
+        word-break: break-word;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 0.92rem;
+        font-weight: 800;
+    }
+
+    .status-active {
+        background: rgba(22, 163, 74, 0.10);
+        color: #16a34a;
+    }
+
+    .status-passive {
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .action-btn-main, .action-btn-secondary {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        font-size: 0.98rem;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="page-title">Tedarikçi Detayı</h1>
+                <p class="page-subtitle">Tedarikçiye ait temel bilgileri ve bağlı ürün sayısını görüntüleyebilirsin.</p>
+            </div>
+
+            <a asp-action="Index" class="btn btn-outline-secondary action-btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Listeye Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                <div>
+                    <div class="stat-label">Bağlı Ürün Sayısı</div>
+                    <div class="stat-value">@(Model.Products?.Count ?? 0)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-hash"></i></div>
+                <div>
+                    <div class="stat-label">Tedarikçi ID</div>
+                    <div class="stat-value">#@Model.Id</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-calendar2-check"></i></div>
+                <div>
+                    <div class="stat-label">Oluşturulma Tarihi</div>
+                    <div class="stat-value" style="font-size:1.15rem;">@Model.CreatedDate.ToString("dd.MM.yyyy")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="details-card">
+        <div class="details-header">
+            <div class="details-title">Tedarikçi Bilgileri</div>
+        </div>
+
+        <div class="details-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <div class="detail-label">Firma Adı</div>
+                        <div class="detail-value">@Model.CompanyName</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <div class="detail-label">Durum</div>
+                        <div class="detail-value">
+                            <span class="status-badge @(Model.IsActive ? "status-active" : "status-passive")">
+                                <i class="bi @(Model.IsActive ? "bi-check-circle-fill" : "bi-x-circle-fill")"></i>
+                                @(Model.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <div class="detail-label">Yetkili Kişi</div>
+                        <div class="detail-value">@(string.IsNullOrWhiteSpace(Model.ContactName) ? "-" : Model.ContactName)</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <div class="detail-label">Telefon</div>
+                        <div class="detail-value">@(string.IsNullOrWhiteSpace(Model.Phone) ? "-" : Model.Phone)</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <div class="detail-label">E-posta</div>
+                        <div class="detail-value">@(string.IsNullOrWhiteSpace(Model.Email) ? "-" : Model.Email)</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="detail-item">
+                        <div class="detail-label">Güncellenme Tarihi</div>
+                        <div class="detail-value">@(Model.UpdatedDate.HasValue? Model.UpdatedDate.Value.ToString("dd.MM.yyyy HH:mm") : "-")</div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="detail-item">
+                        <div class="detail-label">Adres</div>
+                        <div class="detail-value">@(string.IsNullOrWhiteSpace(Model.Address) ? "-" : Model.Address)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning action-btn-main">
+                    <i class="bi bi-pencil-square me-2"></i>Düzenle
+                </a>
+
+                <a asp-action="Index" class="btn btn-outline-secondary action-btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Geri Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
