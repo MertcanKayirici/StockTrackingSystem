@@ -22,6 +22,7 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 ## ✨ Features
 
+<<<<<<< HEAD
 ### 📦 Product Management
 - Full CRUD operations  
 - Category-based organization  
@@ -50,6 +51,19 @@ This project provides a complete solution for managing **products, suppliers, ca
 - Audit log system (action tracking)  
 - Date-based filtering & sorting  
 - Responsive and modern UI (Bootstrap 5)  
+=======
+- 📦 Product Management (CRUD)  
+- 🏢 Supplier Management (CRUD + status toggle)  
+- 🗂️ Category Management  
+- 🔄 Stock In / Stock Out System  
+- 📊 Real-time Dashboard Statistics  
+- 📥 Advanced Export System (Excel / PDF with dynamic filtering support)
+- ⚡ AJAX-based Status Updates (Active / Passive toggle)  
+- 🧾 Audit Log System (tracking all actions)  
+- 🔍 Advanced Filtering & Search (supplier panel)  
+- 📅 Date-based filtering & sorting  
+- 🎨 Modern UI (custom CSS + Bootstrap 5)  
+>>>>>>> acfb166 (Enhance README with export feature, architecture improvements and professional descriptions)
 
 ---
 
@@ -66,7 +80,21 @@ This project provides a complete solution for managing **products, suppliers, ca
 
 ## 📸 Screenshots
 
+<<<<<<< HEAD
 ### 📊 Dashboard
+=======
+### 📥 Export Feature (Excel / PDF)
+
+- Export filtered data directly from the admin panel  
+- Supports Excel (.xlsx) and PDF (.pdf) formats  
+- Maintains active filters during export  
+
+![Export Demo](Screenshots/export-demo.gif)
+
+---
+
+### 📦 Product & Stock Management
+>>>>>>> acfb166 (Enhance README with export feature, architecture improvements and professional descriptions)
 
 ![Dashboard Overview](Screenshots/dashboard.png)
 
@@ -185,6 +213,7 @@ Run the project using **Visual Studio (F5)** 🚀
 
 ---
 
+<<<<<<< HEAD
 ## 📌 Important Notes
 - Ensure SQL Server is running
 - Update the connection string if needed
@@ -198,13 +227,24 @@ Run the project using **Visual Studio (F5)** 🚀
 - Views → Razor Views  
 - Database → SQL Scripts  
 - Screenshots → Images & GIFs  
+=======
+## 📌 Architecture Highlights
+- Layered MVC architecture
+- Separation of concerns (Controller / Service / Data layers)
+- Entity relationships with strong constraints
+- Reusable UI components
+- AJAX-driven dynamic interactions
+- Centralized logging (Audit Log system)
+>>>>>>> acfb166 (Enhance README with export feature, architecture improvements and professional descriptions)
 
 ---
 
 ## 👨‍💻 Developer
 
-Mertcan Kayırıcı
+**Mertcan Kayırıcı**  
+Backend-Focused Full Stack Developer
 
+<<<<<<< HEAD
 Backend-focused Full Stack Developer
 ASP.NET Core & SQL Server
 
@@ -220,3 +260,28 @@ This project was developed to simulate a real-world stock tracking system, focus
 - Real-time data management
 
 ---
+=======
+GitHub: https://github.com/MertcanKayirici
+LinkedIn: https://www.linkedin.com/in/mertcankayirici
+
+---
+
+## 💡 Project Purpose
+
+This project was built to demonstrate **real-world backend development skills**, including:
+
+- Data modeling & relational design  
+- Business logic implementation  
+- Admin panel architecture  
+- Reporting & export systems  
+
+It is part of my professional portfolio.
+
+--- 
+
+## ⭐️ Support
+
+If you like this project, don't forget to star ⭐ the repository.
+
+
+>>>>>>> acfb166 (Enhance README with export feature, architecture improvements and professional descriptions)
