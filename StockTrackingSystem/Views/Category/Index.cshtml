@@ -17,53 +17,131 @@
 
 <style>
     body {
-        background: #f8fafc;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     }
 
     .page-card,
     .stats-card,
     .filter-card,
     .table-card {
-        border: 0;
+        border: 1px solid #e9eef5;
         border-radius: 24px;
         background: #ffffff;
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
 
     .page-card {
-        padding: 30px 32px;
+        padding: 32px;
         margin-bottom: 24px;
     }
 
     .page-title {
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 800;
         color: #0f172a;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
     }
 
     .page-subtitle {
         color: #64748b;
-        font-size: 1.05rem;
+        font-size: 1rem;
         margin-bottom: 0;
     }
 
     .add-btn {
         border-radius: 999px;
-        padding: 14px 28px;
+        padding: 13px 26px;
         font-weight: 700;
-        font-size: 1rem;
+        font-size: 0.98rem;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+        transition: all 0.2s ease;
     }
 
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+        }
+
     .stats-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 16px;
         padding: 24px;
         height: 100%;
+        overflow: hidden;
+        transition: all 0.25s ease;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+        }
+
+        .stats-card::after {
+            content: "";
+            position: absolute;
+            right: -24px;
+            top: -24px;
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            opacity: 0.08;
+        }
+
+    .stats-card-total::after {
+        background: #0f172a;
+    }
+
+    .stats-card-active::after {
+        background: #16a34a;
+    }
+
+    .stats-card-passive::after {
+        background: #ef4444;
+    }
+
+    .stats-card-filtered::after {
+        background: #2563eb;
+    }
+
+    .stats-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .stats-card-total .stats-icon {
+        background: rgba(15, 23, 42, 0.08);
+        color: #0f172a;
+    }
+
+    .stats-card-active .stats-icon {
+        background: rgba(22, 163, 74, 0.10);
+        color: #16a34a;
+    }
+
+    .stats-card-passive .stats-icon {
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+    }
+
+    .stats-card-filtered .stats-icon {
+        background: rgba(37, 99, 235, 0.10);
+        color: #2563eb;
     }
 
     .stats-label {
         color: #64748b;
-        font-size: 1rem;
-        margin-bottom: 8px;
+        font-size: 0.92rem;
+        font-weight: 700;
+        margin-bottom: 6px;
     }
 
     .stats-value {
@@ -92,7 +170,7 @@
 
     .filter-title {
         display: block;
-        font-size: 0.96rem;
+        font-size: 0.92rem;
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 10px;
@@ -100,16 +178,25 @@
 
     .form-control,
     .form-select {
-        min-height: 54px;
+        min-height: 52px;
         border-radius: 16px;
         border: 1px solid #dbe2ea;
-        padding-left: 16px;
-        padding-right: 16px;
+        padding: 0 16px;
         background: #fff;
-        font-size: 1rem;
+        font-size: 0.96rem;
+        color: #0f172a;
         box-shadow: none;
         transition: all 0.2s ease;
     }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-control:hover,
+        .form-select:hover {
+            border-color: #cbd5e1;
+        }
 
         .form-control:focus,
         .form-select:focus {
@@ -117,11 +204,38 @@
             box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
         }
 
-    .btn-soft {
-        min-height: 52px;
-        border-radius: 16px;
-        padding: 0 22px;
+    .clear-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid #dbe2ea;
+        color: #334155;
         font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .clear-filter-btn:hover {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .quick-pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        color: #334155;
     }
 
     .table-card {
@@ -129,11 +243,13 @@
     }
 
     .table-header {
-        padding: 26px 28px 16px 28px;
+        padding: 24px 28px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     }
 
     .table-title {
-        font-size: 1.2rem;
+        font-size: 1.18rem;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 4px;
@@ -142,6 +258,7 @@
     .table-subtitle {
         color: #64748b;
         margin-bottom: 0;
+        font-size: 0.95rem;
     }
 
     .category-table {
@@ -155,16 +272,16 @@
             border-bottom: 1px solid #edf2f7;
             padding-top: 18px;
             padding-bottom: 18px;
+            font-size: 0.9rem;
             white-space: nowrap;
         }
 
         .category-table tbody tr {
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
             .category-table tbody tr:hover {
                 background: #f8fbff;
-                transform: translateY(-1px);
             }
 
         .category-table tbody td {
@@ -183,7 +300,8 @@
 
     .category-desc {
         color: #64748b;
-        font-size: 0.93rem;
+        font-size: 0.92rem;
+        line-height: 1.5;
         max-width: 420px;
     }
 
@@ -191,13 +309,13 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 112px;
+        min-width: 116px;
         border: 1px solid #e2e8f0;
         background: #ffffff;
         color: #334155;
         border-radius: 999px;
         padding: 9px 16px;
-        font-size: 0.88rem;
+        font-size: 0.87rem;
         font-weight: 700;
     }
 
@@ -226,7 +344,7 @@
             inset: 0;
             cursor: pointer;
             background: #e5e7eb;
-            transition: .25s ease;
+            transition: 0.25s ease;
             border-radius: 999px;
             box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
         }
@@ -238,8 +356,8 @@
                 width: 22px;
                 left: 4px;
                 top: 4px;
-                background: white;
-                transition: .25s ease;
+                background: #ffffff;
+                transition: 0.25s ease;
                 border-radius: 50%;
                 box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
             }
@@ -255,8 +373,8 @@
     .status-badge {
         display: inline-flex;
         align-items: center;
-        min-width: 64px;
-        font-size: 0.94rem;
+        min-width: 68px;
+        font-size: 0.92rem;
         font-weight: 800;
     }
 
@@ -269,23 +387,23 @@
     }
 
     .action-btn {
-        width: 46px;
-        height: 46px;
+        width: 44px;
+        height: 44px;
         border-radius: 14px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         text-decoration: none;
         transition: all 0.22s ease;
-        background: #fff;
+        background: #ffffff;
     }
 
         .action-btn i {
-            font-size: 1.05rem;
+            font-size: 1rem;
         }
 
         .action-btn:hover {
-            transform: translateY(-2px) scale(1.03);
+            transform: translateY(-2px);
             box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
         }
 
@@ -296,7 +414,7 @@
 
         .btn-detail:hover {
             background: #0ea5e9;
-            color: white;
+            color: #ffffff;
         }
 
     .btn-edit {
@@ -306,7 +424,7 @@
 
         .btn-edit:hover {
             background: #f59e0b;
-            color: white;
+            color: #ffffff;
         }
 
     .btn-delete {
@@ -316,34 +434,75 @@
 
         .btn-delete:hover {
             background: #ef4444;
-            color: white;
+            color: #ffffff;
         }
 
-    .quick-pill {
-        display: inline-flex;
-        align-items: center;
-        border-radius: 999px;
-        padding: 8px 14px;
-        font-size: 0.82rem;
-        font-weight: 700;
-        border: 1px solid #e5e7eb;
-        background: #fff;
-        color: #374151;
-    }
-
     .empty-state {
-        padding: 70px 20px;
+        padding: 72px 20px;
         text-align: center;
     }
 
     .empty-icon {
-        font-size: 2.4rem;
+        font-size: 2.5rem;
         margin-bottom: 12px;
     }
 
     .loading-toggle {
         opacity: 0.65;
         pointer-events: none;
+    }
+
+    .alert {
+        border: 0;
+        border-radius: 18px;
+    }
+
+    @@media (max-width: 991.98px) {
+        .page-card,
+        .filter-card,
+        .table-header {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .page-title {
+            font-size: 1.7rem;
+        }
+
+        .stats-value {
+            font-size: 1.7rem;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .page-card {
+            padding: 24px 20px;
+        }
+
+        .filter-card {
+            padding: 22px 18px;
+        }
+
+        .table-header {
+            padding: 20px 18px 14px;
+        }
+
+        .category-table thead th,
+        .category-table tbody td {
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+        }
+
+        .date-badge {
+            min-width: auto;
+            padding: 8px 14px;
+        }
     }
 </style>
 
@@ -362,31 +521,51 @@
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="stats-label">Toplam Kategori</div>
-                <div class="stats-value" id="totalCount">@totalCount</div>
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-total">
+                <div class="stats-icon">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                </div>
+                <div>
+                    <div class="stats-label">Toplam Kategori</div>
+                    <div class="stats-value" id="totalCount">@totalCount</div>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="stats-label">Aktif</div>
-                <div class="stats-value active" id="activeCount">@activeCount</div>
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-active">
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div>
+                    <div class="stats-label">Aktif</div>
+                    <div class="stats-value active" id="activeCount">@activeCount</div>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="stats-label">Pasif</div>
-                <div class="stats-value passive" id="passiveCount">@passiveCount</div>
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-passive">
+                <div class="stats-icon">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <div>
+                    <div class="stats-label">Pasif</div>
+                    <div class="stats-value passive" id="passiveCount">@passiveCount</div>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="stats-label">Filtre Sonucu</div>
-                <div class="stats-value filtered" id="filteredCount">@filteredCount</div>
+        <div class="col-md-6 col-xl-3">
+            <div class="stats-card stats-card-filtered">
+                <div class="stats-icon">
+                    <i class="bi bi-funnel-fill"></i>
+                </div>
+                <div>
+                    <div class="stats-label">Filtre Sonucu</div>
+                    <div class="stats-value filtered" id="filteredCount">@filteredCount</div>
+                </div>
             </div>
         </div>
     </div>
@@ -489,7 +668,10 @@
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
-                <a asp-action="Index" class="btn btn-outline-secondary btn-soft">Temizle</a>
+                <a asp-action="Index" class="clear-filter-btn">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Temizle
+                </a>
 
                 @if (!string.IsNullOrWhiteSpace(currentSearch))
                 {
@@ -562,12 +744,12 @@
                                     <div class="category-name">@item.Name</div>
                                     <div class="category-desc">
                                         @(string.IsNullOrWhiteSpace(item.Description)
-                                                                        ? "Açıklama bulunmuyor."
-                                                                        : item.Description.Length > 70
-                                                                        ? item.Description.Substring(0, 70) + "..."
-                                                                        : item.Description)
-                            </div>
-                        </td>
+                                            ? "Açıklama bulunmuyor."
+                                            : item.Description.Length > 70
+                                                ? item.Description.Substring(0, 70) + "..."
+                                                : item.Description)
+                                    </div>
+                                </td>
 
                                 <td>
                                     <div class="status-switch-wrap">
@@ -608,7 +790,7 @@
                                     </div>
                                 </td>
                             </tr>
-                                        }
+                        }
                     </tbody>
                 </table>
             </div>
