@@ -113,6 +113,50 @@ namespace StockTrackingSystem.Controllers
             return View(products);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.Categories = await _context.Categories
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Name)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                })
+                .ToListAsync();
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Product product)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = await _context.Categories
+                    .Where(x => x.IsActive)
+                    .OrderBy(x => x.Name)
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name
+                    })
+                    .ToListAsync();
+
+                return View(product);
+            }
+
+            product.CreatedDate = DateTime.Now;
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Ürün başarıyla eklendi.";
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpPost]
         public async Task<IActionResult> ToggleStatus(int id)
         {

@@ -1,0 +1,368 @@
+﻿@model StockTrackingSystem.Models.Product
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Ürün Ekle";
+    var categories = ViewBag.Categories as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .create-page-card,
+    .create-form-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .create-page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .create-page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .create-page-subtitle {
+        color: #64748b;
+        font-size: 1.02rem;
+        margin-bottom: 0;
+    }
+
+    .create-form-card {
+        overflow: hidden;
+    }
+
+    .create-form-header {
+        padding: 24px 28px 12px 28px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .create-form-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .create-form-text {
+        color: #64748b;
+        margin-bottom: 0;
+        font-size: 0.96rem;
+    }
+
+    .create-form-body {
+        padding: 28px;
+    }
+
+    .form-label {
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .form-control,
+    .form-select,
+    textarea.form-control {
+        min-height: 54px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+        padding-left: 16px;
+        padding-right: 16px;
+        background: #fff;
+        font-size: 1rem;
+        box-shadow: none;
+        transition: all 0.2s ease;
+    }
+
+    textarea.form-control {
+        min-height: 130px;
+        padding-top: 14px;
+        resize: vertical;
+    }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea.form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
+        }
+
+    .form-hint {
+        color: #64748b;
+        font-size: 0.88rem;
+        margin-top: 8px;
+    }
+
+    .validation-summary-errors,
+    .alert-danger {
+        border-radius: 16px;
+        border: 0;
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+    }
+
+    .status-box {
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 16px 18px;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+    }
+
+    .status-box-left h6 {
+        margin: 0 0 4px 0;
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 1rem;
+    }
+
+    .status-box-left p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .modern-switch {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 30px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+        .modern-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .modern-switch .slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: #e5e7eb;
+            transition: .25s ease;
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+        }
+
+            .modern-switch .slider:before {
+                content: "";
+                position: absolute;
+                height: 22px;
+                width: 22px;
+                left: 4px;
+                top: 4px;
+                background: white;
+                transition: .25s ease;
+                border-radius: 50%;
+                box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+            }
+
+        .modern-switch input:checked + .slider {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+        }
+
+            .modern-switch input:checked + .slider:before {
+                transform: translateX(24px);
+            }
+
+    .status-text {
+        min-width: 56px;
+        text-align: right;
+        font-size: 0.92rem;
+        font-weight: 800;
+    }
+
+    .status-active {
+        color: #16a34a;
+    }
+
+    .status-passive {
+        color: #ef4444;
+    }
+
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .save-btn {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        font-size: 0.98rem;
+    }
+
+    .cancel-btn {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        font-size: 0.98rem;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="create-page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="create-page-title">Yeni Ürün Ekle</h1>
+                <p class="create-page-subtitle">Yeni ürün oluşturarak stok sistemine kayıt ekleyebilirsin.</p>
+            </div>
+
+            <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
+                <i class="bi bi-arrow-left me-2"></i>Listeye Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="create-form-card">
+        <div class="create-form-header">
+            <div class="create-form-title">Ürün Bilgileri</div>
+            <p class="create-form-text">Ürünün temel bilgilerini, stok durumunu ve kategori seçimini doldur.</p>
+        </div>
+
+        <div class="create-form-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label">Ürün Adı</label>
+                        <input asp-for="Name" class="form-control" placeholder="Örn: Laptop, Klavye, Kahve" />
+                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-hint">Liste ekranında görünecek ana ürün adı.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CategoryId" class="form-label">Kategori</label>
+                        <select asp-for="CategoryId" class="form-select">
+                            <option value="">Kategori Seçiniz</option>
+                            @foreach (var category in categories)
+                            {
+                                <option value="@category.Value">@category.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-hint">Ürünün ait olduğu aktif kategoriyi seç.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Ürünle ilgili kısa açıklama giriniz..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-hint">İsteğe bağlıdır. Liste ekranında kısa özet olarak gösterilir.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="UnitPrice" class="form-label">Birim Fiyat</label>
+                        <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                        <span asp-validation-for="UnitPrice" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StockQuantity" class="form-label">Stok Miktarı</label>
+                        <input asp-for="StockQuantity" class="form-control" type="number" min="0" placeholder="0" />
+                        <span asp-validation-for="StockQuantity" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="CriticalStockLevel" class="form-label">Kritik Stok Seviyesi</label>
+                        <input asp-for="CriticalStockLevel" class="form-control" type="number" min="0" placeholder="5" />
+                        <span asp-validation-for="CriticalStockLevel" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ImageUrl" class="form-label">Görsel URL</label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                        <span asp-validation-for="ImageUrl" class="text-danger small mt-1 d-block"></span>
+                        <div class="form-hint">Şimdilik opsiyonel. Sonradan görsel önizleme de ekleyebiliriz.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Durum</label>
+
+                        <div class="status-box">
+                            <div class="status-box-left">
+                                <h6>Ürün Durumu</h6>
+                                <p>Yeni ürün aktif olarak oluşturulsun mu?</p>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <label class="modern-switch">
+                                    <input asp-for="IsActive" id="isActiveSwitch" />
+                                    <span class="slider"></span>
+                                </label>
+
+                                <span id="statusLabel" class="status-text @(Model?.IsActive ?? true ? "status-active" : "status-passive")">
+                                    @(Model?.IsActive ?? true ? "Aktif" : "Pasif")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary save-btn">
+                        <i class="bi bi-check2-circle me-2"></i>Kaydet
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
+                        <i class="bi bi-x-circle me-2"></i>Vazgeç
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const isActiveSwitch = document.getElementById("isActiveSwitch");
+        const statusLabel = document.getElementById("statusLabel");
+
+        function updateStatusLabel() {
+            if (!isActiveSwitch || !statusLabel) return;
+
+            if (isActiveSwitch.checked) {
+                statusLabel.textContent = "Aktif";
+                statusLabel.classList.remove("status-passive");
+                statusLabel.classList.add("status-active");
+            } else {
+                statusLabel.textContent = "Pasif";
+                statusLabel.classList.remove("status-active");
+                statusLabel.classList.add("status-passive");
+            }
+        }
+
+        if (isActiveSwitch) {
+            updateStatusLabel();
+            isActiveSwitch.addEventListener("change", updateStatusLabel);
+        }
+    </script>
+}
