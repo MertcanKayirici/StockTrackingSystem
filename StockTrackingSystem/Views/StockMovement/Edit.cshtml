@@ -131,6 +131,37 @@
         background: #f8fafc;
     }
 
+    .product-stock-info-card {
+        border: 1px solid #dbeafe;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+        padding: 18px;
+    }
+
+    .stock-info-box {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 16px;
+        height: 100%;
+    }
+
+    .stock-info-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 8px;
+    }
+
+    .stock-info-value {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #0f172a;
+        word-break: break-word;
+    }
+
     .form-actions {
         display: flex;
         flex-wrap: wrap;
@@ -196,7 +227,7 @@
                 <div class="row g-4">
                     <div class="col-md-6">
                         <label asp-for="ProductId" class="form-label">Ürün</label>
-                        <select asp-for="ProductId" class="form-select">
+                        <select asp-for="ProductId" class="form-select" id="ProductId">
                             <option value="">Ürün Seçiniz</option>
                             @foreach (var product in products)
                             {
@@ -215,6 +246,47 @@
                             <option value="Out" selected="@(Model.MovementType == "Out")">Çıkış (Out)</option>
                         </select>
                         <span asp-validation-for="MovementType" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="product-stock-info-card" id="productStockInfoCard" style="display:none;">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="stock-info-box">
+                                        <div class="stock-info-label">Ürün</div>
+                                        <div class="stock-info-value" id="infoProductName">-</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="stock-info-box">
+                                        <div class="stock-info-label">Kategori</div>
+                                        <div class="stock-info-value" id="infoCategoryName">-</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="stock-info-box">
+                                        <div class="stock-info-label">Mevcut Stok</div>
+                                        <div class="stock-info-value text-primary" id="infoCurrentStock">0</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="stock-info-box">
+                                        <div class="stock-info-label">Kritik Stok</div>
+                                        <div class="stock-info-value text-danger" id="infoCriticalStock">0</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="stock-info-box">
+                                        <div class="stock-info-label">Birim / Fiyat</div>
+                                        <div class="stock-info-value" id="infoUnitTypePrice">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -276,4 +348,47 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const productSelect = document.getElementById("ProductId");
+        const productStockInfoCard = document.getElementById("productStockInfoCard");
+
+        async function loadProductStockInfo(productId) {
+            if (!productId) {
+                productStockInfoCard.style.display = "none";
+                return;
+            }
+
+            try {
+                const response = await fetch(`/StockMovement/GetProductStockInfo?productId=${productId}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    productStockInfoCard.style.display = "none";
+                    return;
+                }
+
+                document.getElementById("infoProductName").textContent = result.name;
+                document.getElementById("infoCategoryName").textContent = result.categoryName;
+                document.getElementById("infoCurrentStock").textContent = result.currentStock;
+                document.getElementById("infoCriticalStock").textContent = result.criticalStock;
+                document.getElementById("infoUnitTypePrice").textContent =
+                    `${result.unitType} / ${result.unitPrice.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}`;
+
+                productStockInfoCard.style.display = "block";
+            } catch (error) {
+                productStockInfoCard.style.display = "none";
+            }
+        }
+
+        if (productSelect) {
+            productSelect.addEventListener("change", function () {
+                loadProductStockInfo(this.value);
+            });
+
+            if (productSelect.value) {
+                loadProductStockInfo(productSelect.value);
+            }
+        }
+    </script>
 }

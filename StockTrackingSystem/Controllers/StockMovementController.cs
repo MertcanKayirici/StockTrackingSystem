@@ -308,5 +308,34 @@ namespace StockTrackingSystem.Controllers
                 product.StockQuantity += movement.Quantity;
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProductStockInfo(int productId)
+        {
+            var product = await _context.Products
+                .Include(x => x.Category)
+                .FirstOrDefaultAsync(x => x.Id == productId);
+
+            if (product == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Ürün bulunamadı."
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                productId = product.Id,
+                name = product.Name,
+                currentStock = product.StockQuantity,
+                criticalStock = product.CriticalStockLevel,
+                unitType = product.UnitType,
+                categoryName = product.Category != null ? product.Category.Name : "-",
+                unitPrice = product.UnitPrice
+            });
+        }
     }
 }
