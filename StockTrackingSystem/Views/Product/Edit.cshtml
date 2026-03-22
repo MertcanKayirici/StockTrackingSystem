@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "Ürün Ekle";
+    ViewData["Title"] = "Ürün Düzenle";
     var categories = ViewBag.Categories as List<SelectListItem> ?? new List<SelectListItem>();
     var suppliers = ViewBag.Suppliers as List<SelectListItem> ?? new List<SelectListItem>();
 }
@@ -12,54 +12,54 @@
         background: #f8fafc;
     }
 
-    .create-page-card, .create-form-card {
+    .edit-page-card, .edit-form-card {
         border: 0;
         border-radius: 24px;
         background: #ffffff;
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     }
 
-    .create-page-card {
+    .edit-page-card {
         padding: 30px 32px;
         margin-bottom: 24px;
     }
 
-    .create-page-title {
+    .edit-page-title {
         font-size: 2rem;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 6px;
     }
 
-    .create-page-subtitle {
+    .edit-page-subtitle {
         color: #64748b;
         font-size: 1.02rem;
         margin-bottom: 0;
     }
 
-    .create-form-card {
+    .edit-form-card {
         overflow: hidden;
     }
 
-    .create-form-header {
+    .edit-form-header {
         padding: 24px 28px 12px;
         border-bottom: 1px solid #f1f5f9;
     }
 
-    .create-form-title {
+    .edit-form-title {
         font-size: 1.15rem;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 4px;
     }
 
-    .create-form-text {
+    .edit-form-text {
         color: #64748b;
         margin-bottom: 0;
         font-size: 0.96rem;
     }
 
-    .create-form-body {
+    .edit-form-body {
         padding: 28px;
     }
 
@@ -93,12 +93,6 @@
             box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.12);
         }
 
-    .form-hint {
-        color: #64748b;
-        font-size: 0.88rem;
-        margin-top: 8px;
-    }
-
     .alert-danger {
         border-radius: 16px;
         border: 0;
@@ -108,11 +102,26 @@
         margin-bottom: 20px;
     }
 
-    .status-box, .image-box {
+    .meta-card, .status-box, .image-box {
         border: 1px solid #e2e8f0;
         border-radius: 18px;
-        padding: 16px 18px;
         background: #f8fafc;
+        padding: 18px 20px;
+    }
+
+    .meta-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .meta-value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
     }
 
     .status-box {
@@ -196,6 +205,23 @@
         color: #ef4444;
     }
 
+    .current-image-wrap {
+        margin-top: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .current-image {
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+    }
+
     .image-preview-wrap {
         margin-top: 16px;
         display: none;
@@ -217,15 +243,7 @@
         margin-top: 28px;
     }
 
-    .save-btn {
-        min-height: 52px;
-        border-radius: 16px;
-        padding: 0 24px;
-        font-weight: 700;
-        font-size: 0.98rem;
-    }
-
-    .cancel-btn {
+    .save-btn, .cancel-btn {
         min-height: 52px;
         border-radius: 16px;
         padding: 0 24px;
@@ -238,11 +256,11 @@
 </style>
 
 <div class="container py-4">
-    <div class="create-page-card">
+    <div class="edit-page-card">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
-                <h1 class="create-page-title">Yeni Ürün Ekle</h1>
-                <p class="create-page-subtitle">Yeni ürün oluşturarak stok sistemine kayıt ekleyebilirsin.</p>
+                <h1 class="edit-page-title">Ürün Düzenle</h1>
+                <p class="edit-page-subtitle">Ürün bilgilerini, görselini ve stok ayarlarını güncelleyebilirsin.</p>
             </div>
 
             <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
@@ -251,26 +269,46 @@
         </div>
     </div>
 
-    <div class="create-form-card">
-        <div class="create-form-header">
-            <div class="create-form-title">Ürün Bilgileri</div>
-            <p class="create-form-text">Ürünün temel bilgilerini, stok durumunu, tedarikçisini ve görselini ekle.</p>
+    <div class="edit-form-card">
+        <div class="edit-form-header">
+            <div class="edit-form-title">Ürün Düzenleme Formu</div>
+            <p class="edit-form-text">Aşağıdaki alanları güncelleyerek ürün kaydını düzenleyebilirsin.</p>
         </div>
 
-        <div class="create-form-body">
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="edit-form-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CreatedDate" />
+                <input type="hidden" asp-for="ImageUrl" />
+
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="meta-card">
+                            <div class="meta-label">Ürün ID</div>
+                            <div class="meta-value">#@Model.Id</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="meta-card">
+                            <div class="meta-label">Oluşturulma Tarihi</div>
+                            <div class="meta-value">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="row g-4">
                     <div class="col-md-6">
                         <label asp-for="Name" class="form-label">Ürün Adı</label>
-                        <input asp-for="Name" class="form-control" placeholder="Örn: Laptop, Klavye, Kahve" />
+                        <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-md-6">
                         <label asp-for="ProductCode" class="form-label">Ürün Kodu</label>
-                        <input asp-for="ProductCode" class="form-control" placeholder="Örn: PRD-1001" />
+                        <input asp-for="ProductCode" class="form-control" />
                         <span asp-validation-for="ProductCode" class="text-danger small mt-1 d-block"></span>
                     </div>
 
@@ -280,7 +318,9 @@
                             <option value="">Kategori Seçiniz</option>
                             @foreach (var category in categories)
                             {
-                                <option value="@category.Value">@category.Text</option>
+                                <option value="@category.Value" selected="@(Model.CategoryId.ToString() == category.Value)">
+                                    @category.Text
+                                </option>
                             }
                         </select>
                         <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
@@ -292,7 +332,9 @@
                             <option value="">Tedarikçi Seçiniz</option>
                             @foreach (var supplier in suppliers)
                             {
-                                <option value="@supplier.Value">@supplier.Text</option>
+                                <option value="@supplier.Value" selected="@(Model.SupplierId.ToString() == supplier.Value)">
+                                    @supplier.Text
+                                </option>
                             }
                         </select>
                         <span asp-validation-for="SupplierId" class="text-danger small mt-1 d-block"></span>
@@ -300,25 +342,25 @@
 
                     <div class="col-12">
                         <label asp-for="Description" class="form-label">Açıklama</label>
-                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="Ürünle ilgili kısa açıklama giriniz..."></textarea>
+                        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
                         <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="UnitPrice" class="form-label">Birim Fiyat</label>
-                        <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                        <input asp-for="UnitPrice" class="form-control" type="number" step="0.01" min="0" />
                         <span asp-validation-for="UnitPrice" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="StockQuantity" class="form-label">Stok Miktarı</label>
-                        <input asp-for="StockQuantity" class="form-control" type="number" min="0" placeholder="0" />
+                        <input asp-for="StockQuantity" class="form-control" type="number" min="0" />
                         <span asp-validation-for="StockQuantity" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <div class="col-md-3">
                         <label asp-for="CriticalStockLevel" class="form-label">Kritik Stok</label>
-                        <input asp-for="CriticalStockLevel" class="form-control" type="number" min="0" placeholder="5" />
+                        <input asp-for="CriticalStockLevel" class="form-control" type="number" min="0" />
                         <span asp-validation-for="CriticalStockLevel" class="text-danger small mt-1 d-block"></span>
                     </div>
 
@@ -337,13 +379,29 @@
                     <div class="col-12">
                         <label class="form-label">Ürün Görseli</label>
                         <div class="image-box">
-                            <h6>Dosya Yükle</h6>
-                            <p>Görsel `wwwroot/img/products` klasörüne kaydedilir.</p>
+                            <h6>Görsel Yönetimi</h6>
+                            <p>Yeni görsel seçersen eski görsel klasörden silinir.</p>
 
                             <input type="file" name="imageFile" id="imageFile" class="form-control mt-3" accept=".jpg,.jpeg,.png,.webp" />
 
+                            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                            {
+                                <div class="current-image-wrap">
+                                    <div>
+                                        <img src="@Model.ImageUrl" alt="@Model.Name" class="current-image" />
+                                    </div>
+
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" name="removeImage" value="true" id="removeImage" />
+                                        <label class="form-check-label" for="removeImage">
+                                            Mevcut görseli kaldır
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+
                             <div class="image-preview-wrap" id="imagePreviewWrap">
-                                <img id="imagePreview" class="image-preview" alt="Önizleme" />
+                                <img id="imagePreview" class="image-preview" alt="Yeni önizleme" />
                             </div>
                         </div>
                     </div>
@@ -354,7 +412,7 @@
                         <div class="status-box">
                             <div class="status-box-left">
                                 <h6>Ürün Durumu</h6>
-                                <p>Yeni ürün aktif olarak oluşturulsun mu?</p>
+                                <p>Bu ürünün aktif veya pasif olmasını buradan değiştirebilirsin.</p>
                             </div>
 
                             <div class="d-flex align-items-center gap-3">
@@ -372,9 +430,13 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary save-btn">
-                        <i class="bi bi-check2-circle me-2"></i>Kaydet
+                    <button type="submit" class="btn btn-warning save-btn">
+                        <i class="bi bi-check2-circle me-2"></i>Güncelle
                     </button>
+
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary cancel-btn">
+                        <i class="bi bi-eye me-2"></i>Detaya Git
+                    </a>
 
                     <a asp-action="Index" class="btn btn-outline-secondary cancel-btn">
                         <i class="bi bi-x-circle me-2"></i>Vazgeç

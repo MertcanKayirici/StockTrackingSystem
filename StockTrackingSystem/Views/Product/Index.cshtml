@@ -798,7 +798,10 @@
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
-                                        <a href="javascript:void(0);" class="action-btn btn-delete" title="Sil">
+                                        <a href="javascript:void(0);"
+                                           class="action-btn btn-delete"
+                                           title="Sil"
+                                           onclick="deleteProduct(@item.Id, '@item.Name')">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -891,5 +894,37 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        async function deleteProduct(id, name) {
+            const ok = confirm(`"${name}" ürününü silmek istediğinize emin misiniz? Bu işlem görseli de klasörden siler.`);
+            if (!ok) return;
+
+            try {
+                const response = await fetch(`/Product/Delete?id=${id}`, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    alert(result.message);
+                    return;
+                }
+
+                const row = document.getElementById(`row-${id}`);
+                if (row) row.remove();
+
+                alert(result.message);
+                location.reload();
+            }
+            catch {
+                alert("Silme işlemi sırasında hata oluştu.");
+            }
+        }
     </script>
 }

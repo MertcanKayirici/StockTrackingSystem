@@ -1,0 +1,331 @@
+﻿@model StockTrackingSystem.Models.Product
+
+@{
+    ViewData["Title"] = "Ürün Detayı";
+}
+
+<style>
+    body {
+        background: #f8fafc;
+    }
+
+    .details-page-card, .details-info-card, .details-stat-card {
+        border: 0;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .details-page-card {
+        padding: 30px 32px;
+        margin-bottom: 24px;
+    }
+
+    .details-page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .details-page-subtitle {
+        color: #64748b;
+        font-size: 1.02rem;
+        margin-bottom: 0;
+    }
+
+    .details-info-card {
+        overflow: hidden;
+    }
+
+    .details-info-header {
+        padding: 24px 28px 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .details-info-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .details-info-text {
+        color: #64748b;
+        margin-bottom: 0;
+        font-size: 0.96rem;
+    }
+
+    .details-info-body {
+        padding: 28px;
+    }
+
+    .detail-item {
+        padding: 18px 20px;
+        border: 1px solid #eef2f7;
+        border-radius: 18px;
+        background: #f8fafc;
+        height: 100%;
+    }
+
+    .detail-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .detail-value {
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: #0f172a;
+        word-break: break-word;
+    }
+
+    .detail-description {
+        font-size: 0.98rem;
+        font-weight: 500;
+        color: #334155;
+        line-height: 1.7;
+        white-space: pre-line;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 0.92rem;
+        font-weight: 800;
+    }
+
+    .status-active {
+        background: rgba(22, 163, 74, 0.10);
+        color: #16a34a;
+    }
+
+    .status-passive {
+        background: rgba(239, 68, 68, 0.10);
+        color: #ef4444;
+    }
+
+    .details-stat-card {
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 100%;
+    }
+
+    .details-stat-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        background: rgba(37, 99, 235, 0.10);
+        color: #2563eb;
+        flex-shrink: 0;
+    }
+
+    .details-stat-label {
+        color: #64748b;
+        font-size: 0.92rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .details-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #0f172a;
+    }
+
+    .product-image {
+        width: 220px;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .action-btn-main, .action-btn-secondary {
+        min-height: 52px;
+        border-radius: 16px;
+        padding: 0 24px;
+        font-weight: 700;
+        font-size: 0.98rem;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="details-page-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <h1 class="details-page-title">Ürün Detayı</h1>
+                <p class="details-page-subtitle">Ürüne ait bilgileri görüntüleyebilir ve düzenleme sayfasına geçebilirsin.</p>
+            </div>
+
+            <a asp-action="Index" class="btn btn-outline-secondary action-btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Listeye Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="details-stat-card">
+                <div class="details-stat-icon"><i class="bi bi-box-seam"></i></div>
+                <div>
+                    <div class="details-stat-label">Stok Miktarı</div>
+                    <div class="details-stat-value">@Model.StockQuantity</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="details-stat-card">
+                <div class="details-stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                <div>
+                    <div class="details-stat-label">Kritik Stok</div>
+                    <div class="details-stat-value">@Model.CriticalStockLevel</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="details-stat-card">
+                <div class="details-stat-icon"><i class="bi bi-currency-dollar"></i></div>
+                <div>
+                    <div class="details-stat-label">Birim Fiyat</div>
+                    <div class="details-stat-value">@Model.UnitPrice.ToString("C")</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="details-stat-card">
+                <div class="details-stat-icon"><i class="bi bi-upc-scan"></i></div>
+                <div>
+                    <div class="details-stat-label">Ürün Kodu</div>
+                    <div class="details-stat-value">@Model.ProductCode</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="details-info-card">
+        <div class="details-info-header">
+            <div class="details-info-title">Ürün Bilgileri</div>
+            <p class="details-info-text">Seçili ürüne ait temel bilgiler aşağıda listelenmektedir.</p>
+        </div>
+
+        <div class="details-info-body">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="detail-item text-center">
+                        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="@Model.Name" class="product-image" />
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center product-image">
+                                <span class="text-muted">Görsel yok</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Ürün Adı</div>
+                                <div class="detail-value">@Model.Name</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Durum</div>
+                                <div class="detail-value">
+                                    <span class="status-badge @(Model.IsActive ? "status-active" : "status-passive")">
+                                        <i class="bi @(Model.IsActive ? "bi-check-circle-fill" : "bi-x-circle-fill")"></i>
+                                        @(Model.IsActive ? "Aktif" : "Pasif")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Kategori</div>
+                                <div class="detail-value">@(Model.Category?.Name ?? "-")</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Tedarikçi</div>
+                                <div class="detail-value">@(Model.Supplier?.CompanyName ?? "-")</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Birim Türü</div>
+                                <div class="detail-value">@Model.UnitType</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Oluşturulma Tarihi</div>
+                                <div class="detail-value">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="detail-item">
+                        <div class="detail-label">Açıklama</div>
+                        <div class="detail-description">
+                            @(string.IsNullOrWhiteSpace(Model.Description)
+                                                        ? "Bu ürün için açıklama girilmemiş."
+                                                        : Model.Description)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning action-btn-main">
+                    <i class="bi bi-pencil-square me-2"></i>Düzenle
+                </a>
+
+                <a asp-action="Index" class="btn btn-outline-secondary action-btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Geri Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
