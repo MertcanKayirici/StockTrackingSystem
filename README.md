@@ -1,12 +1,26 @@
 # 🚀 Stock Tracking System
 
-> ⚡ A production-ready stock management system with advanced filtering, export capabilities, and a real-time admin dashboard
+<p align="center">
+  <img src="https://img.shields.io/badge/.NET-Core-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
+  <img src="https://img.shields.io/badge/ASP.NET-Core-5C2D91?style=for-the-badge&logo=dotnet&logoColor=white" />
+  <img src="https://img.shields.io/badge/SQL-Server-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Entity-Framework-512BD4?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Bootstrap-5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" />
+  <img src="https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" />
+</p>
+
+---
+
+> ⚡ A modern stock management system with advanced filtering, export capabilities, and a real-time admin dashboard
 
 A scalable and production-style **stock tracking and management system** built with **ASP.NET Core MVC, Entity Framework Core, and SQL Server**.
 
 The application simulates a real-world business environment, enabling full control over **inventory, suppliers, categories, and stock movements** through a modern and responsive **admin dashboard**.
 
-It focuses on **data-driven decision making**, **clean architecture**, and **high usability**.
+It focuses on **data-driven decision making**, **clean and maintainable architecture**, and **high usability**.
 
 ---
 
@@ -14,40 +28,52 @@ It focuses on **data-driven decision making**, **clean architecture**, and **hig
 
 > Overview of system features and real-time interactions
 
-| 🖥️ System Overview |
-|-------------------|
-| ![Application Overview](Screenshots/app_overview.gif) |
+<p align="center">
+  <img src="Screenshots/app_overview.gif" width="100%" />
+</p>
 
-| ⚡ AJAX Live Updates | 🔄 Stock Movement |
-|---------------------|------------------|
-| ![AJAX Live Update](Screenshots/ajax_live_update.gif) | ![Stock Movement Create](Screenshots/stock_movement_create.gif) |
+<p align="center">
+  <img src="Screenshots/ajax_live_update.gif" width="49%" />
+  <img src="Screenshots/stock_movement_create.gif" width="49%" />
+</p>
 
 ---
 
 ## ✨ Key Features
 
-- 📦 Product Management (CRUD)  
-- 🏢 Supplier Management (CRUD + status toggle)  
-- 🗂️ Category Management  
-- 🔄 Stock In / Stock Out System  
-- 📊 Real-time Dashboard Statistics  
-- 📥 Advanced Export System (Excel / PDF with dynamic filtering support)  
-- ⚡ AJAX-based Status Updates (Active / Passive toggle)  
-- 🧾 Audit Log System (tracking all actions)  
-- 🔍 Advanced Filtering & Search  
-- 📅 Date-based filtering & sorting  
-- 🎨 Modern UI (custom CSS + Bootstrap 5)  
+- 📦 Product Management (CRUD)
+- 🏢 Supplier Management (CRUD + status toggle)
+- 🗂️ Category Management
+- 🔄 Stock In / Stock Out System
+- 📊 Real-time Dashboard Statistics
+- 📥 Export System (Excel / PDF with filtering support)
+- ⚡ AJAX-based Status Updates (Active / Passive toggle)
+- 🧾 Audit Log System (tracks all critical actions)
+- 🔍 Advanced Filtering & Search
+- 📅 Date-based filtering & sorting
+- 🎨 Modern UI (Bootstrap 5 + custom styling)
+- 📈 Stock analytics & insights
+
+---
+
+## 🚀 Key Highlights
+
+- Real-world business logic implementation  
+- Advanced filtering & reporting system  
+- Export functionality (Excel & PDF)  
+- Audit logging for traceability  
+- AJAX-powered dynamic UI  
 
 ---
 
 ## 🛠️ Tech Stack
 
-- ASP.NET Core MVC  
-- Entity Framework Core  
-- Microsoft SQL Server  
-- Bootstrap 5  
-- JavaScript (AJAX, Fetch API)  
-- HTML5 / CSS3  
+- ASP.NET Core MVC (Backend)
+- Entity Framework Core (ORM)
+- SQL Server (Database)
+- Bootstrap 5 (UI Framework)
+- JavaScript (AJAX, Fetch API)
+- HTML5 / CSS3 (Frontend structure)
 
 ---
 
@@ -59,7 +85,9 @@ It focuses on **data-driven decision making**, **clean architecture**, and **hig
 - Supports Excel (.xlsx) and PDF (.pdf) formats  
 - Preserves active filters during export operations  
 
-![Export Demo](Screenshots/export_demo.gif)
+<p align="center">
+  <img src="Screenshots/export_demo.gif" width="100%" />
+</p>
 
 ---
 
@@ -154,50 +182,50 @@ Run the project using **Visual Studio (F5)** 🚀
 ---
 
 ## 📂 Project Structure
-- Controllers → MVC Controllers  
-- Models → Entity Framework Models  
-- Views → Razor Views  
-- Database → SQL Scripts  
-- Screenshots → Images & GIFs  
+- Controllers → Handle HTTP requests and business flow  
+- Models → Entity Framework data models  
+- Views → Razor UI components  
+- Database → SQL scripts and schema  
+- Screenshots → Project visuals & demos  
 
 ---
 
 ## 📌 Architecture Highlights
 - Layered MVC architecture
 - Separation of concerns (Controller / Service / Data layers)
-- Entity relationships with strong constraints
+- Clear request flow (Controller → Service → Data access)
+- Relational database design with constraints
+- AJAX-driven dynamic UI
+- Centralized Audit Log system
 - Reusable UI components
-- AJAX-driven dynamic interactions
-- Centralized logging (Audit Log system)
-- 
+- Business logic handled through structured layers
+  
 ---
 
 ## ⭐ Project Purpose
 
-This project was developed to simulate a real-world stock tracking system, focusing on:
+This project was built to simulate a real-world inventory management system and demonstrate:
 
-- Clean architecture
-- Scalable database design
-- Admin panel usability
-- Real-time data management
-
----
-
-- GitHub: https://github.com/MertcanKayirici
-- LinkedIn: https://www.linkedin.com/in/mertcankayirici
-
----
-
-## 💡 Project Purpose
-
-This project was built to demonstrate **real-world backend development skills**, including:
-
-- Data modeling & relational design  
+- Scalable backend architecture  
+- Relational database design  
 - Business logic implementation  
-- Admin panel architecture  
-- Reporting & export systems  
+- Admin panel development  
 
-It is part of my professional portfolio.
+---
+
+## 💡 Why This Project Matters
+
+This project demonstrates the ability to build a real-world business application, not just a simple CRUD system.
+
+It includes:
+
+- Business logic handling (stock movements)
+- Data consistency with relational database design
+- Audit logging for traceability
+- Dynamic UI with AJAX
+- Reporting and export capabilities
+
+This makes it closer to a real production system used in companies.
 
 ---
 
@@ -206,6 +234,9 @@ It is part of my professional portfolio.
 **Mertcan Kayırıcı**  
 Backend-focused Full Stack Developer
 ASP.NET Core & SQL Server
+
+- GitHub: https://github.com/MertcanKayirici
+- LinkedIn: https://www.linkedin.com/in/mertcankayirici
 
 --- 
 
